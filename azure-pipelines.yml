@@ -9,12 +9,11 @@ variables:
 
 steps:
 - script: dotnet build src/NewRelic.Telemetry.Sdk.sln --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+  displayName: 'Build (configuration=$(buildConfiguration)'
 
-- script: dotnet test src/NewRelic.Telemetry.Sdk.Tests/NewRelic.Telemetry.Sdk.Tests.csproj --logger trx
-  displayName: 'Run some tests'
+- script: dotnet test src/**/*.Tests --no-build --no-restore --configuration $(buildConfiguration) --logger trx
+  displayName: 'Run tests'
 - task: PublishTestResults@2
-  condition: succeededOrFailed()
   inputs:
     testRunner: VSTest
     testResultsFiles: '**/*.trx'
