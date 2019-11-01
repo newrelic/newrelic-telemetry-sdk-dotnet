@@ -10,7 +10,7 @@ namespace NewRelic.Telemetry.Sdk.Tests
         {
             var attributes = new Dictionary<string, object> { { "attrKey", "attrValue" } };
 
-            var spanBuilder = Span.GetSpanBuilder("spanId");
+            var spanBuilder = new SpanBuilder("spanId");
             spanBuilder.TraceId("traceId").TimeStamp(1L).ServiceName("serviceName").DurationMs(67d).Name("name")
                 .ParentId("parentId").Error(true).Attributes(attributes);
             var span = spanBuilder.Build();
@@ -29,7 +29,7 @@ namespace NewRelic.Telemetry.Sdk.Tests
         public void DoNotBuildSpanIfNullId()
         {
             var attributes = new Dictionary<string, object> { { "attrKey", "attrValue" } };
-            var spanBuilder = Span.GetSpanBuilder(null);
+            var spanBuilder = new SpanBuilder(null);
             spanBuilder.TraceId("traceId").TimeStamp(1L).ServiceName("serviceName").DurationMs(67d).Name("name")
                 .ParentId("parentId").Error(true).Attributes(attributes);
             var span = spanBuilder.Build();
