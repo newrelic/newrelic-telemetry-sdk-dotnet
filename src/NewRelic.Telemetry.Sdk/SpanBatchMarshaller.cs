@@ -3,7 +3,6 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 
-
 namespace NewRelic.Telemetry.Sdk
 {
     public class SpanBatchMarshaller

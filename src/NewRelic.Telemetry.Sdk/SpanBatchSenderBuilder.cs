@@ -1,5 +1,4 @@
-﻿
-namespace NewRelic.Telemetry.Sdk
+﻿namespace NewRelic.Telemetry.Sdk
 {
     public class SpanBatchSenderBuilder
     {
