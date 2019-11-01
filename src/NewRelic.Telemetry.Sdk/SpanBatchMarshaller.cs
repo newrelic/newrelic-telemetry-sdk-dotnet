@@ -150,36 +150,42 @@ namespace NewRelic.Telemetry.Sdk
                         writer.WriteNumber("timestamp", span.Timestamp);
                     }
 
-                    if (!string.IsNullOrEmpty(span.ServiceName))
-                    {
-                        writer.WriteString("service.name", span.ServiceName);
-                    }
-
-                    if (span.DurationMs != default)
-                    {
-                        writer.WriteNumber("duration.ms", span.DurationMs);
-                    }
-
-                    if (!string.IsNullOrEmpty(span.Name))
-                    {
-                        writer.WriteString("name", span.Name);
-                    }
-
-                    if (!string.IsNullOrEmpty(span.ParentId))
-                    {
-                        writer.WriteString("parent.id", span.ParentId);
-                    }
-
                     if (span.Error)
                     {
                         writer.WriteBoolean("error", span.Error);
                     }
 
-                    var customAttributes = span.Attributes;
+                    var attributes = span.Attributes;
 
-                    if (customAttributes?.Count > 0)
+                    if(attributes == null) 
                     {
-                        BuidAttributesBlock(writer, customAttributes);
+                        attributes = new Dictionary<string, object>();
+                    }
+
+                    if (span.DurationMs != default)
+                    {
+                        attributes.Add("duration.ms", span.DurationMs);
+                    }
+
+                    if (!string.IsNullOrEmpty(span.Name))
+                    {
+                        attributes.Add("name", span.Name);
+                    }
+
+                    if (!string.IsNullOrEmpty(span.ServiceName))
+                    {
+                        attributes.Add("service.name", span.ServiceName);
+                    }
+
+                    if (!string.IsNullOrEmpty(span.ParentId))
+                    {
+                        attributes.Add("parent.id", span.ParentId);
+                    }
+
+
+                    if (attributes.Count > 0)
+                    {
+                        BuidAttributesBlock(writer, attributes);
                     }
 
                     writer.WriteEndObject();

@@ -27,7 +27,7 @@ namespace NewRelic.Telemetry.Sdk.Tests
         [Test]
         public void ToJson_NonEmptySpanBatch()
         {
-            var expectedString = @"[{""common"":{""trace.id"":""traceId""},""spans"":[{""id"":""span1"",""trace.id"":""traceId"",""timestamp"":1,""service.name"":""serviceName"",""duration.ms"":67,""name"":""name"",""parent.id"":""parentId"",""error"":true}]}]";
+            var expectedString = @"[{""common"":{""trace.id"":""traceId""},""spans"":[{""id"":""span1"",""trace.id"":""traceId"",""timestamp"":1,""error"":true,""attributes"":{""duration.ms"":67,""name"":""name"",""service.name"":""serviceName"",""parent.id"":""parentId""}}]}]";
 
             var spanBuilder = Span.GetSpanBuilder("span1");
             var span = spanBuilder.TraceId("traceId").TimeStamp(1L)
@@ -51,7 +51,7 @@ namespace NewRelic.Telemetry.Sdk.Tests
                 { "customAtt4", true }
             };
 
-            var expectedString = @"[{""common"":{""trace.id"":""traceId"",""attributes"":{""customAtt1"":""hello"",""customAtt2"":1,""customAtt3"":1.2,""customAtt4"":true}},""spans"":[{""id"":""span1"",""trace.id"":""traceId"",""timestamp"":1,""service.name"":""serviceName"",""duration.ms"":67,""name"":""name"",""parent.id"":""parentId"",""error"":true,""attributes"":{""customAtt1"":""hello"",""customAtt2"":1,""customAtt3"":1.2,""customAtt4"":true}}]}]";
+            var expectedString = @"[{""common"":{""trace.id"":""traceId"",""attributes"":{""customAtt1"":""hello"",""customAtt2"":1,""customAtt3"":1.2,""customAtt4"":true}},""spans"":[{""id"":""span1"",""trace.id"":""traceId"",""timestamp"":1,""error"":true,""attributes"":{""customAtt1"":""hello"",""customAtt2"":1,""customAtt3"":1.2,""customAtt4"":true,""duration.ms"":67,""name"":""name"",""service.name"":""serviceName"",""parent.id"":""parentId""}}]}]";
 
             var spanBuilder = Span.GetSpanBuilder("span1");
             var span = spanBuilder.TraceId("traceId").TimeStamp(1L)
@@ -64,54 +64,35 @@ namespace NewRelic.Telemetry.Sdk.Tests
             Assert.AreEqual(expectedString, jsonString);
         }
 
-        [Test]
-        public void ToJson_OmitNullValueProperty()
+        [TestCase("spanId", null, null, false, ExpectedResult = @"[{""spans"":[{""id"":""spanId""}]}]")]
+        [TestCase(null, null, null, false, ExpectedResult = @"[{}]")]
+        [TestCase(null, null, null, true, ExpectedResult = @"[{}]")]
+        public string ToJson_OmitNullValueProperty(string spanId, string traceId, IDictionary<string, object> attributes, bool nullList)
         {
             var marshaller = new SpanBatchMarshaller();
 
-            var expectedString1 = @"[{""spans"":[{""id"":""spanId""}]}]";
-            var spanBuilder1 = Span.GetSpanBuilder("spanId");
-            var span1 = spanBuilder1.Build();
-            var spanBatch1 = new SpanBatch(new List<Span>() { span1 }, null, null);
-            var jsonString1 = marshaller.ToJson(spanBatch1);
-            Assert.AreEqual(expectedString1, jsonString1);
-
-            var expectedString2 = @"[{}]";
-            var spanBatch2 = new SpanBatch(null, null, null);
-            var jsonString2 = marshaller.ToJson(spanBatch2);
-            Assert.AreEqual(expectedString2, jsonString2);
-
-            var expectedString3 = @"[{}]";
-            var spanBatch3 = new SpanBatch(new List<Span>(), null, null);
-            var jsonString3 = marshaller.ToJson(spanBatch3);
-            Assert.AreEqual(expectedString3, jsonString3);
+            var spanBuilder = Span.GetSpanBuilder(spanId);
+            var span = spanBuilder.Build();
+            var spans = nullList ? null : new List<Span>() { span };
+            var spanBatch = new SpanBatch(spans, attributes, traceId);
+            return marshaller.ToJson(spanBatch);
         }
 
-        [Test]
-        public void ToJson_NullSpans() 
+        [TestCase("spanId", ExpectedResult = @"[{""spans"":[{""id"":""spanId""}]}]")]
+        [TestCase(null, ExpectedResult = @"[{}]")]
+        public string ToJson_ListContainsNullSpans(string spanId) 
         {
             var marshaller = new SpanBatchMarshaller();
 
-            var expectedString1 = @"[{""spans"":[{""id"":""spanId""}]}]";
-            var spanBatch1 = new SpanBatch(
+            var spanBatch = new SpanBatch(
                 new List<Span>() 
                 { 
                     Span.GetSpanBuilder(null).Build(),
                     Span.GetSpanBuilder(null).Build(),
-                    Span.GetSpanBuilder("spanId").Build() 
+                    Span.GetSpanBuilder(spanId).Build() 
                 }, null, null);
-            var jsonString1 = marshaller.ToJson(spanBatch1);
-            Assert.AreEqual(expectedString1, jsonString1);
 
-            var expectedString2 = @"[{}]";
-            var spanBatch2 = new SpanBatch(
-                new List<Span>()
-                {
-                    Span.GetSpanBuilder(null).Build(),
-                    Span.GetSpanBuilder(null).Build()
-                }, null, null);
-            var jsonString2 = marshaller.ToJson(spanBatch2);
-            Assert.AreEqual(expectedString2, jsonString2);
+            return marshaller.ToJson(spanBatch);
         }
 
     }
