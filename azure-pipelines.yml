@@ -11,7 +11,7 @@ steps:
 - script: dotnet build src/NewRelic.Telemetry.Sdk.sln --configuration $(buildConfiguration)
   displayName: 'Build (configuration=$(buildConfiguration)'
 
-- script: dotnet test src/**/*.Tests --no-build --no-restore --configuration $(buildConfiguration) --logger trx
+- script: dotnet test src/NewRelic.Telemetry.Sdk.Tests --no-build --no-restore --configuration $(buildConfiguration) --logger trx
   displayName: 'Run tests'
 
 - task: PublishTestResults@2
