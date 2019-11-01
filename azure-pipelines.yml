@@ -25,3 +25,12 @@ steps:
     targetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - task: PublishBuildArtifacts@1
+
+- task: NuGetCommand@2
+  condition: and(succeeded(), eq(variables['pushNupkg'], 'true'))
+  displayName: 'Push NuGet Packages'
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
+    nuGetFeedType: 'external'
+    publishFeedCredentials: 'NuGet'
