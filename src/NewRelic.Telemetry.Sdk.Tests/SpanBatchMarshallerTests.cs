@@ -65,35 +65,13 @@ namespace NewRelic.Telemetry.Sdk.Tests
         }
 
         [TestCase("spanId", null, null, false, ExpectedResult = @"[{""spans"":[{""id"":""spanId""}]}]")]
-        [TestCase(null, null, null, false, ExpectedResult = @"[{}]")]
         [TestCase(null, null, null, true, ExpectedResult = @"[{}]")]
         public string ToJson_OmitNullValueProperty(string spanId, string traceId, IDictionary<string, object> attributes, bool nullList)
         {
             var marshaller = new SpanBatchMarshaller();
-
-            var spanBuilder = new SpanBuilder(spanId);
-            var span = spanBuilder.Build();
-            var spans = nullList ? null : new List<Span>() { span };
+            var spans = nullList ? null : new List<Span>() { new SpanBuilder(spanId).Build() };
             var spanBatch = new SpanBatch(spans, attributes, traceId);
             return marshaller.ToJson(spanBatch);
         }
-
-        [TestCase("spanId", ExpectedResult = @"[{""spans"":[{""id"":""spanId""}]}]")]
-        [TestCase(null, ExpectedResult = @"[{}]")]
-        public string ToJson_ListContainsNullSpans(string spanId) 
-        {
-            var marshaller = new SpanBatchMarshaller();
-
-            var spanBatch = new SpanBatch(
-                new List<Span>() 
-                {
-                    new SpanBuilder(null).Build(),
-                    new SpanBuilder(null).Build(),
-                    new SpanBuilder(spanId).Build() 
-                }, null, null);
-
-            return marshaller.ToJson(spanBatch);
-        }
-
     }
 }

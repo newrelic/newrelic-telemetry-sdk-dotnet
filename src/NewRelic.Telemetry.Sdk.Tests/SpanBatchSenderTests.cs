@@ -12,7 +12,7 @@ namespace NewRelic.Telemetry.Sdk.Tests
         {
             var traceId = "123";
             var spanBatch = new SpanBatch(new List<Span>(), new Dictionary<string, object>(), traceId);
-            var spanBatchMarshaller = Mock.Create<Sdk.SpanBatchMarshaller>();
+            var spanBatchMarshaller = Mock.Create<SpanBatchMarshaller>();
             var batchDataSender = Mock.Create<BatchDataSender>();
             Mock.Arrange(() => batchDataSender.SendBatch(Arg.AnyString)).Returns(new HttpResponseMessage(System.Net.HttpStatusCode.OK));
             var spanBatchSender = new SpanBatchSender(batchDataSender, spanBatchMarshaller);
@@ -26,7 +26,7 @@ namespace NewRelic.Telemetry.Sdk.Tests
         {
             var traceId = "123";
             var spanBatch = new SpanBatch(new List<Span>() { Mock.Create<Span>() }, new Dictionary<string, object>(), traceId);
-            var spanBatchMarshaller = Mock.Create<Sdk.SpanBatchMarshaller>();
+            var spanBatchMarshaller = Mock.Create<SpanBatchMarshaller>();
             var batchDataSender = Mock.Create<BatchDataSender>();
             Mock.Arrange(() => batchDataSender.SendBatch(Arg.AnyString)).Returns(new HttpResponseMessage(System.Net.HttpStatusCode.OK));
             var spanBatchSender = new SpanBatchSender(batchDataSender, spanBatchMarshaller);

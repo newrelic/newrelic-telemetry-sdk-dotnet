@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace NewRelic.Telemetry.Sdk
 {
@@ -60,8 +61,7 @@ namespace NewRelic.Telemetry.Sdk
         {
             if (string.IsNullOrEmpty(_id))
             {
-                //TODO: Log out "can not create span with a null id"  message 
-                return null;
+                throw new NullReferenceException("id is not set.");
             }
 
             return new Span(_id, _traceId, _timestamp, _serviceName, _durationMs, _name, _parentId, _error, _attributes);

@@ -54,13 +54,13 @@ namespace NewRelic.Telemetry.Sdk
             var customAttributes = batch.Attributes;
             if (customAttributes?.Count > 0)
             {
-                BuidAttributesBlock(writer, customAttributes);
+                BuildAttributesBlock(writer, customAttributes);
             }
 
             writer.WriteEndObject();
         }
 
-        private void BuidAttributesBlock(Utf8JsonWriter writer, IDictionary<string, object> attributes)
+        private void BuildAttributesBlock(Utf8JsonWriter writer, IDictionary<string, object> attributes)
         {
 
             writer.WritePropertyName("attributes");
@@ -112,7 +112,6 @@ namespace NewRelic.Telemetry.Sdk
             }
 
             writer.WriteEndObject();
-
         }
 
         private void BuildSpansBlock(Utf8JsonWriter writer, SpanBatch batch)
@@ -126,69 +125,66 @@ namespace NewRelic.Telemetry.Sdk
 
             foreach (var span in batch.Spans)
             {
-                if (span != null)
+                if (!didCreateSpansProperty)
                 {
-                    if (!didCreateSpansProperty)
-                    {
-                        writer.WritePropertyName("spans");
-                        writer.WriteStartArray();
-                        didCreateSpansProperty = true;
-                    }
-
-                    writer.WriteStartObject();
-
-                    writer.WriteString("id", span.Id);
-
-                    if (!string.IsNullOrEmpty(span.TraceId))
-                    {
-                        writer.WriteString("trace.id", span.TraceId);
-                    }
-
-                    if (span.Timestamp != default)
-                    {
-                        writer.WriteNumber("timestamp", span.Timestamp);
-                    }
-
-                    if (span.Error)
-                    {
-                        writer.WriteBoolean("error", span.Error);
-                    }
-
-                    var attributes = span.Attributes;
-
-                    if(attributes == null) 
-                    {
-                        attributes = new Dictionary<string, object>();
-                    }
-
-                    if (span.DurationMs != default)
-                    {
-                        attributes.Add("duration.ms", span.DurationMs);
-                    }
-
-                    if (!string.IsNullOrEmpty(span.Name))
-                    {
-                        attributes.Add("name", span.Name);
-                    }
-
-                    if (!string.IsNullOrEmpty(span.ServiceName))
-                    {
-                        attributes.Add("service.name", span.ServiceName);
-                    }
-
-                    if (!string.IsNullOrEmpty(span.ParentId))
-                    {
-                        attributes.Add("parent.id", span.ParentId);
-                    }
-
-
-                    if (attributes.Count > 0)
-                    {
-                        BuidAttributesBlock(writer, attributes);
-                    }
-
-                    writer.WriteEndObject();
+                    writer.WritePropertyName("spans");
+                    writer.WriteStartArray();
+                    didCreateSpansProperty = true;
                 }
+
+                writer.WriteStartObject();
+
+                writer.WriteString("id", span.Id);
+
+                if (!string.IsNullOrEmpty(span.TraceId))
+                {
+                    writer.WriteString("trace.id", span.TraceId);
+                }
+
+                if (span.Timestamp != default)
+                {
+                    writer.WriteNumber("timestamp", span.Timestamp);
+                }
+
+                if (span.Error)
+                {
+                    writer.WriteBoolean("error", span.Error);
+                }
+
+                var attributes = span.Attributes;
+
+                if (attributes == null)
+                {
+                    attributes = new Dictionary<string, object>();
+                }
+
+                if (span.DurationMs != default)
+                {
+                    attributes.Add("duration.ms", span.DurationMs);
+                }
+
+                if (!string.IsNullOrEmpty(span.Name))
+                {
+                    attributes.Add("name", span.Name);
+                }
+
+                if (!string.IsNullOrEmpty(span.ServiceName))
+                {
+                    attributes.Add("service.name", span.ServiceName);
+                }
+
+                if (!string.IsNullOrEmpty(span.ParentId))
+                {
+                    attributes.Add("parent.id", span.ParentId);
+                }
+
+
+                if (attributes.Count > 0)
+                {
+                    BuildAttributesBlock(writer, attributes);
+                }
+
+                writer.WriteEndObject();
             }
 
             if (didCreateSpansProperty)
