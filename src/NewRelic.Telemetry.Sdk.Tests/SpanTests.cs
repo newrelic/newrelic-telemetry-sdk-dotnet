@@ -9,6 +9,7 @@ namespace NewRelic.Telemetry.Sdk.Tests
         public void BuildSpan()
         {
             var attributes = new Dictionary<string, object> { { "attrKey", "attrValue" } };
+
             var spanBuilder = Span.GetSpanBuilder("spanId");
             spanBuilder.TraceId("traceId").TimeStamp(1L).ServiceName("serviceName").DurationMs(67d).Name("name")
                 .ParentId("parentId").Error(true).Attributes(attributes);
