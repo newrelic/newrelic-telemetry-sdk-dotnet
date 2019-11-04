@@ -2,19 +2,35 @@ trigger:
 - master
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-latest'
 
 variables:
   buildConfiguration: 'Release'
 
 steps:
 - script: dotnet build src/NewRelic.Telemetry.Sdk.sln --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+  displayName: 'Build (configuration=$(buildConfiguration))'
 
-- script: dotnet test src/NewRelic.Telemetry.Sdk.Tests/NewRelic.Telemetry.Sdk.Tests.csproj --logger trx
-  displayName: 'Run some tests'
+- script: dotnet test src/NewRelic.Telemetry.Sdk.Tests --no-build --no-restore --configuration $(buildConfiguration) --logger trx
+  displayName: 'Run tests'
+
 - task: PublishTestResults@2
-  condition: succeededOrFailed()
   inputs:
     testRunner: VSTest
     testResultsFiles: '**/*.trx'
+
+- task: CopyFiles@2
+  inputs:
+    contents: 'src/NewRelic.Telemetry.Sdk/bin/$(buildConfiguration)/**/*'
+    targetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+
+- task: NuGetCommand@2
+  condition: and(succeeded(), eq(variables['pushNupkg'], 'true'))
+  displayName: 'Push NuGet Packages'
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
+    nuGetFeedType: 'external'
+    publishFeedCredentials: 'NuGet'
