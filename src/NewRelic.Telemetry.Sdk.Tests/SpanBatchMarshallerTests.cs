@@ -64,12 +64,14 @@ namespace NewRelic.Telemetry.Sdk.Tests
             Assert.AreEqual(expectedString, jsonString);
         }
 
-        [TestCase("spanId", null, null, false, ExpectedResult = @"[{""spans"":[{""id"":""spanId""}]}]")]
-        [TestCase(null, null, null, true, ExpectedResult = @"[{}]")]
-        public string ToJson_OmitNullValueProperty(string spanId, string traceId, IDictionary<string, object> attributes, bool nullList)
+        [TestCase("ABC", null, null, false, ExpectedResult = @"[{""spans"":[{""id"":""ABC"",""trace.id"":""123456"",""timestamp"":2,""attributes"":{""duration.ms"":2.5}}]}]")]
+        [TestCase(null, null, null, false, ExpectedResult = @"[{}]")] //Test serialization when a span batch is created from a null list.
+        [TestCase(null, null, null, true, ExpectedResult = @"[{}]")]  //Test serialization when a span batch is created from an empty list.
+        public string ToJson_OmitNullValueProperty(string spanId, string traceId, IDictionary<string, object> attributes, bool createEmptySpanList)
         {
             var marshaller = new SpanBatchMarshaller();
-            var spans = nullList ? null : new List<Span>() { new SpanBuilder(spanId).Build() };
+            var spans = createEmptySpanList ? new List<Span>() : null;
+            spans = spanId == null ? spans : new List<Span>() { new SpanBuilder(spanId).TraceId("123456").TimeStamp(2L).DurationMs(2.5D).Build() };
             var spanBatch = new SpanBatch(spans, attributes, traceId);
             return marshaller.ToJson(spanBatch);
         }
