@@ -145,7 +145,7 @@ namespace NewRelic.Telemetry.Sdk
                         writer.WriteString("trace.id", span.TraceId);
                     }
 
-                    if (span.Timestamp != default)
+                    if (span.Timestamp != default(long))
                     {
                         writer.WriteNumber("timestamp", span.Timestamp);
                     }
@@ -155,7 +155,7 @@ namespace NewRelic.Telemetry.Sdk
                         writer.WriteString("service.name", span.ServiceName);
                     }
 
-                    if (span.DurationMs != default)
+                    if (span.DurationMs != default(double))
                     {
                         writer.WriteNumber("duration.ms", span.DurationMs);
                     }
