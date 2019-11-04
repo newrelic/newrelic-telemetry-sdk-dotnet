@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace NewRelic.Telemetry.Sdk.Tests
@@ -9,7 +10,8 @@ namespace NewRelic.Telemetry.Sdk.Tests
         public void BuildSpan()
         {
             var attributes = new Dictionary<string, object> { { "attrKey", "attrValue" } };
-            var spanBuilder = Span.GetSpanBuilder("spanId");
+
+            var spanBuilder = new SpanBuilder("spanId");
             spanBuilder.TraceId("traceId").TimeStamp(1L).ServiceName("serviceName").DurationMs(67d).Name("name")
                 .ParentId("parentId").Error(true).Attributes(attributes);
             var span = spanBuilder.Build();
@@ -25,14 +27,14 @@ namespace NewRelic.Telemetry.Sdk.Tests
         }
 
         [Test]
-        public void DoNotBuildSpanIfNullId()
+        public void ThrowExceptionIfNullId()
         {
             var attributes = new Dictionary<string, object> { { "attrKey", "attrValue" } };
-            var spanBuilder = Span.GetSpanBuilder(null);
+            var spanBuilder = new SpanBuilder(null);
             spanBuilder.TraceId("traceId").TimeStamp(1L).ServiceName("serviceName").DurationMs(67d).Name("name")
                 .ParentId("parentId").Error(true).Attributes(attributes);
-            var span = spanBuilder.Build();
-            Assert.IsNull(span);
+
+            Assert.Throws<NullReferenceException>(new TestDelegate(() => spanBuilder.Build()));
         }
     }
 }
