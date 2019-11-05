@@ -3,11 +3,40 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>7.1</LangVersion>
+
+    <Title>New Relic Telemetry SDK</Title>
+    <Description>.NET library for sending telemetry data to New Relic</Description>
+    <Authors>newrelic</Authors>
+
+    <PackageId>NewRelic.Telemetry.Sdk</PackageId>
+    <PackageTags>newrelic</PackageTags>
+    <PackageIconUrl>https://newrelic.com/images/avatar-newrelic.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/newrelic/newrelic-telemetry-sdk-dotnet</PackageProjectUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <Major>1</Major>
+    <Minor>0</Minor>
+    <Build>0</Build>
+    <Revision>0</Revision>
+    <Version>$(Major).$(Minor).$(Build).$(Revision)</Version>
+    <PackageVersion>$(Major).$(Minor).$(Build)</PackageVersion>
+    <AssemblyVersion>$(Major).0.0.0</AssemblyVersion>
+    <FileVersion>$(Major).$(Minor).$(Build).$(Revision)</FileVersion>
+
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\keys\NewRelic.Telemetry.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="SharpZipLib" Version="1.2.0" />
     <PackageReference Include="System.Text.Json" Version="4.6.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19554-01" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE" Pack="true" PackagePath=""/>
   </ItemGroup>
 
 </Project>
