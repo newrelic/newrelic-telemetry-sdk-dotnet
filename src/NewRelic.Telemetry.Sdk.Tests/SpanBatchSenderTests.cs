@@ -17,7 +17,7 @@ namespace NewRelic.Telemetry.Sdk.Tests
             var batchDataSender = Mock.Create<BatchDataSender>();
             Mock.Arrange(() => batchDataSender.SendBatch(Arg.AnyString)).Returns(Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK)));
             var spanBatchSender = new SpanBatchSender(batchDataSender, spanBatchMarshaller);
-            var response = spanBatchSender.SendData(spanBatch).Result;
+            var response = spanBatchSender.SendDataAsync(spanBatch).Result;
             Assert.AreEqual(false, response.DidSend);
             Assert.IsNull(response.Message);
         }
@@ -31,7 +31,7 @@ namespace NewRelic.Telemetry.Sdk.Tests
             var batchDataSender = Mock.Create<BatchDataSender>();
             Mock.Arrange(() => batchDataSender.SendBatch(Arg.AnyString)).Returns(Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK)));
             var spanBatchSender = new SpanBatchSender(batchDataSender, spanBatchMarshaller);
-            var response = spanBatchSender.SendData(spanBatch).Result;
+            var response = spanBatchSender.SendDataAsync(spanBatch).Result;
             Assert.AreEqual(true, response.DidSend);
             Assert.NotNull(response.Message);
             Assert.AreEqual(System.Net.HttpStatusCode.OK, response.Message.StatusCode);

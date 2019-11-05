@@ -1,4 +1,6 @@
-﻿namespace NewRelic.Telemetry.Sdk
+﻿using System;
+
+namespace NewRelic.Telemetry.Sdk
 {
     public class SpanBatchSenderBuilder
     {
@@ -9,6 +11,11 @@
         public SpanBatchSender Build()
         {
             SpanBatchMarshaller marshaller = new SpanBatchMarshaller();
+            if (_apiKey == null)
+            {
+                throw new ArgumentNullException("apiKey");
+            }
+
             BatchDataSender sender = new BatchDataSender(_apiKey, _traceUrl, _auditLoggingEnabled);
             return new SpanBatchSender(sender, marshaller);
         }

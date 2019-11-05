@@ -19,13 +19,15 @@ namespace NewRelic.Telemetry.Sdk
 
         private HttpClient _httpClient;
         private Func<HttpClient> _httpClientFactory = () => new HttpClient();
+        private Uri _uri;
 
-        public BatchDataSender(
+        internal BatchDataSender(
           string apiKey, string endpointUrl, bool auditLoggingEnabled)
         {
             ApiKey = apiKey;
             EndpointUrl = endpointUrl;
             AuditLoggingEnabled = auditLoggingEnabled;
+            _uri = new Uri(endpointUrl);
         }
 
         public virtual async Task<HttpResponseMessage> SendBatch(string serializedPayload)
@@ -34,7 +36,7 @@ namespace NewRelic.Telemetry.Sdk
 
             var serializedBytes = new UTF8Encoding().GetBytes(serializedPayload);
 
-            using (MemoryStream memoryStream = new MemoryStream())
+            using (var memoryStream = new MemoryStream())
             {
                 var outStream = Compress(serializedBytes, memoryStream);
 
@@ -43,8 +45,7 @@ namespace NewRelic.Telemetry.Sdk
                 streamContent.Headers.Add("Content-Encoding", "gzip");
                 streamContent.Headers.ContentLength = outStream.Length;
 
-                Uri target = new Uri(EndpointUrl);
-                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, target);
+                var requestMessage = new HttpRequestMessage(HttpMethod.Post, _uri);
                 requestMessage.Content = streamContent;
                 requestMessage.Headers.Add("User-Agent", _userAgent + _sdkImplementationVersion);
                 requestMessage.Headers.Add("Api-Key", ApiKey);
@@ -56,17 +57,17 @@ namespace NewRelic.Telemetry.Sdk
 
         private MemoryStream Compress(byte[] bytes, MemoryStream memoryStream)
         {
-            using (System.IO.Compression.GZipStream gzipStream = new System.IO.Compression.GZipStream(memoryStream,
+            using (var gzipStream = new System.IO.Compression.GZipStream(memoryStream,
                 System.IO.Compression.CompressionMode.Compress, true))
             {
                 gzipStream.Write(bytes, 0, bytes.Length);
             }
 
             memoryStream.Position = 0;
-            byte[] compressedBytes = new byte[memoryStream.Length];
+            var compressedBytes = new byte[memoryStream.Length];
             memoryStream.Read(compressedBytes, 0, compressedBytes.Length);
 
-            MemoryStream outStream = new MemoryStream(compressedBytes);
+            var outStream = new MemoryStream(compressedBytes);
             return outStream;
         }
     }
