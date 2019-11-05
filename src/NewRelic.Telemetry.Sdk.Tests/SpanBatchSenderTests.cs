@@ -15,7 +15,7 @@ namespace NewRelic.Telemetry.Sdk.Tests
             var spanBatch = new SpanBatch(new List<Span>(), new Dictionary<string, object>(), traceId);
             var spanBatchMarshaller = Mock.Create<SpanBatchMarshaller>();
             var batchDataSender = Mock.Create<BatchDataSender>();
-            Mock.Arrange(() => batchDataSender.SendBatch(Arg.AnyString)).Returns(new Task<HttpResponseMessage>(() => { return new HttpResponseMessage(System.Net.HttpStatusCode.OK); }));
+            Mock.Arrange(() => batchDataSender.SendBatch(Arg.AnyString)).Returns(Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK)));
             var spanBatchSender = new SpanBatchSender(batchDataSender, spanBatchMarshaller);
             var response = spanBatchSender.SendData(spanBatch).Result;
             Assert.AreEqual(false, response.DidSend);
@@ -29,7 +29,7 @@ namespace NewRelic.Telemetry.Sdk.Tests
             var spanBatch = new SpanBatch(new List<Span>() { Mock.Create<Span>() }, new Dictionary<string, object>(), traceId);
             var spanBatchMarshaller = Mock.Create<SpanBatchMarshaller>();
             var batchDataSender = Mock.Create<BatchDataSender>();
-            Mock.Arrange(() => batchDataSender.SendBatch(Arg.AnyString)).Returns(new Task<HttpResponseMessage>(() => { return new HttpResponseMessage(System.Net.HttpStatusCode.OK); }));
+            Mock.Arrange(() => batchDataSender.SendBatch(Arg.AnyString)).Returns(Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK)));
             var spanBatchSender = new SpanBatchSender(batchDataSender, spanBatchMarshaller);
             var response = spanBatchSender.SendData(spanBatch).Result;
             Assert.AreEqual(true, response.DidSend);
