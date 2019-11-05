@@ -151,16 +151,16 @@ namespace NewRelic.Telemetry.Sdk
                     writer.WriteBoolean("error", span.Error);
                 }
 
-                if (span.DurationMs != default(double))
-                {
-                    writer.WriteNumber("duration.ms", span.DurationMs);
-                }
-
                 var attributes = span.Attributes;
 
                 if (attributes == null)
                 {
                     attributes = new Dictionary<string, object>();
+                }
+
+                if (span.DurationMs != default(double))
+                {
+                    attributes.Add("duration.ms", span.DurationMs);
                 }
 
                 if (!string.IsNullOrEmpty(span.Name))
