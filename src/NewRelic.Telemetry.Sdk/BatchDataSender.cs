@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace NewRelic.Telemetry.Sdk
 {
@@ -27,7 +28,7 @@ namespace NewRelic.Telemetry.Sdk
             AuditLoggingEnabled = auditLoggingEnabled;
         }
 
-        public virtual HttpResponseMessage SendBatch(string serializedPayload)
+        public virtual async Task<HttpResponseMessage> SendBatch(string serializedPayload)
         {
             _httpClient = _httpClient ?? _httpClientFactory();
 
@@ -49,7 +50,7 @@ namespace NewRelic.Telemetry.Sdk
                 requestMessage.Headers.Add("Api-Key", ApiKey);
                 requestMessage.Method = HttpMethod.Post;
 
-                return _httpClient.SendAsync(requestMessage).Result;
+                return await _httpClient.SendAsync(requestMessage);
             }
         }
 

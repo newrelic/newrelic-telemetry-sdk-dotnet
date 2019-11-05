@@ -163,11 +163,6 @@ namespace NewRelic.Telemetry.Sdk
                     attributes = new Dictionary<string, object>();
                 }
 
-                if (span.DurationMs != default(double))
-                {
-                    attributes.Add("duration.ms", span.DurationMs);
-                }
-
                 if (!string.IsNullOrEmpty(span.Name))
                 {
                     attributes.Add("name", span.Name);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace NewRelic.Telemetry.Sdk
 {
@@ -14,7 +15,7 @@ namespace NewRelic.Telemetry.Sdk
             _marshaller = marshaller;
         }
 
-        public Response SendData(SpanBatch spanBatch)
+        public async Task<Response> SendData(SpanBatch spanBatch)
         {
             if (spanBatch?.Spans?.Count == 0)
             {
@@ -30,7 +31,7 @@ namespace NewRelic.Telemetry.Sdk
 
             try
             {
-                var response = _sender.SendBatch(serializedPayload);
+                var response = await _sender.SendBatch(serializedPayload);
                 return new Response(true, response);
             }
             catch (Exception ex)
