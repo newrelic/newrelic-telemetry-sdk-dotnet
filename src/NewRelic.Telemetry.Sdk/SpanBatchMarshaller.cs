@@ -143,7 +143,7 @@ namespace NewRelic.Telemetry.Sdk
                     writer.WriteString("trace.id", span.TraceId);
                 }
 
-                if (span.Timestamp != default)
+                if (span.Timestamp != default(long))
                 {
                     writer.WriteNumber("timestamp", span.Timestamp);
                 }
@@ -160,7 +160,7 @@ namespace NewRelic.Telemetry.Sdk
                     attributes = new Dictionary<string, object>();
                 }
 
-                if (span.DurationMs != default)
+                if (span.DurationMs != default(double))
                 {
                     attributes.Add("duration.ms", span.DurationMs);
                 }
@@ -179,7 +179,6 @@ namespace NewRelic.Telemetry.Sdk
                 {
                     attributes.Add("parent.id", span.ParentId);
                 }
-
 
                 if (attributes.Count > 0)
                 {
