@@ -15,10 +15,9 @@ namespace NewRelic.Telemetry.Sdk
         private const string _dataFormat = "newrelic";
         private const string _dataFormatVersion = "1";
         private const string _userAgent = "NewRelic-Dotnet-TelemetrySDK";
-        private const string _sdkImplementationVersion = "0.1.0";
+        private const string _sdkImplementationVersion = "/1.0.0";
 
         private HttpClient _httpClient;
-        private Func<HttpClient> _httpClientFactory = () => new HttpClient();
         private Uri _uri;
 
         internal BatchDataSender(
@@ -27,13 +26,15 @@ namespace NewRelic.Telemetry.Sdk
             ApiKey = apiKey;
             EndpointUrl = endpointUrl;
             AuditLoggingEnabled = auditLoggingEnabled;
+
             _uri = new Uri(endpointUrl);
+            _httpClient = new HttpClient();
+            var sp = System.Net.ServicePointManager.FindServicePoint(_uri);
+            sp.ConnectionLeaseTimeout = 5000;
         }
 
         public virtual async Task<HttpResponseMessage> SendBatch(string serializedPayload)
         {
-            _httpClient = _httpClient ?? _httpClientFactory();
-
             var serializedBytes = new UTF8Encoding().GetBytes(serializedPayload);
 
             using (var memoryStream = new MemoryStream())
