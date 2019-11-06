@@ -14,6 +14,8 @@ namespace NewRelic.Telemetry.Sdk
         {
             Spans = spans;
             Attributes = attributes;
+
+            Logging.LogDebug($@"Creates span batch with trace.id = {TraceId}");
         }
 
         public SpanBatch(IList<Span> spans, IDictionary<string, object> attributes, string traceId) : this(spans, attributes)

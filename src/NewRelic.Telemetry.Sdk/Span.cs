@@ -61,9 +61,11 @@ namespace NewRelic.Telemetry.Sdk
         {
             if (string.IsNullOrEmpty(_id))
             {
+                Logging.LogError($@"id is not set.");
                 throw new NullReferenceException("id is not set.");
             }
 
+            Logging.LogDebug($@"Builds span with id = {_id}");
             return new Span(_id, _traceId, _timestamp, _serviceName, _durationMs, _name, _parentId, _error, _attributes);
         }
 
