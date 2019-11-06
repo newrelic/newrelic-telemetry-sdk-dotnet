@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace NewRelic.Telemetry.Sdk
 {
     public class SpanBatchSender
     {
-        BatchDataSender _sender;
-        SpanBatchMarshaller _marshaller;
+        private BatchDataSender _sender;
+        private SpanBatchMarshaller _marshaller;
 
         public SpanBatchSender(BatchDataSender sender, SpanBatchMarshaller marshaller) 
         {
@@ -14,7 +15,7 @@ namespace NewRelic.Telemetry.Sdk
             _marshaller = marshaller;
         }
 
-        public Response SendData(SpanBatch spanBatch)
+        public async Task<Response> SendDataAsync(SpanBatch spanBatch)
         {
             if (spanBatch?.Spans?.Count == 0)
             {
@@ -23,21 +24,8 @@ namespace NewRelic.Telemetry.Sdk
 
             var serializedPayload = _marshaller.ToJson(spanBatch);
 
-            // TODO: try/catch is for troubleshooting during dev; may not be needed for released code
-
-            //            var response = _sender.SendBatch(serializedPayload);
-//            return new Response(true, response);
-
-            try
-            {
-                var response = _sender.SendBatch(serializedPayload);
-                return new Response(true, response);
-            }
-            catch (Exception ex)
-            {
-                var y = ex;
-                return new Response();
-            }
+            var response = await _sender.SendBatch(serializedPayload);
+            return new Response(true, response);
         }
     }
 

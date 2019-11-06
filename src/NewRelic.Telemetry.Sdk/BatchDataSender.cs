@@ -1,11 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Text;
-using ICSharpCode.SharpZipLib.GZip;
-using ICSharpCode.SharpZipLib.Zip.Compression;
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using System.Threading.Tasks;
 
 namespace NewRelic.Telemetry.Sdk
 {
@@ -18,49 +15,61 @@ namespace NewRelic.Telemetry.Sdk
         private const string _dataFormat = "newrelic";
         private const string _dataFormatVersion = "1";
         private const string _userAgent = "NewRelic-Dotnet-TelemetrySDK";
+        private const string _sdkImplementationVersion = "/1.0.0";
 
-        public BatchDataSender(
+        private HttpClient _httpClient;
+        private Uri _uri;
+
+        internal BatchDataSender(
           string apiKey, string endpointUrl, bool auditLoggingEnabled)
         {
             ApiKey = apiKey;
             EndpointUrl = endpointUrl;
             AuditLoggingEnabled = auditLoggingEnabled;
+
+            _uri = new Uri(endpointUrl);
+            _httpClient = new HttpClient();
+            var sp = System.Net.ServicePointManager.FindServicePoint(_uri);
+            sp.ConnectionLeaseTimeout = 60000;  // 1 minute
         }
 
-        public virtual HttpResponseMessage SendBatch(string serializedPayload)
+        public virtual async Task<HttpResponseMessage> SendBatch(string serializedPayload)
         {
-            using (var client = new HttpClient())
+            var serializedBytes = new UTF8Encoding().GetBytes(serializedPayload);
+
+            using (var memoryStream = new MemoryStream())
             {
-                var httpRequestMessage = new HttpRequestMessage();
-                httpRequestMessage.Method = HttpMethod.Post;
-                httpRequestMessage.RequestUri = new Uri(EndpointUrl);
-                httpRequestMessage.Headers.Add("Api-Key", ApiKey);
-                httpRequestMessage.Headers.Add("User-Agent", "NewRelic-Dotnet-TelemetrySDK/1");
+                var outStream = Compress(serializedBytes, memoryStream);
 
-                // TODO: should marshaller return bytes?
-                // TODO: is compression dependent on length?
-                // TODO: troubleshoot compression, currently sending uncompressed
+                StreamContent streamContent = new StreamContent(outStream);
+                streamContent.Headers.Add("Content-Type", "application/json; charset=utf-8");
+                streamContent.Headers.Add("Content-Encoding", "gzip");
+                streamContent.Headers.ContentLength = outStream.Length;
 
-                //var compressedPayload = Compress(serializedPayload);
-                //httpRequestMessage.Content = compressedPayload;
-                httpRequestMessage.Content = new StringContent(serializedPayload, Encoding.UTF8, "application/json");
+                var requestMessage = new HttpRequestMessage(HttpMethod.Post, _uri);
+                requestMessage.Content = streamContent;
+                requestMessage.Headers.Add("User-Agent", _userAgent + _sdkImplementationVersion);
+                requestMessage.Headers.Add("Api-Key", ApiKey);
+                requestMessage.Method = HttpMethod.Post;
 
-                return client.SendAsync(httpRequestMessage).Result;
+                return await _httpClient.SendAsync(requestMessage);
             }
         }
 
-        private StringContent Compress(string data)
+        private MemoryStream Compress(byte[] bytes, MemoryStream memoryStream)
         {
-            var bytes = new UTF8Encoding().GetBytes(data);
-            using (var stream = new MemoryStream(bytes.Length))
-            using (var outputStream = new GZipOutputStream(stream))
+            using (var gzipStream = new System.IO.Compression.GZipStream(memoryStream,
+                System.IO.Compression.CompressionMode.Compress, true))
             {
-                outputStream.Write(bytes, 0, bytes.Length);
-                outputStream.Flush();
-                outputStream.Finish();
-                //                return new StreamContent(outputStream, (int)outputStream.Length);
-                return new StringContent(outputStream.ToString(), Encoding.UTF8, "application/json");
+                gzipStream.Write(bytes, 0, bytes.Length);
             }
+
+            memoryStream.Position = 0;
+            var compressedBytes = new byte[memoryStream.Length];
+            memoryStream.Read(compressedBytes, 0, compressedBytes.Length);
+
+            var outStream = new MemoryStream(compressedBytes);
+            return outStream;
         }
     }
 }
