@@ -30,7 +30,7 @@ namespace NewRelic.Telemetry.Sdk
             _uri = new Uri(endpointUrl);
             _httpClient = new HttpClient();
             var sp = System.Net.ServicePointManager.FindServicePoint(_uri);
-            sp.ConnectionLeaseTimeout = 5000;
+            sp.ConnectionLeaseTimeout = 60000;  // 1 minute
         }
 
         public virtual async Task<HttpResponseMessage> SendBatch(string serializedPayload)
