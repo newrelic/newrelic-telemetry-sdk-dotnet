@@ -39,14 +39,18 @@ namespace NewRelic.Telemetry.Sdk
             var serializedBytes = new UTF8Encoding().GetBytes(serializedPayload);
 
             using (var memoryStream = new MemoryStream())
-            using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Compress))
             {
-                gzipStream.Write(serializedBytes, 0, serializedBytes.Length);
+                using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Compress, true))
+                {
+                    gzipStream.Write(serializedBytes, 0, serializedBytes.Length);
+                }
 
-                StreamContent streamContent = new StreamContent(gzipStream);
+                memoryStream.Position = 0;
+
+                var streamContent = new StreamContent(memoryStream);
                 streamContent.Headers.Add("Content-Type", "application/json; charset=utf-8");
                 streamContent.Headers.Add("Content-Encoding", "gzip");
-                streamContent.Headers.ContentLength = gzipStream.Length;
+                streamContent.Headers.ContentLength = memoryStream.Length;
 
                 var requestMessage = new HttpRequestMessage(HttpMethod.Post, _uri);
                 requestMessage.Content = streamContent;
