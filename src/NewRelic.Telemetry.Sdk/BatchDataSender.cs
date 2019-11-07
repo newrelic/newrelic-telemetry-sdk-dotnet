@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.IO.Compression;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,18 +34,19 @@ namespace NewRelic.Telemetry.Sdk
             sp.ConnectionLeaseTimeout = 60000;  // 1 minute
         }
 
-        public virtual async Task<HttpResponseMessage> SendBatch(string serializedPayload)
+        public virtual async Task<HttpResponseMessage> SendBatchAsync(string serializedPayload)
         {
             var serializedBytes = new UTF8Encoding().GetBytes(serializedPayload);
 
             using (var memoryStream = new MemoryStream())
+            using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Compress))
             {
-                var outStream = Compress(serializedBytes, memoryStream);
+                gzipStream.Write(serializedBytes, 0, serializedBytes.Length);
 
-                StreamContent streamContent = new StreamContent(outStream);
+                StreamContent streamContent = new StreamContent(gzipStream);
                 streamContent.Headers.Add("Content-Type", "application/json; charset=utf-8");
                 streamContent.Headers.Add("Content-Encoding", "gzip");
-                streamContent.Headers.ContentLength = outStream.Length;
+                streamContent.Headers.ContentLength = gzipStream.Length;
 
                 var requestMessage = new HttpRequestMessage(HttpMethod.Post, _uri);
                 requestMessage.Content = streamContent;
@@ -54,22 +56,6 @@ namespace NewRelic.Telemetry.Sdk
 
                 return await _httpClient.SendAsync(requestMessage);
             }
-        }
-
-        private MemoryStream Compress(byte[] bytes, MemoryStream memoryStream)
-        {
-            using (var gzipStream = new System.IO.Compression.GZipStream(memoryStream,
-                System.IO.Compression.CompressionMode.Compress, true))
-            {
-                gzipStream.Write(bytes, 0, bytes.Length);
-            }
-
-            memoryStream.Position = 0;
-            var compressedBytes = new byte[memoryStream.Length];
-            memoryStream.Read(compressedBytes, 0, compressedBytes.Length);
-
-            var outStream = new MemoryStream(compressedBytes);
-            return outStream;
         }
     }
 }
