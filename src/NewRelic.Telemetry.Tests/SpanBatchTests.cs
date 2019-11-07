@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 
-namespace NewRelic.Telemetry.Sdk.Tests
+namespace NewRelic.Telemetry.Tests
 {
     public class SpanBatchTests
     {

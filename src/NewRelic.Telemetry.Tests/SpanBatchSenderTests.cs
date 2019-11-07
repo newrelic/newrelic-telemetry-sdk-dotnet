@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Telerik.JustMock;
 
-namespace NewRelic.Telemetry.Sdk.Tests
+namespace NewRelic.Telemetry.Tests
 {
     public class SpanBatchSenderTests
     {

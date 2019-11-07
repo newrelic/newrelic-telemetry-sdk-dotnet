@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NewRelic.Telemetry.Sdk
+namespace NewRelic.Telemetry
 {
     public class BatchDataSender
     {
@@ -16,7 +16,7 @@ namespace NewRelic.Telemetry.Sdk
         private const string _dataFormat = "newrelic";
         private const string _dataFormatVersion = "1";
         private const string _userAgent = "NewRelic-Dotnet-TelemetrySDK";
-        private const string _sdkImplementationVersion = "/1.0.0";
+        private const string _implementationVersion = "/1.0.0";
 
         private HttpClient _httpClient;
         private Uri _uri;
@@ -54,7 +54,7 @@ namespace NewRelic.Telemetry.Sdk
 
                 var requestMessage = new HttpRequestMessage(HttpMethod.Post, _uri);
                 requestMessage.Content = streamContent;
-                requestMessage.Headers.Add("User-Agent", _userAgent + _sdkImplementationVersion);
+                requestMessage.Headers.Add("User-Agent", _userAgent + _implementationVersion);
                 requestMessage.Headers.Add("Api-Key", ApiKey);
                 requestMessage.Method = HttpMethod.Post;
 

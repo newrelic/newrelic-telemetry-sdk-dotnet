@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NewRelic.Telemetry.Sdk
+namespace NewRelic.Telemetry
 {
     public class SpanBatchSenderBuilder
     {

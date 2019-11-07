@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace NewRelic.Telemetry.Sdk
+namespace NewRelic.Telemetry
 {
     public class SpanBatch
     {

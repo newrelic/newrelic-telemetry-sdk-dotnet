@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace NewRelic.Telemetry.Sdk
+namespace NewRelic.Telemetry
 {
     public class Response
     {
