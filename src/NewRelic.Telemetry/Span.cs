@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace NewRelic.Telemetry
 {
@@ -24,6 +25,13 @@ namespace NewRelic.Telemetry
 
         internal Span(string id, string traceId, long timestamp, string serviceName, double durationMs, string name, string parentId, bool error, IDictionary<string, object> attributes)
         {
+            if (string.IsNullOrEmpty(id))
+            {
+                var ex = new NullReferenceException("Span id is not set.");
+                Logging.LogError($@"{ex}");
+                throw ex;
+            }
+
             Id = id;
             TraceId = traceId;
             Timestamp = timestamp;

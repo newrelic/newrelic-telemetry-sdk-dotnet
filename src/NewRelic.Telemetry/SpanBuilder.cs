@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace NewRelic.Telemetry
 {
@@ -24,13 +23,6 @@ namespace NewRelic.Telemetry
 
         public Span Build()
         {
-            if (string.IsNullOrEmpty(_id))
-            {
-                var ex = new NullReferenceException("Span id is not set.");
-                Logging.LogError($@"Span id is not set. Exception: {ex.StackTrace}", ex);
-                throw ex;
-            }
-
             return new Span(_id, _traceId, _timestamp, _serviceName, _durationMs, _name, _parentId, _error, _attributes);
         }
 
