@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace NewRelic.Telemetry.Sdk
@@ -25,6 +24,9 @@ namespace NewRelic.Telemetry.Sdk
             var serializedPayload = _marshaller.ToJson(spanBatch);
 
             var response = await _sender.SendBatch(serializedPayload);
+
+            Logging.LogDebug($@"Sent span batch payload: {serializedPayload}");
+
             return new Response(true, response);
         }
     }

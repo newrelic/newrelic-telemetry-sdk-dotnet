@@ -13,8 +13,6 @@ namespace NewRelic.Telemetry.Sdk
 
         public virtual string ToJson(SpanBatch batch) 
         {
-            Logging.LogDebug($@"Serializing span batch trace.id = {batch.TraceId}");
-
             var options = new JsonWriterOptions
             {
                 Indented = false
