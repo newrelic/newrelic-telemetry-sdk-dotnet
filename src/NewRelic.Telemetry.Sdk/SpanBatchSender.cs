@@ -21,13 +21,13 @@ namespace NewRelic.Telemetry.Sdk
         {
             if (spanBatch?.Spans?.Count == 0)
             {
-                return new Response(false, (HttpStatusCode)0, null);
+                return new Response(false, (HttpStatusCode)0);
             }
 
             var serializedPayload = _marshaller.ToJson(spanBatch);
 
             var response = await _sender.SendBatchAsync(serializedPayload);
-            return new Response(true, response.StatusCode, response.Content?.ToString());
+            return new Response(true, response.StatusCode);
         }
     }
 }

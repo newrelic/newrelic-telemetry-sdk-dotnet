@@ -6,13 +6,11 @@ namespace NewRelic.Telemetry.Sdk
     {
         public bool DidSend;
         public HttpStatusCode StatusCode;
-        public string Content;
 
-        public Response(bool didSend, HttpStatusCode statusCode, string content)
+        public Response(bool didSend, HttpStatusCode statusCode)
         {
             DidSend = didSend;
             StatusCode = statusCode;
-            Content = content;
         }
     }
 }
