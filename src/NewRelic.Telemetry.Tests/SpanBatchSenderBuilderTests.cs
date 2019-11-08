@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace NewRelic.Telemetry.Sdk.Tests
+namespace NewRelic.Telemetry.Tests
 {
     public class SpanBatchSenderBuilderTests
     {

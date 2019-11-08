@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewRelic.Telemetry.Sdk", "NewRelic.Telemetry.Sdk\NewRelic.Telemetry.Sdk.csproj", "{62CE6D9B-449B-4956-94FC-0FBBA235145F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Telemetry", "NewRelic.Telemetry\NewRelic.Telemetry.csproj", "{62CE6D9B-449B-4956-94FC-0FBBA235145F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewRelic.Telemetry.Sdk.Tests", "NewRelic.Telemetry.Sdk.Tests\NewRelic.Telemetry.Sdk.Tests.csproj", "{46FE3771-EB5C-4C05-B76C-DDEF7BCC7706}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Telemetry.Tests", "NewRelic.Telemetry.Tests\NewRelic.Telemetry.Tests.csproj", "{46FE3771-EB5C-4C05-B76C-DDEF7BCC7706}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{62CE6D9B-449B-4956-94FC-0FBBA235145F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -44,5 +41,11 @@ Global
 		{46FE3771-EB5C-4C05-B76C-DDEF7BCC7706}.Release|x64.Build.0 = Release|Any CPU
 		{46FE3771-EB5C-4C05-B76C-DDEF7BCC7706}.Release|x86.ActiveCfg = Release|Any CPU
 		{46FE3771-EB5C-4C05-B76C-DDEF7BCC7706}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {08D1630D-EA85-4E78-ABBA-34195DCA7595}
 	EndGlobalSection
 EndGlobal

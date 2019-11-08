@@ -1,9 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-
     <IsPackable>false</IsPackable>
+
+    <Title>New Relic Telemetry SDK Tests</Title>
+    <Description>Tests for .NET New Relic Telemetry SDK library</Description>
+    <Authors>newrelic</Authors>
+
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\keys\NewRelic.Telemetry.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NewRelic.Telemetry.Sdk\NewRelic.Telemetry.Sdk.csproj" />
+    <ProjectReference Include="..\NewRelic.Telemetry\NewRelic.Telemetry.csproj" />
   </ItemGroup>
 
 </Project>
