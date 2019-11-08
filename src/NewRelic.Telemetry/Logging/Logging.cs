@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 
-namespace NewRelic.Telemetry.Sdk
+namespace NewRelic.Telemetry
 {
     static public class Logging
     {

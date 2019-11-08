@@ -4,7 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace NewRelic.Telemetry.Sdk.Tests
+namespace NewRelic.Telemetry.Tests
 {
     public class LoggingTests
     {
