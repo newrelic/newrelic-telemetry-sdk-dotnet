@@ -28,22 +28,22 @@ namespace NewRelic.Telemetry
 
         public static void LogDebug(string message, Exception exception = null)
         {
-            _logger.Log(LogLevel.Debug, 0, message, exception, _messageFormatter);
+            _logger?.Log(LogLevel.Debug, 0, message, exception, _messageFormatter);
         }
 
         public static void LogError(string message, Exception exception = null)
         {
-            _logger.Log(LogLevel.Error, 0, message, exception, _messageFormatter);
+            _logger?.Log(LogLevel.Error, 0, message, exception, _messageFormatter);
         }
 
         public static void LogInformation(string message, Exception exception = null)
         {
-            _logger.Log(LogLevel.Information, 0, message, exception, _messageFormatter);
+            _logger?.Log(LogLevel.Information, 0, message, exception, _messageFormatter);
         }
 
         public static void LogWarning(string message, Exception exception = null)
         {
-            _logger.Log(LogLevel.Warning, 0, message, exception, _messageFormatter);
+            _logger?.Log(LogLevel.Warning, 0, message, exception, _messageFormatter);
         }
     }
 }
