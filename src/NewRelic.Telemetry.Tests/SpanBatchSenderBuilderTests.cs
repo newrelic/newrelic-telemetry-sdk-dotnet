@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using NewRelic.Telemetry.Spans;
 
 namespace NewRelic.Telemetry.Tests
 {

@@ -1,13 +1,13 @@
 ﻿using System.Net;
 
-namespace NewRelic.Telemetry
+namespace NewRelic.Telemetry.Transport
 {
     public class Response
     {
-        public bool DidSend;
-        public HttpStatusCode StatusCode;
+        public bool DidSend { get; }
+        public HttpStatusCode StatusCode { get; }
 
-        public Response(bool didSend, HttpStatusCode statusCode)
+        internal Response(bool didSend, HttpStatusCode statusCode)
         {
             DidSend = didSend;
             StatusCode = statusCode;

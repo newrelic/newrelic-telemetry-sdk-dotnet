@@ -1,6 +1,7 @@
 ﻿using System;
+using NewRelic.Telemetry.Transport;
 
-namespace NewRelic.Telemetry
+namespace NewRelic.Telemetry.Spans
 {
     public class SpanBatchSenderBuilder
     {
@@ -16,7 +17,7 @@ namespace NewRelic.Telemetry
                 throw new ArgumentNullException("apiKey");
             }
 
-            BatchDataSender sender = new BatchDataSender(_apiKey, _traceUrl, _auditLoggingEnabled);
+            IBatchDataSender sender = new BatchDataSender(_apiKey, _traceUrl, _auditLoggingEnabled);
             return new SpanBatchSender(sender, marshaller);
         }
 
