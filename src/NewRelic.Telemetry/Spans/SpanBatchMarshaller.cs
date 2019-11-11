@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace NewRelic.Telemetry.Spans
 {
-    public interface ISpanBatchMarshaller
+    internal interface ISpanBatchMarshaller
     {
         string ToJson(SpanBatch spanBatch);
     }
