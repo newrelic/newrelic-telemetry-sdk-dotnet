@@ -27,6 +27,9 @@ namespace NewRelic.Telemetry
             var serializedPayload = _marshaller.ToJson(spanBatch);
 
             var response = await _sender.SendBatchAsync(serializedPayload);
+
+            Logging.LogDebug($@"Sent payload {serializedPayload}");
+
             return new Response(true, response.StatusCode);
         }
     }
