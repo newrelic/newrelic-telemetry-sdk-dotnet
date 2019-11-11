@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using NewRelic.Telemetry.Spans;
 
 namespace NewRelic.Telemetry.Tests
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NewRelic.Telemetry
+namespace NewRelic.Telemetry.Spans
 {
     public class SpanBuilder
     {

@@ -5,9 +5,14 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NewRelic.Telemetry
+namespace NewRelic.Telemetry.Transport
 {
-    public class BatchDataSender
+    internal interface IBatchDataSender
+    {
+        Task<HttpResponseMessage> SendBatchAsync(string serializedPayload);
+    }
+
+    internal class BatchDataSender : IBatchDataSender
     {
         public string ApiKey { get; }
         public string EndpointUrl { get; }
@@ -34,7 +39,7 @@ namespace NewRelic.Telemetry
             sp.ConnectionLeaseTimeout = 60000;  // 1 minute
         }
 
-        public virtual async Task<HttpResponseMessage> SendBatchAsync(string serializedPayload)
+        public async Task<HttpResponseMessage> SendBatchAsync(string serializedPayload)
         {
             var serializedBytes = new UTF8Encoding().GetBytes(serializedPayload);
 

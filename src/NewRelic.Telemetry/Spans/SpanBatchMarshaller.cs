@@ -3,15 +3,20 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 
-namespace NewRelic.Telemetry
+namespace NewRelic.Telemetry.Spans
 {
-    public class SpanBatchMarshaller
+    internal interface ISpanBatchMarshaller
     {
-        public SpanBatchMarshaller()
+        string ToJson(SpanBatch spanBatch);
+    }
+
+    internal class SpanBatchMarshaller : ISpanBatchMarshaller
+    {
+        internal SpanBatchMarshaller()
         {
         }
 
-        public virtual string ToJson(SpanBatch batch) 
+        public string ToJson(SpanBatch batch) 
         {
             var options = new JsonWriterOptions
             {

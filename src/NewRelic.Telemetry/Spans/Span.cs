@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace NewRelic.Telemetry
+namespace NewRelic.Telemetry.Spans
 {
     public class Span
     {
@@ -21,6 +21,11 @@ namespace NewRelic.Telemetry
         public bool Error { get; }
 
         public IDictionary<string, object> Attributes { get; }
+
+        internal Span()
+        {
+            // parameterless constructor required for Moq
+        }
 
         internal Span(string id, string traceId, long timestamp, string serviceName, double durationMs, string name, string parentId, bool error, IDictionary<string, object> attributes)
         {
