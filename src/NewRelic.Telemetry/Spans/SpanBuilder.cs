@@ -19,16 +19,18 @@ namespace NewRelic.Telemetry.Spans
 
         public SpanBuilder(string spanId)
         {
+            if (string.IsNullOrEmpty(spanId))
+            {
+                var ex = new NullReferenceException("Span id is not set.");
+                Logging.LogError($@"{ex}");
+                throw ex;
+            }
+
             _id = spanId;
         }
 
         public Span Build()
         {
-            if (string.IsNullOrEmpty(_id))
-            {
-                throw new NullReferenceException("id is not set.");
-            }
-
             return new Span(_id, _traceId, _timestamp, _serviceName, _durationMs, _name, _parentId, _error, _attributes);
         }
 
