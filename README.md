@@ -2,7 +2,7 @@
 
 ## Logging
 
-Logging in the New Relic Telemetry Sdk for .NET is designed to be providers nonspecific. It works with any logging providers used in the host applications that support `Microsoft.Extensions.Logging` (i.e. Serilog, NLog ...). In order to link the logging providers the host application uses to the Sdk, uses the following code:
+Logging in the New Relic Telemetry Sdk for .NET is designed to be vedor-agnostic. It works with any logging providers used in the host applications that support `Microsoft.Extensions.Logging` (i.e. Serilog, NLog ...). In order to link the logging providers the host application uses to the Sdk, uses the following code:
 
 	//loggerFactory is an instance of type Microsoft.Extensions.Logging.LoggerFactory 
 	NewRelic.Telemetry.Logging.LoggerFactory = loggerFactory;
