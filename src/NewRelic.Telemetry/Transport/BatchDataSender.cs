@@ -63,7 +63,14 @@ namespace NewRelic.Telemetry.Transport
                 requestMessage.Headers.Add("Api-Key", ApiKey);
                 requestMessage.Method = HttpMethod.Post;
 
-                return await _httpClient.SendAsync(requestMessage);
+                var response = await _httpClient.SendAsync(requestMessage);
+
+                if (AuditLoggingEnabled)
+                {
+                    Logging.LogDebug($@"Sent payload: '{serializedPayload}'");
+                }
+
+                return response;
             }
         }
     }
