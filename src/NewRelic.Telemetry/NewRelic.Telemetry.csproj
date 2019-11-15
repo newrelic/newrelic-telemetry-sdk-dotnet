@@ -10,7 +10,7 @@
 
     <PackageId>NewRelic.Telemetry</PackageId>
     <PackageTags>newrelic</PackageTags>
-    <PackageIconUrl>https://newrelic.com/images/avatar-newrelic.png</PackageIconUrl>
+    <PackageIcon>avatar-newrelic.png</PackageIcon>
     <PackageProjectUrl>https://github.com/newrelic/newrelic-telemetry-sdk-dotnet</PackageProjectUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <IncludeSymbols>true</IncludeSymbols>
@@ -40,6 +40,7 @@
 
   <ItemGroup>
     <None Include="..\..\LICENSE" Pack="true" PackagePath="" />
+    <None Include="..\..\avatar-newrelic.png" Pack="true" PackagePath="" />    
   </ItemGroup>
 
   <ItemGroup>
