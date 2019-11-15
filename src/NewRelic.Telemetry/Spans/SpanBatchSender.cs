@@ -31,8 +31,6 @@ namespace NewRelic.Telemetry.Spans
 
             var response = await _sender.SendBatchAsync(serializedPayload);
 
-            Logging.LogDebug($@"Sent payload {serializedPayload}");
-
             return new Response(true, response.StatusCode);
         }
     }
