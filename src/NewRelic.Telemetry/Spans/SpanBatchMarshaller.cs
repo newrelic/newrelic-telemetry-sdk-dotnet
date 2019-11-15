@@ -148,12 +148,12 @@ namespace NewRelic.Telemetry.Spans
                 return;
             }
 
-            //TODO: This won't work
-            //if (t == typeof(decimal))
-            //{
-            //    writer.WriteRaw
-            //    return;
-            //}
+            if (t == typeof(decimal))
+            {
+                var decvValBytes = Encoding.UTF8.GetBytes(attribute.Value.ToString());
+                writer.WriteRaw(decvValBytes);
+                return;
+            }
 
             if (t == typeof(bool))
             {

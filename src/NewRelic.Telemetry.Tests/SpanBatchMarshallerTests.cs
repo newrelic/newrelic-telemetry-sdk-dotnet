@@ -48,7 +48,7 @@ namespace NewRelic.Telemetry.Tests
             {
                 { "customAtt1", "hello" },
                 { "customAtt2", 1 },
-                { "customAtt3", 1.2D },
+                { "customAtt3", (decimal)1.2 },
                 { "customAtt4", true }
             };
 
