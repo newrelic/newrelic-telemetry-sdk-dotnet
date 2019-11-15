@@ -94,7 +94,7 @@ namespace NewRelic.Telemetry.Spans
 
         private void WriteAttribute(ref JsonWriter writer, KeyValuePair<string, object> attribute)
         {
-            //includes the seperator
+            //includes the separator
             writer.WritePropertyName(attribute.Key);
 
             if(attribute.Value == null)
