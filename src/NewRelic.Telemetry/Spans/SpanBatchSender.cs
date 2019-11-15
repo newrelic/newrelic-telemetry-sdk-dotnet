@@ -4,6 +4,11 @@ using NewRelic.Telemetry.Transport;
 
 namespace NewRelic.Telemetry.Spans
 {
+    public interface ISpanBatchSender
+    {
+        Task<Response> SendDataAsync(SpanBatch spanBatch);
+    }
+
     public class SpanBatchSender
     {
         private IBatchDataSender _sender;
