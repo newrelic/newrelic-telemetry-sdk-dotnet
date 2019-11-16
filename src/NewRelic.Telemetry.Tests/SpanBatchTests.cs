@@ -21,8 +21,6 @@ namespace NewRelic.Telemetry.Tests
         public void TraceIdIsNotSet()
         {
             var spanBatch = SpanBatchBuilder.Create().Build();
-
-            //var spanBatch = new SpanBatch(new List<Span>(), new Dictionary<string, object>());
             Assert.Null(spanBatch.CommonProperties?.TraceId);
         }
     }
