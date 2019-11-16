@@ -10,7 +10,6 @@ namespace NewRelic.Telemetry.Tests
         public void TraceIdIsSet()
         {
             var traceId = "myId";
-            //var spanBatch = new SpanBatch(new List<Span>(), new Dictionary<string, object>(), traceId);
             var spanBatch = SpanBatchBuilder.Create()
                 .WithTraceId(traceId)
                 .Build();
