@@ -14,7 +14,6 @@ namespace NewRelic.Telemetry.Tests
         public void SendAnEmptySpanBatch()
         {
             var traceId = "123";
-            //var spanBatch = new SpanBatch(new List<Span>(), new Dictionary<string, object>(), traceId);
             var spanBatch = SpanBatchBuilder.Create()
                 .WithTraceId(traceId)
                 .Build();
@@ -39,7 +38,6 @@ namespace NewRelic.Telemetry.Tests
                 .WithSpan(new Mock<Span>().Object)
                 .Build();
 
-            //var spanBatch = new SpanBatch(new List<Span>() { new Mock<Span>().Object }, new Dictionary<string, object>(), traceId);
             var mockBatchDataSender = new Mock<IBatchDataSender>();
             mockBatchDataSender.Setup(x => x.SendBatchAsync(It.IsAny<string>())).Returns(Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK)));
 
