@@ -1,24 +1,26 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
+using Utf8Json;
+using Utf8Json.Resolvers;
 
 namespace NewRelic.Telemetry.Spans
 {
     public class SpanBatch
     {
-        public IDictionary<string, object> Attributes { get; }
+        [DataMember(Name = "common")]
+        public SpanBatchCommonProperties CommonProperties { get; internal set; }
 
-        public string TraceId { get; }
+        public List<Span> Spans { get; internal set; }
 
-        public IList<Span> Spans { get; }
-
-        public SpanBatch(IList<Span> spans, IDictionary<string, object> attributes)
+        internal SpanBatch()
         {
-            Spans = spans;
-            Attributes = attributes;
         }
 
-        public SpanBatch(IList<Span> spans, IDictionary<string, object> attributes, string traceId) : this(spans, attributes)
+        public string ToJson()
         {
-            TraceId = traceId;
+            return JsonSerializer.ToJsonString(new[] { this }, StandardResolver.ExcludeNullCamelCase);
         }
     }
+
+
 }

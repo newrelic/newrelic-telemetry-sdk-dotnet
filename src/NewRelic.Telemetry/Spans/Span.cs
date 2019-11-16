@@ -1,43 +1,23 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace NewRelic.Telemetry.Spans
 {
     public class Span
     {
-        public string Id { get; }
+        public string Id { get; internal set; }
 
-        public string TraceId { get; }
+        [DataMember(Name = "trace.id")]
+        public string TraceId { get; internal set; }
 
-        public long Timestamp { get; }
+        public long? Timestamp { get; internal set; }
 
-        public string ServiceName { get; }
+        public bool? Error { get; internal set; }
 
-        public double DurationMs { get; }
-
-        public string Name { get; }
-
-        public string ParentId { get; }
-
-        public bool Error { get; }
-
-        public IDictionary<string, object> Attributes { get; }
+        public Dictionary<string, object> Attributes { get; internal set; }
 
         internal Span()
         {
-            // parameterless constructor required for Moq
-        }
-
-        internal Span(string id, string traceId, long timestamp, string serviceName, double durationMs, string name, string parentId, bool error, IDictionary<string, object> attributes)
-        {
-            Id = id;
-            TraceId = traceId;
-            Timestamp = timestamp;
-            ServiceName = serviceName;
-            DurationMs = durationMs;
-            Name = name;
-            ParentId = parentId;
-            Error = error;
-            Attributes = attributes;
         }
     }
 }

@@ -36,6 +36,11 @@ namespace NewRelic.Telemetry
             _logger?.Log(LogLevel.Error, 0, message, exception, _messageFormatter);
         }
 
+        internal static void LogException(Exception ex)
+        {
+            _logger?.Log(LogLevel.Error, 0, ex.GetType().Name, ex, _messageFormatter);
+        }
+
         internal static void LogInformation(string message, Exception exception = null)
         {
             _logger?.Log(LogLevel.Information, 0, message, exception, _messageFormatter);

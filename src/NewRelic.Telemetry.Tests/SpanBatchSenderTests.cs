@@ -14,14 +14,15 @@ namespace NewRelic.Telemetry.Tests
         public void SendAnEmptySpanBatch()
         {
             var traceId = "123";
-            var spanBatch = new SpanBatch(new List<Span>(), new Dictionary<string, object>(), traceId);
-
-            var spanBatchMarshaller = new SpanBatchMarshaller();
+            //var spanBatch = new SpanBatch(new List<Span>(), new Dictionary<string, object>(), traceId);
+            var spanBatch = SpanBatchBuilder.Create()
+                .WithTraceId(traceId)
+                .Build();
 
             var mockBatchDataSender = new Mock<IBatchDataSender>();
             mockBatchDataSender.Setup(x => x.SendBatchAsync(It.IsAny<string>())).Returns(Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK)));
 
-            var spanBatchSender = new SpanBatchSender(mockBatchDataSender.Object, spanBatchMarshaller);
+            var spanBatchSender = new SpanBatchSender(mockBatchDataSender.Object);
 
             var response = spanBatchSender.SendDataAsync(spanBatch).Result;
 
@@ -32,13 +33,17 @@ namespace NewRelic.Telemetry.Tests
         public void SendANonEmptySpanBatch()
         {
             var traceId = "123";
-            var spanBatch = new SpanBatch(new List<Span>() { new Mock<Span>().Object }, new Dictionary<string, object>(), traceId);
-            var spanBatchMarshaller = new SpanBatchMarshaller();
 
+            var spanBatch = SpanBatchBuilder.Create()
+                .WithTraceId(traceId)
+                .WithSpan(new Mock<Span>().Object)
+                .Build();
+
+            //var spanBatch = new SpanBatch(new List<Span>() { new Mock<Span>().Object }, new Dictionary<string, object>(), traceId);
             var mockBatchDataSender = new Mock<IBatchDataSender>();
             mockBatchDataSender.Setup(x => x.SendBatchAsync(It.IsAny<string>())).Returns(Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK)));
 
-            var spanBatchSender = new SpanBatchSender(mockBatchDataSender.Object, spanBatchMarshaller);
+            var spanBatchSender = new SpanBatchSender(mockBatchDataSender.Object);
 
             var response = spanBatchSender.SendDataAsync(spanBatch).Result;
 
