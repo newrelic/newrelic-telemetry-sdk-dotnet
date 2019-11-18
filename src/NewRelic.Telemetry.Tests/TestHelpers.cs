@@ -51,6 +51,15 @@ namespace NewRelic.Telemetry.Tests
             Assert.IsTrue(dic.Count == length, $"There should be {length} properties, actual {dic?.Count}.");
         }
 
+        public static void AssertForAttribNotPresent(Dictionary<string, JsonElement> dic, string attribName)
+        {
+            if (dic.ContainsKey(attribName))
+            {
+                var realVal = dic[attribName];
+                Assert.Fail($"Attribute {attribName}, was NOT expected, but was present with value {realVal}");
+            }
+        }
+
         public static void AssertForAttribValue(Dictionary<string, JsonElement> dic, string attribName, object testValue)
         {
             if (!dic.ContainsKey(attribName))
