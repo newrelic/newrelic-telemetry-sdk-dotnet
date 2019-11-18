@@ -12,7 +12,7 @@ namespace NewRelic.Telemetry.Tests
     class TelemetryClientTests
     {
         [Test]
-        async public Task TestTelemetryClient_RetryBackoffSequence_RemoteServiceTimeoutForGood()
+        async public Task TestTelemetryClient_RetryBackoffSequence_RetriesExceeded()
         {
             var expectedNumSendBatchAsyncCall = 9; //1 first call + 8 calls from retries
             var expectedBackoffSequenceFromTestRun = new List<int>() 
@@ -32,6 +32,7 @@ namespace NewRelic.Telemetry.Tests
             {
                 actualBackoffSequenceFromTestRun.Add(milliSecondsDelay);
                 await Task.Delay(0);
+                return ;
             });
 
             var mockSpanBatchSender = new Mock<ISpanBatchSender>();

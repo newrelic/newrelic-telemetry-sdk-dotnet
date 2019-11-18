@@ -8,8 +8,8 @@ namespace NewRelic.Telemetry.Client
     public class TelemetryClient
     {
         private ISpanBatchSender _spanBatchSender;
-        private const int BACKOFF_FACTOR = 5; // In seconds.
-        private const int BACKOFF_MAX = 80; // In seconds. 
+        private const int BACKOFF_FACTOR_SECONDS = 5; // In seconds.
+        private const int BACKOFF_MAX_SECONDS = 80; // In seconds. 
         private const int MAX_RETRIES = 8;
         private readonly Func<int, Task> _delayer;
 
@@ -37,6 +37,7 @@ namespace NewRelic.Telemetry.Client
             switch (response.StatusCode)
             {
                 case HttpStatusCode code when code >= HttpStatusCode.OK && code <= (HttpStatusCode)299:
+                    Logging.LogDebug($@"Response from New Relic ingest API: code: {response.StatusCode}, body: {response.Content} ");
                     return;
                 case HttpStatusCode.BadRequest:
                 case HttpStatusCode.Unauthorized:
@@ -45,9 +46,10 @@ namespace NewRelic.Telemetry.Client
                 case HttpStatusCode.MethodNotAllowed:
                 case HttpStatusCode.LengthRequired:
                     //drop data and log out error
-                    Logging.LogError($@"Response from New Relic ingest API: code: {response.StatusCode}");
+                    Logging.LogError($@"Response from New Relic ingest API: code: {response.StatusCode}, body: {response.Content} ");
                     break;
                 case HttpStatusCode.RequestTimeout:
+                    Logging.LogWarning($@"Response from New Relic ingest API: code: {response.StatusCode}, body: {response.Content} ");
                     await Retry(spanBatch, retryNum);
                     break;
                 case HttpStatusCode.RequestEntityTooLarge:
@@ -57,7 +59,7 @@ namespace NewRelic.Telemetry.Client
                     //handle 429 error according to the spec.
                     break;
                 default:
-                    Logging.LogError($@"Response from New Relic ingest API: code: {response.StatusCode}");
+                    Logging.LogError($@"Response from New Relic ingest API: code: {response.StatusCode}, body: {response.Content}");
                     break;
             }
         }
@@ -67,10 +69,13 @@ namespace NewRelic.Telemetry.Client
             retryNum++;
             if (retryNum > MAX_RETRIES)
             {
+                Logging.LogWarning($@"Number of retries exceeded.");
                 return;
             }
 
-            var waitTime = (int) Math.Min(BACKOFF_MAX, BACKOFF_FACTOR * Math.Pow(2, retryNum - 1)) * 1000;
+            Logging.LogWarning($@"Retry({retryNum}).");
+
+            var waitTime = (int) Math.Min(BACKOFF_MAX_SECONDS, BACKOFF_FACTOR_SECONDS * Math.Pow(2, retryNum - 1)) * 1000;
 
             await _delayer(waitTime);
             await SendBatchAsyncInternal(spanBatch, retryNum);

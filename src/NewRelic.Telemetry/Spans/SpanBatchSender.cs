@@ -9,7 +9,7 @@ namespace NewRelic.Telemetry.Spans
         Task<Response> SendDataAsync(SpanBatch spanBatch);
     }
 
-    public class SpanBatchSender
+    public class SpanBatchSender : ISpanBatchSender
     {
         private IBatchDataSender _sender;
         private ISpanBatchMarshaller _marshaller;
@@ -24,14 +24,16 @@ namespace NewRelic.Telemetry.Spans
         {
             if (spanBatch?.Spans?.Count == 0)
             {
-                return new Response(false, (HttpStatusCode)0);
+                return new Response(false, (HttpStatusCode)0, string.Empty);
             }
 
             var serializedPayload = _marshaller.ToJson(spanBatch);
 
             var response = await _sender.SendBatchAsync(serializedPayload);
 
-            return new Response(true, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+
+            return new Response(true, response.StatusCode, content);
         }
     }
 }
