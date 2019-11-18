@@ -15,7 +15,7 @@ namespace NewRelic.Telemetry.Spans
 
         public async Task<Response> SendDataAsync(SpanBatch spanBatch)
         {
-            if (spanBatch == null || spanBatch.Spans == null || spanBatch.Spans.Count == 0)
+            if ((spanBatch?.Spans?.Count).GetValueOrDefault(0) == 0)
             {
                 return new Response(false, (HttpStatusCode)0);
             }
