@@ -43,7 +43,7 @@ namespace NewRelic.Telemetry.Tests
             var response = spanBatchSender.SendDataAsync(spanBatch).Result;
 
             Assert.AreEqual(true, response.DidSend);
-            Assert.AreEqual(System.Net.HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual(System.Net.HttpStatusCode.OK, response.StatusCode, string.Empty);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace NewRelic.Telemetry.Transport
         {
             DidSend = didSend;
             StatusCode = statusCode;
-            Content = content;
+            Content = content ;
         }
     }
 }

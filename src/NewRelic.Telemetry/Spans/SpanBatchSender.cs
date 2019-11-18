@@ -31,7 +31,11 @@ namespace NewRelic.Telemetry.Spans
 
             var response = await _sender.SendBatchAsync(serializedPayload);
 
-            var content = await response.Content.ReadAsStringAsync();
+            var content = string.Empty;
+            if (response.Content != null)
+            {
+                content = await response.Content?.ReadAsStringAsync();
+            }
 
             return new Response(true, response.StatusCode, content);
         }
