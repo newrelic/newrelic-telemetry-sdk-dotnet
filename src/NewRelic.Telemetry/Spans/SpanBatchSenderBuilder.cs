@@ -9,6 +9,11 @@ namespace NewRelic.Telemetry.Spans
         private string _apiKey;
         private bool _auditLoggingEnabled = false;
         
+        public static SpanBatchSenderBuilder Create()
+        {
+            return new SpanBatchSenderBuilder();
+        }
+
         public SpanBatchSender Build()
         {
             if (_apiKey == null)
@@ -20,19 +25,19 @@ namespace NewRelic.Telemetry.Spans
             return new SpanBatchSender(sender);
         }
 
-        public SpanBatchSenderBuilder UrlOverride(string urlOverride)
+        public SpanBatchSenderBuilder WithUrlOverride(string urlOverride)
         {
             _traceUrl = urlOverride;
             return this;
         }
 
-        public SpanBatchSenderBuilder ApiKey(string apiKey)
+        public SpanBatchSenderBuilder WithApiKey(string apiKey)
         {
             _apiKey = apiKey;
             return this;
         }
 
-        public SpanBatchSenderBuilder EnableAuditLogging()
+        public SpanBatchSenderBuilder WithAuditLoggingEnabled()
         {
             _auditLoggingEnabled = true;
             return this;
