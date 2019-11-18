@@ -10,6 +10,7 @@ namespace NewRelic.Telemetry.Spans
         private const string attribName_DurationMs = "duration.ms";
         private const string attribName_Name = "name";
         private const string attribName_ParentID = "parent.id";
+        private const string attribName_Error = "error";
 
         public static SpanBuilder Create(string spanId)
         {
@@ -66,7 +67,16 @@ namespace NewRelic.Telemetry.Spans
 
         public SpanBuilder HasError(bool b)
         {
-            _span.Error = b ? b : null as bool?;
+            if (b)
+            {
+                return WithAttribute(attribName_Error, true);
+            }
+
+            if (_span.Attributes?.ContainsKey(attribName_Error) == true)
+            {
+                _span.Attributes.Remove(attribName_Error);
+            }
+
             return this;
         }
 

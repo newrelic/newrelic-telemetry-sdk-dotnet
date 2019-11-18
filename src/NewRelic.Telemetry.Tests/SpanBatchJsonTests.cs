@@ -63,8 +63,7 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribValue(resultSpan, "id", "span1");
             TestHelpers.AssertForAttribValue(resultSpan, "trace.id", "traceId");
             TestHelpers.AssertForAttribValue(resultSpan, "timestamp", 1);
-            TestHelpers.AssertForAttribValue(resultSpan, "error", true);
-            TestHelpers.AssertForAttribCount(resultSpan, 5);
+            TestHelpers.AssertForAttribCount(resultSpan, 4);
 
             var resultSpanAttribs = TestHelpers.DeserializeObject(resultSpan["attributes"]);
 
@@ -72,7 +71,8 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "name", "name");
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "service.name", "serviceName");
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "parent.id", "parentId");
-            TestHelpers.AssertForAttribCount(resultSpanAttribs, 4);
+            TestHelpers.AssertForAttribValue(resultSpanAttribs, "error", true);
+            TestHelpers.AssertForAttribCount(resultSpanAttribs, 5);
         }
 
 
@@ -142,8 +142,7 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribValue(firstSpan, "id", "span1");
             TestHelpers.AssertForAttribValue(firstSpan, "trace.id", "traceId1");
             TestHelpers.AssertForAttribValue(firstSpan, "timestamp", 1);
-            TestHelpers.AssertForAttribValue(firstSpan, "error", true);
-            TestHelpers.AssertForAttribCount(firstSpan, 5);
+            TestHelpers.AssertForAttribCount(firstSpan, 4);
 
             var firstSpanAttribs = TestHelpers.DeserializeObject(firstSpan["attributes"]);
 
@@ -151,14 +150,15 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribValue(firstSpanAttribs, "name", "name1");
             TestHelpers.AssertForAttribValue(firstSpanAttribs, "service.name", "serviceName1");
             TestHelpers.AssertForAttribValue(firstSpanAttribs, "parent.id", "parentId1");
-            TestHelpers.AssertForAttribCount(firstSpanAttribs, 4);
+            TestHelpers.AssertForAttribValue(firstSpanAttribs, "error", true);
+
+            TestHelpers.AssertForAttribCount(firstSpanAttribs, 5);
 
             var secondSpan = resultSpans[1];
 
             TestHelpers.AssertForAttribValue(secondSpan, "id", "span2");
             TestHelpers.AssertForAttribValue(secondSpan, "trace.id", "traceId2");
             TestHelpers.AssertForAttribValue(secondSpan, "timestamp", 2);
-            TestHelpers.AssertForAttribNotPresent(secondSpan, "error");     //Only true 
             TestHelpers.AssertForAttribCount(secondSpan, 4);
 
             var secondSpanAttribs = TestHelpers.DeserializeObject(secondSpan["attributes"]);
@@ -223,8 +223,7 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribValue(resultSpan, "id", "span1");
             TestHelpers.AssertForAttribValue(resultSpan, "trace.id", "traceId");
             TestHelpers.AssertForAttribValue(resultSpan, "timestamp", 1);
-            TestHelpers.AssertForAttribValue(resultSpan, "error", true);
-            TestHelpers.AssertForAttribCount(resultSpan, 5);
+            TestHelpers.AssertForAttribCount(resultSpan, 4);
 
             var resultSpanAttribs = TestHelpers.DeserializeObject(resultSpan["attributes"]);
 
@@ -232,7 +231,8 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "name", "name");
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "service.name", "serviceName");
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "parent.id", "parentId");
-            TestHelpers.AssertForAttribCount(resultSpanAttribs, 4);
+            TestHelpers.AssertForAttribValue(resultSpanAttribs, "error", true);
+            TestHelpers.AssertForAttribCount(resultSpanAttribs, 5);
         }
 
 
@@ -295,8 +295,7 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribValue(resultSpan, "id", "span1");
             TestHelpers.AssertForAttribValue(resultSpan, "trace.id", "GoodTraceID");
             TestHelpers.AssertForAttribValue(resultSpan, "timestamp", 100);
-            TestHelpers.AssertForAttribValue(resultSpan, "error", true);
-            TestHelpers.AssertForAttribCount(resultSpan, 5);
+            TestHelpers.AssertForAttribCount(resultSpan, 4);
 
             var resultSpanAttribs = TestHelpers.DeserializeObject(resultSpan["attributes"]);
 
@@ -304,7 +303,8 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "name", "GoodName");
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "service.name", "GoodServiceName");
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "parent.id", "GoodParentId");
-            TestHelpers.AssertForAttribCount(resultSpanAttribs, 4);
+            TestHelpers.AssertForAttribValue(resultSpanAttribs, "error", true);
+            TestHelpers.AssertForAttribCount(resultSpanAttribs, 5);
 
 
 

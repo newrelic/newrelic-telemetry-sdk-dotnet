@@ -12,8 +12,6 @@ namespace NewRelic.Telemetry.Spans
 
         public long? Timestamp { get; internal set; }
 
-        public bool? Error { get; internal set; }
-
         public Dictionary<string, object> Attributes { get; internal set; }
 
         internal Span()
