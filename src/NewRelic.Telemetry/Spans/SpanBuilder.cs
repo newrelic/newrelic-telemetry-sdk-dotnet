@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NewRelic.Telemetry.Extensions;
 
 namespace NewRelic.Telemetry.Spans
 {
@@ -53,6 +54,16 @@ namespace NewRelic.Telemetry.Spans
             return this;
         }
 
+        public SpanBuilder WithTimestamp(DateTimeOffset timestamp)
+        {
+            if (timestamp == null)
+            {
+                return this;
+            }
+            
+            return WithTimestamp(DateTimeExtensions.ToUnixTimeMilliseconds(timestamp));
+        }
+
         public SpanBuilder HasError(bool b)
         {
             _span.Error = b ? b : null as bool?;
@@ -62,6 +73,37 @@ namespace NewRelic.Telemetry.Spans
         public SpanBuilder WithDurationMs(double durationMs)
         {
             WithAttribute(attribName_DurationMs, durationMs);
+            return this;
+        }
+
+        public SpanBuilder WithDurationMs(DateTimeOffset startTimestamp, DateTimeOffset endTimestamp)
+        {
+            if(startTimestamp == null || endTimestamp == null)
+            {
+                return this;
+            }
+
+            return WithDurationMs(DateTimeExtensions.ToUnixTimeMilliseconds(endTimestamp)
+                - DateTimeExtensions.ToUnixTimeMilliseconds(startTimestamp));
+        }
+
+        public SpanBuilder WithExecutionTimeInfo(DateTimeOffset startTimestamp, DateTimeOffset endTimestamp)
+        {
+            if(startTimestamp == null)
+            {
+                return this;
+            }
+
+            var startTimestampUnix = DateTimeExtensions.ToUnixTimeMilliseconds(startTimestamp);
+            WithTimestamp(startTimestampUnix);
+            
+            if(endTimestamp == null)
+            {
+                return this;
+            }
+
+            WithDurationMs(DateTimeExtensions.ToUnixTimeMilliseconds(endTimestamp) - startTimestampUnix);
+
             return this;
         }
 
@@ -83,7 +125,7 @@ namespace NewRelic.Telemetry.Spans
             return this;
         }
 
-        public SpanBuilder WithAttributes<T>(ICollection<KeyValuePair<string,T>> attributes)
+        public SpanBuilder WithAttributes<T>(IEnumerable<KeyValuePair<string,T>> attributes)
         {
             if (attributes == null)
             {
