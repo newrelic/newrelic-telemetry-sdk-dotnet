@@ -8,19 +8,21 @@ namespace NewRelic.Telemetry.Client
     public class TelemetryClient
     {
         private ISpanBatchSender _spanBatchSender;
-        private readonly IAsyncDelayer _asyncDelayer;
         private const int BACKOFF_FACTOR = 5; // In seconds.
         private const int BACKOFF_MAX = 80; // In seconds. 
         private const int MAX_RETRIES = 8;
+        private readonly Func<int, Task> _delayer;
 
-        public TelemetryClient(ISpanBatchSender spanBatchSender) : this(spanBatchSender, AsyncDelayer.Instance)
+        private static readonly Func<int, Task> _defaultDelayer = new Func<int, Task>(async (int milliseconds) => await Task.Delay(milliseconds));
+
+        public TelemetryClient(ISpanBatchSender spanBatchSender) : this(spanBatchSender, _defaultDelayer)
         {
         }
 
-        internal TelemetryClient(ISpanBatchSender spanBatchSender, IAsyncDelayer asyncDelayer)
+        internal TelemetryClient(ISpanBatchSender spanBatchSender, Func<int, Task> delayer)
         {
             _spanBatchSender = spanBatchSender;
-            _asyncDelayer = asyncDelayer;
+            _delayer = delayer;
         }
 
         public async Task SendBatchAsync(SpanBatch spanBatch) 
@@ -70,32 +72,9 @@ namespace NewRelic.Telemetry.Client
 
             var waitTime = (int) Math.Min(BACKOFF_MAX, BACKOFF_FACTOR * Math.Pow(2, retryNum - 1)) * 1000;
 
-            await _asyncDelayer.Delay(waitTime);
+            await _delayer(waitTime);
             await SendBatchAsyncInternal(spanBatch, retryNum);
             return;
-        }
-    }
-
-    internal interface IAsyncDelayer
-    {
-        Task Delay(int millisecondsDelay);
-    }
-
-    internal class AsyncDelayer : IAsyncDelayer
-    {
-        private static readonly AsyncDelayer _singleton = new AsyncDelayer();
-
-        public static AsyncDelayer Instance
-        {
-            get
-            {
-                return _singleton;
-            }
-        }
-
-        public Task Delay(int millisecondsDelay)
-        {
-            return Task.Delay(millisecondsDelay);
         }
     }
 }
