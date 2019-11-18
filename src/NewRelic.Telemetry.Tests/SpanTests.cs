@@ -29,10 +29,10 @@ namespace NewRelic.Telemetry.Tests
             Assert.AreEqual("traceId", span.TraceId);
             Assert.AreEqual(1L, span.Timestamp);
             Assert.AreEqual("serviceName", span.Attributes["service.name"]);
+            Assert.AreEqual(true, span.Attributes["error"]);
             Assert.AreEqual(67, span.Attributes["duration.ms"]);
             Assert.AreEqual("name", span.Attributes["name"]);
             Assert.AreEqual("parentId", span.Attributes["parent.id"]);
-            Assert.AreEqual(true, span.Error);
             Assert.AreEqual("attrValue", span.Attributes["attrKey"]);
         }
 
