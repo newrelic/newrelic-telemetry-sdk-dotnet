@@ -24,13 +24,15 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 		public void Test1()
 		{
             var tracer = TracerFactory.Create(tb => { }).GetTracer("test");
-            var testSpan = tracer.StartSpan("test");
-
+            var testSpan = (tracer.StartSpan("test") as Span);
             testSpan.Status = Status.Ok;
+            testSpan.SetAttribute("jason", "feingold");
+
+
 
             testSpan.UpdateName("test");
 
-            SpanConverter.ToNewRelicSpan();
+            var nrSpan = SpanConverter.ToNewRelicSpan(testSpan,"boger");
 
             var traceId = ActivityTraceId.CreateRandom();
             var spanId = ActivitySpanId.CreateRandom();
@@ -40,14 +42,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         [Test]
         public void Validation_OpenTraceSpan_Required()
         {
-
-
-            var traceId = ActivityTraceId.CreateFromString(null);
-            var spanId = ActivitySpanId.CreateRandom();
-
-            SpanContext ctx = new SpanContext(traceId, spanId, ActivityTraceFlags.None);
-            var testSpan = Mock.Create<ISpan>();
-
+            Assert.Throws<ArgumentNullException>(()=>SpanConverter.ToNewRelicSpan(null, null));
         }
 
 

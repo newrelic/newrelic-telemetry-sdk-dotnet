@@ -3,13 +3,10 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <IsPackable>false</IsPackable>
-    <AssemblyOriginatorKeyFile>..\..\keys\OpenTelemetry.Exporter.NewRelic.snk</AssemblyOriginatorKeyFile>
+
+    <AssemblyOriginatorKeyFile>..\..\keys\NewRelic.Telemetry.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="..\..\keys\OpenTelemetry.Exporter.NewRelic.snk" Link="OpenTelemetry.Exporter.NewRelic.snk" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="JustMock" Version="2019.3.910.4" />

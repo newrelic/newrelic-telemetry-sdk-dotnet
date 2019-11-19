@@ -16,7 +16,7 @@ namespace OpenTelemetry.Exporter.NewRelic
             if (otSpan.Context.SpanId == null) throw new NullReferenceException($"{nameof(otSpan)}.Context.SpanId");
             if (otSpan.Context.TraceId == null) throw new NullReferenceException($"{nameof(otSpan)}.Context.TraceId");
             if (otSpan.StartTimestamp == null) throw new NullReferenceException($"{nameof(otSpan)}.StartTimestamp");
-
+           
             var spanBuilder = NRSpans.SpanBuilder.Create(otSpan.Context.SpanId.ToHexString())
                    .WithTraceId(otSpan.Context.TraceId.ToHexString())
                    .WithExecutionTimeInfo(otSpan.StartTimestamp, otSpan.EndTimestamp)   //handles Nulls
