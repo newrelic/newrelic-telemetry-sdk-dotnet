@@ -6,6 +6,8 @@ namespace NewRelic.Telemetry.Transport
     {
         public bool DidSend { get; }
         public HttpStatusCode StatusCode { get; }
+        public string Content { get; }
+
 
         internal Response(bool didSend, HttpStatusCode statusCode)
         {
