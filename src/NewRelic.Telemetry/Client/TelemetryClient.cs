@@ -69,7 +69,7 @@ namespace NewRelic.Telemetry.Client
             retryNum++;
             if (retryNum > MAX_RETRIES)
             {
-                Logging.LogWarning($@"Number of retries exceeded.");
+                Logging.LogWarning($@"SendBatchAsync(SpanBatch spanBatch) timed out after {MAX_RETRIES} attempts.");
                 return;
             }
 
