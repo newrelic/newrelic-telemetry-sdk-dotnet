@@ -33,13 +33,7 @@ namespace OpenTelemetry.Exporter.NewRelic
             return this;
         }
 
-        public NewRelicTraceExporter WithApiKey(string apiKey)
-        {
-
-        }
-
-
-
+        
         public async override Task<ExportResult> ExportAsync(IEnumerable<Span> otSpanBatch, CancellationToken cancellationToken)
         {
 

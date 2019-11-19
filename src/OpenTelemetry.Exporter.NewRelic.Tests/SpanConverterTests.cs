@@ -1,9 +1,19 @@
 using NUnit.Framework;
 using OpenTelemetry.Trace;
+using OpenTelemetry.Trace.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using Telerik.JustMock;
+using OpenTelemetry.Exporter.NewRelic;
 
 namespace OpenTelemetry.Exporter.NewRelic.Tests
 {
-	public class SpanConverterTests
+
+  
+   
+
+    public class SpanConverterTests
 	{
 		[SetUp]
 		public void Setup()
@@ -13,9 +23,32 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 		[Test]
 		public void Test1()
 		{
+            var tracer = TracerFactory.Create(tb => { }).GetTracer("test");
+            var testSpan = tracer.StartSpan("test");
 
-           //ISpan.Equals
+            testSpan.Status = Status.Ok;
+
+            testSpan.UpdateName("test");
+
+            SpanConverter.ToNewRelicSpan();
+
+            var traceId = ActivityTraceId.CreateRandom();
+            var spanId = ActivitySpanId.CreateRandom();
+            SpanContext ctx = new SpanContext(traceId, spanId, ActivityTraceFlags.None);
 		}
+
+        [Test]
+        public void Validation_OpenTraceSpan_Required()
+        {
+
+
+            var traceId = ActivityTraceId.CreateFromString(null);
+            var spanId = ActivitySpanId.CreateRandom();
+
+            SpanContext ctx = new SpanContext(traceId, spanId, ActivityTraceFlags.None);
+            var testSpan = Mock.Create<ISpan>();
+
+        }
 
 
 
