@@ -37,7 +37,7 @@ namespace NewRelic.Telemetry.Client
             switch (response.StatusCode)
             {
                 case HttpStatusCode code when code >= HttpStatusCode.OK && code <= (HttpStatusCode)299:
-                    Logging.LogDebug($@"Response from New Relic ingest API: code: {response.StatusCode}, body: {response.Content} ");
+                    Logging.LogDebug($@"Response from New Relic ingest API: code: {response.StatusCode}");
                     return;
                 case HttpStatusCode.BadRequest:
                 case HttpStatusCode.Unauthorized:
@@ -69,7 +69,7 @@ namespace NewRelic.Telemetry.Client
             retryNum++;
             if (retryNum > MAX_RETRIES)
             {
-                Logging.LogWarning($@"Number of retries exceeded.");
+                Logging.LogWarning($@"SendBatchAsync(SpanBatch spanBatch) timed out after {MAX_RETRIES} attempts.");
                 return;
             }
 
