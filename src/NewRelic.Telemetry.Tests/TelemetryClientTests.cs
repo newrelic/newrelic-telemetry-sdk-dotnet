@@ -39,7 +39,7 @@ namespace NewRelic.Telemetry.Tests
             mockSpanBatchSender.Setup(x => x.SendDataAsync(It.IsAny<SpanBatch>()))
                 .Returns(() =>
                 {
-                    return Task.FromResult(new Response(true, System.Net.HttpStatusCode.RequestTimeout, string.Empty));
+                    return Task.FromResult(new Response(true, System.Net.HttpStatusCode.RequestTimeout));
                 });
 
             var client = new TelemetryClient(mockSpanBatchSender.Object, customDelayer);
@@ -78,10 +78,10 @@ namespace NewRelic.Telemetry.Tests
                     callCount++;
                     if (callCount < 4)
                     {
-                        return Task.FromResult(new Response(true, System.Net.HttpStatusCode.RequestTimeout, string.Empty));
+                        return Task.FromResult(new Response(true, System.Net.HttpStatusCode.RequestTimeout));
                     }
 
-                    return Task.FromResult(new Response(true, System.Net.HttpStatusCode.Accepted, string.Empty));
+                    return Task.FromResult(new Response(true, System.Net.HttpStatusCode.Accepted));
 
                 });
 

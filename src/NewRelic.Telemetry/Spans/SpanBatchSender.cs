@@ -24,20 +24,14 @@ namespace NewRelic.Telemetry.Spans
         {
             if (spanBatch?.Spans?.Count == 0)
             {
-                return new Response(false, (HttpStatusCode)0, string.Empty);
+                return new Response(false, (HttpStatusCode)0);
             }
 
             var serializedPayload = _marshaller.ToJson(spanBatch);
 
             var response = await _sender.SendBatchAsync(serializedPayload);
 
-            var content = string.Empty;
-            if (response.Content != null)
-            {
-                content = await response.Content?.ReadAsStringAsync();
-            }
-
-            return new Response(true, response.StatusCode, content);
+            return new Response(true, response.StatusCode);
         }
     }
 }

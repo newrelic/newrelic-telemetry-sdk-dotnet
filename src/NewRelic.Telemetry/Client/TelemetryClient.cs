@@ -37,7 +37,7 @@ namespace NewRelic.Telemetry.Client
             switch (response.StatusCode)
             {
                 case HttpStatusCode code when code >= HttpStatusCode.OK && code <= (HttpStatusCode)299:
-                    Logging.LogDebug($@"Response from New Relic ingest API: code: {response.StatusCode}, body: {response.Content} ");
+                    Logging.LogDebug($@"Response from New Relic ingest API: code: {response.StatusCode}");
                     return;
                 case HttpStatusCode.BadRequest:
                 case HttpStatusCode.Unauthorized:
@@ -46,20 +46,20 @@ namespace NewRelic.Telemetry.Client
                 case HttpStatusCode.MethodNotAllowed:
                 case HttpStatusCode.LengthRequired:
                     //drop data and log out error
-                    Logging.LogError($@"Response from New Relic ingest API: code: {response.StatusCode}, body: {response.Content} ");
+                    Logging.LogError($@"Response from New Relic ingest API: code: {response.StatusCode}");
                     break;
                 case HttpStatusCode.RequestTimeout:
-                    Logging.LogWarning($@"Response from New Relic ingest API: code: {response.StatusCode}, body: {response.Content} ");
+                    Logging.LogWarning($@"Response from New Relic ingest API: code: {response.StatusCode}");
                     await Retry(spanBatch, retryNum);
                     break;
                 case HttpStatusCode.RequestEntityTooLarge:
-                    //split payload.
+                    //TODO: split payload.
                     break;
                 case (HttpStatusCode)429:
-                    //handle 429 error according to the spec.
+                    //TODO: handle 429 error according to the spec.
                     break;
                 default:
-                    Logging.LogError($@"Response from New Relic ingest API: code: {response.StatusCode}, body: {response.Content}");
+                    Logging.LogError($@"Response from New Relic ingest API: code: {response.StatusCode}");
                     break;
             }
         }
