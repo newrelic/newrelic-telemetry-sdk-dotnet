@@ -52,8 +52,11 @@ namespace NewRelic.Telemetry.Client
                     Logging.LogWarning($@"Response from New Relic ingest API: code: {response.StatusCode}");
                     await Retry(spanBatch, retryNum);
                     break;
+
                 case HttpStatusCode.RequestEntityTooLarge:
-                    //TODO: split payload.
+                    Logging.LogWarning($@"Response from New Relic ingest API: code: {response.StatusCode}. Response indicates payload is too large.");
+                    await RetryWithSplit(spanBatch);
+
                     break;
                 case (HttpStatusCode)429:
                     //TODO: handle 429 error according to the spec.
@@ -64,12 +67,33 @@ namespace NewRelic.Telemetry.Client
             }
         }
 
+        private async Task RetryWithSplit(SpanBatch spanBatch)
+        {
+            var newBatches = SpanBatch.Split(spanBatch);
+            if (newBatches == null)
+            {
+                Logging.LogError($@"Cannot send the span batch because it has a single span that exceeds the size limit.");
+                return;
+            }
+
+            Logging.LogWarning("Splitting the span batch and retrying.");
+
+            var taskList = new Task[newBatches.Length];
+
+            for (var i = 0; i < newBatches.Length; i++)
+            {
+                taskList[i] = SendBatchAsyncInternal(newBatches[i], 0);
+            }
+
+            await Task.WhenAll(taskList);
+        }
+
         private async Task Retry(SpanBatch spanBatch, int retryNum)
         {
             retryNum++;
             if (retryNum > MAX_RETRIES)
             {
-                Logging.LogWarning($@"SendBatchAsync(SpanBatch spanBatch) timed out after {MAX_RETRIES} attempts.");
+                Logging.LogError($@"SendBatchAsync(SpanBatch spanBatch) timed out after {MAX_RETRIES} attempts.");
                 return;
             }
 
