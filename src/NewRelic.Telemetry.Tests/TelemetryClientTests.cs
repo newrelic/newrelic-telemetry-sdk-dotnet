@@ -72,14 +72,16 @@ namespace NewRelic.Telemetry.Tests
                 {"testAttrib1", "testAttribValue1" }
             };
 
-            var spans = new List<Span>();
+            var spanBatchBuilder = SpanBatchBuilder.Create()
+                .WithTraceId(expectedTraceID)
+                .WithAttributes(attribs);
+
             for(var i = 0; i < expectedCountSpans; i++)
             {
-                var spanBuilder = new SpanBuilder(i.ToString());
-                spans.Add(spanBuilder.Build());
+                spanBatchBuilder.WithSpan(SpanBuilder.Create(i.ToString()).Build());
             }
 
-            var spanBatch = new SpanBatch(spans, attribs, expectedTraceID);
+            var spanBatch = spanBatchBuilder.Build();
 
             // Act
             var client = new TelemetryClient(mockSpanBatchSender.Object);
@@ -94,10 +96,10 @@ namespace NewRelic.Telemetry.Tests
             Assert.AreEqual(expectedCountSpans, successfulSpanBatches.SelectMany(x => x.Spans).Select(x => x.Id).Distinct().Count(),"All Spans should be unique (spanId)");
             
             //Test the attributes on the spanbatch
-            Assert.AreEqual(expectedCountDistinctTraceIds, successfulSpanBatches.Select(x => x.TraceId).Distinct().Count(),"The traceId on split batches are not the same");
-            Assert.AreEqual(expectedTraceID, successfulSpanBatches.FirstOrDefault().TraceId,"The traceId on split batches does not match the original traceId");
-            Assert.AreEqual(expectedCountSpanBatchAttribSets, successfulSpanBatches.Select(x => x.Attributes).Distinct().Count(), "The attributes on all span batches should be the same");
-            Assert.AreEqual(attribs, successfulSpanBatches.Select(x => x.Attributes).FirstOrDefault(), "The Span Batch attribute values on split batches do not match the attributes of the original span batch.");
+            Assert.AreEqual(expectedCountDistinctTraceIds, successfulSpanBatches.Select(x => x.CommonProperties.TraceId).Distinct().Count(),"The traceId on split batches are not the same");
+            Assert.AreEqual(expectedTraceID, successfulSpanBatches.FirstOrDefault().CommonProperties.TraceId, "The traceId on split batches does not match the original traceId");
+            Assert.AreEqual(expectedCountSpanBatchAttribSets, successfulSpanBatches.Select(x => x.CommonProperties.Attributes).Distinct().Count(), "The attributes on all span batches should be the same");
+            Assert.AreEqual(attribs, successfulSpanBatches.Select(x => x.CommonProperties.Attributes).FirstOrDefault(), "The Span Batch attribute values on split batches do not match the attributes of the original span batch.");
         }
 
         /// <summary>
@@ -148,13 +150,14 @@ namespace NewRelic.Telemetry.Tests
                     return Task.FromResult(new Response(true, System.Net.HttpStatusCode.OK));
                 });
 
-            var spans = new List<Span>();
-            spans.Add(new SpanBuilder($"{traceID_SplitBatch_Prefix}1").Build());
-            spans.Add(new SpanBuilder($"{traceID_SplitBatch_Prefix}2").Build());
-            spans.Add(new SpanBuilder($"{traceID_SplitBatch_Prefix}3").Build());
-            spans.Add(new SpanBuilder(traceID_Success).Build());
-            
-            var spanBatch = new SpanBatch(spans, null,null);
+            var spanBatchBuilder = SpanBatchBuilder.Create();
+
+            spanBatchBuilder.WithSpan(SpanBuilder.Create($"{traceID_SplitBatch_Prefix}1").Build());
+            spanBatchBuilder.WithSpan(SpanBuilder.Create($"{traceID_SplitBatch_Prefix}2").Build());
+            spanBatchBuilder.WithSpan(SpanBuilder.Create($"{traceID_SplitBatch_Prefix}3").Build());
+            spanBatchBuilder.WithSpan(SpanBuilder.Create(traceID_Success).Build());
+
+            var spanBatch = spanBatchBuilder.Build();
 
             // Act
             var client = new TelemetryClient(mockSpanBatchSender.Object);

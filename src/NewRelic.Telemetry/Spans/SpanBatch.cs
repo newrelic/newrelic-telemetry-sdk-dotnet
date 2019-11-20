@@ -1,44 +1,33 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
+using Utf8Json;
+using Utf8Json.Resolvers;
 using System.Linq;
 
 namespace NewRelic.Telemetry.Spans
 {
     public class SpanBatch
     {
-        public IDictionary<string, object> Attributes { get; }
+        [DataMember(Name = "common")]
+        public SpanBatchCommonProperties CommonProperties { get; internal set; }
 
-        public string TraceId { get; }
+        public List<Span> Spans { get; internal set; }
 
-        public IList<Span> Spans { get; }
-
-        public SpanBatch(IList<Span> spans, IDictionary<string, object> attributes)
+        internal SpanBatch()
         {
-            Spans = spans;
-            Attributes = attributes;
         }
 
-        public SpanBatch(IList<Span> spans, IDictionary<string, object> attributes, string traceId) : this(spans, attributes)
+        internal SpanBatch(SpanBatchCommonProperties commonProperties, IEnumerable<Span> spans)
         {
-            TraceId = traceId;
+            CommonProperties = commonProperties;
+            Spans = spans.ToList();
         }
 
-        public static SpanBatch[] Split(SpanBatch batch)
+        public string ToJson()
         {
-            var countSpans = batch.Spans.Count;
-            if(countSpans <= 1)
-            {
-                return null;
-            }
-
-            var targetSpanCount = countSpans / 2;
-            var batch0Spans = batch.Spans.Take(targetSpanCount).ToList();
-            var batch1Spans = batch.Spans.Skip(targetSpanCount).ToList();
-
-            var batch0 = new SpanBatch(batch0Spans, batch.Attributes, batch.TraceId);
-            var batch1 = new SpanBatch(batch1Spans, batch.Attributes, batch.TraceId);
-
-            return new[]{ batch0, batch1 };
+            return JsonSerializer.ToJsonString(new[] { this }, StandardResolver.ExcludeNullCamelCase);
         }
-
     }
+
+
 }

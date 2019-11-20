@@ -3,19 +3,17 @@ using System.Runtime.Serialization;
 
 namespace NewRelic.Telemetry.Spans
 {
-    public class Span
+    public class SpanBatchCommonProperties
     {
-        public string Id { get; internal set; }
-
         [DataMember(Name = "trace.id")]
         public string TraceId { get; internal set; }
 
-        public long? Timestamp { get; internal set; }
+        public Dictionary<string,object> Attributes { get; internal set; }
 
-        public Dictionary<string, object> Attributes { get; internal set; }
-
-        internal Span()
+        internal SpanBatchCommonProperties()
         {
         }
     }
+
+
 }

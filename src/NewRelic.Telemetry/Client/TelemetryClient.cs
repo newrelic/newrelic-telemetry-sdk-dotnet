@@ -69,7 +69,7 @@ namespace NewRelic.Telemetry.Client
 
         private async Task RetryWithSplit(SpanBatch spanBatch)
         {
-            var newBatches = SpanBatch.Split(spanBatch);
+            var newBatches = SpanBatchBuilder.Split(spanBatch);
             if (newBatches == null)
             {
                 Logging.LogError($@"Cannot send the span batch because it has a single span that exceeds the size limit.");

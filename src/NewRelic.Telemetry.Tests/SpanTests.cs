@@ -10,27 +10,36 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         public void BuildSpan()
         {
-            var attributes = new Dictionary<string, object> { { "attrKey", "attrValue" } };
+            var attributes = new Dictionary<string, object> 
+            { { "attrKey", "attrValue" } };
 
-            var spanBuilder = new SpanBuilder("spanId");
-            spanBuilder.TraceId("traceId").TimeStamp(1L).ServiceName("serviceName").DurationMs(67d).Name("name")
-                .ParentId("parentId").Error(true).Attributes(attributes);
+            var spanBuilder = SpanBuilder.Create("spanId")
+                .WithTraceId("traceId")
+                .WithTimestamp(1L)
+                .WithServiceName("serviceName")
+                .WithDurationMs(67)
+                .WithName("name")
+                .WithParentId("parentId")
+                .HasError(true)
+                .WithAttribute("adsfasdf",12)
+                .WithAttributes(attributes);
+
             var span = spanBuilder.Build();
             Assert.AreEqual("spanId", span.Id);
             Assert.AreEqual("traceId", span.TraceId);
             Assert.AreEqual(1L, span.Timestamp);
-            Assert.AreEqual("serviceName", span.ServiceName);
-            Assert.AreEqual(67d, span.DurationMs);
-            Assert.AreEqual("name", span.Name);
-            Assert.AreEqual("parentId", span.ParentId);
-            Assert.AreEqual(true, span.Error);
-            Assert.AreSame(attributes, span.Attributes);
+            Assert.AreEqual("serviceName", span.Attributes["service.name"]);
+            Assert.AreEqual(true, span.Attributes["error"]);
+            Assert.AreEqual(67, span.Attributes["duration.ms"]);
+            Assert.AreEqual("name", span.Attributes["name"]);
+            Assert.AreEqual("parentId", span.Attributes["parent.id"]);
+            Assert.AreEqual("attrValue", span.Attributes["attrKey"]);
         }
 
         [Test]
         public void ThrowExceptionIfNullId()
         {
-            Assert.Throws<NullReferenceException>(new TestDelegate(() => new SpanBuilder(null)));
+            Assert.Throws<NullReferenceException>(new TestDelegate(() => SpanBuilder.Create(null)));
         }
     }
 }
