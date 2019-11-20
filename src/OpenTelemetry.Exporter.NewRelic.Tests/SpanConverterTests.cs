@@ -7,24 +7,24 @@ using System.Diagnostics;
 using Telerik.JustMock;
 using OpenTelemetry.Exporter.NewRelic;
 using OpenTelemetry.Trace.Export;
+using NRSpans = NewRelic.Telemetry.Spans;
+using NewRelic.Telemetry.Transport;
+using System.Threading.Tasks;
+using OpenTelemetry.Context.Propagation;
 
 namespace OpenTelemetry.Exporter.NewRelic.Tests
 {
-
-    
-
-    public class TestSpanProcessor : SimpleSpanProcessor
+    public class TestBatchSender : NRSpans.ISpanBatchSender
     {
-        public TestSpanProcessor(SpanExporter exporter) : base(exporter)
+        public readonly List<NRSpans.SpanBatch> CapturedSpanBatches = new List<NRSpans.SpanBatch>();
+        
+        public Task<Response> SendDataAsync(NRSpans.SpanBatch spanBatch)
         {
-        }
+            CapturedSpanBatches.Add(spanBatch);
 
-        public override void OnEnd(Span span)
-        {
-            base.OnEnd(span);
+            return Task.FromResult(new Response(true, System.Net.HttpStatusCode.OK));
         }
     }
-
 
     public class SpanConverterTests
 	{
@@ -36,33 +36,31 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 		[Test]
 		public void Test1()
 		{
-            var tracer = TracerFactory.Create(tb => { }).GetTracer("test");
-            var testSpan = (tracer.StartSpan("test") as Span);
-            testSpan.Status = Status.Ok;
-            testSpan.SetAttribute("jason", "feingold");
+            const string testServiceName = "TestService";
+
+            var mockSender = new TestBatchSender();
+            var exporter = new NewRelicTraceExporter(mockSender)
+                .WithServiceName(testServiceName);
 
 
+            using (var tracerFactory = TracerFactory.Create(
+                                  builder => builder.AddProcessorPipeline(
+                                  c => c.SetExporter(new NewRelicTraceExporter(mockSender)))))
+            {
+                var tracer = tracerFactory.GetTracer("TestTracer");
 
-            //BatchSpanProcessor
-            var l = new SimpleSpanProcessor();
-            l.
+                var rootSpan = tracer.StartRootSpan("Jason");
+                var tootSpan = tracer.StartSpan("Ian", rootSpan);
+                var pooSpan = tracer.StartSpan("Feingold", tootSpan);
+                pooSpan.End();
+                tootSpan.End();
+                rootSpan.End();
+            }
 
-
-            testSpan.UpdateName("test");
-
-            var nrSpan = SpanConverter.ToNewRelicSpan(testSpan,"boger");
-
-            var traceId = ActivityTraceId.CreateRandom();
-            var spanId = ActivitySpanId.CreateRandom();
-            SpanContext ctx = new SpanContext(traceId, spanId, ActivityTraceFlags.None);
-		}
-
-        [Test]
-        public void Validation_OpenTraceSpan_Required()
-        {
-            Assert.Throws<ArgumentNullException>(()=>SpanConverter.ToNewRelicSpan(null, null));
+            var l = mockSender.CapturedSpanBatches;
         }
 
+        
 
 
         /*
