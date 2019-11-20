@@ -6,12 +6,24 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Telerik.JustMock;
 using OpenTelemetry.Exporter.NewRelic;
+using OpenTelemetry.Trace.Export;
 
 namespace OpenTelemetry.Exporter.NewRelic.Tests
 {
 
-  
-   
+
+    public class TestSpanProcessor : SimpleSpanProcessor
+    {
+        public TestSpanProcessor(SpanExporter exporter) : base(exporter)
+        {
+        }
+
+        public override void OnEnd(Span span)
+        {
+            base.OnEnd(span);
+        }
+    }
+
 
     public class SpanConverterTests
 	{
@@ -28,6 +40,9 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             testSpan.Status = Status.Ok;
             testSpan.SetAttribute("jason", "feingold");
 
+            //BatchSpanProcessor
+            var l = new SimpleSpanProcessor();
+            l.
 
 
             testSpan.UpdateName("test");
