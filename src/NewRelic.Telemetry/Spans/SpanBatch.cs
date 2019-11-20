@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using Utf8Json;
 using Utf8Json.Resolvers;
+using System.Linq;
 
 namespace NewRelic.Telemetry.Spans
 {
@@ -14,6 +15,12 @@ namespace NewRelic.Telemetry.Spans
 
         internal SpanBatch()
         {
+        }
+
+        internal SpanBatch(SpanBatchCommonProperties commonProperties, IEnumerable<Span> spans)
+        {
+            CommonProperties = commonProperties;
+            Spans = spans.ToList();
         }
 
         public string ToJson()
