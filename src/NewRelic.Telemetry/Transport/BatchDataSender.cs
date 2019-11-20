@@ -27,7 +27,7 @@ namespace NewRelic.Telemetry.Transport
         private Uri _uri;
 
         internal BatchDataSender(
-          string apiKey, string endpointUrl, bool auditLoggingEnabled)
+          string apiKey, string endpointUrl, bool auditLoggingEnabled, TimeSpan timeout)
         {
             ApiKey = apiKey;
             EndpointUrl = endpointUrl;
@@ -35,6 +35,7 @@ namespace NewRelic.Telemetry.Transport
 
             _uri = new Uri(endpointUrl);
             _httpClient = new HttpClient();
+            _httpClient.Timeout = timeout;
             var sp = System.Net.ServicePointManager.FindServicePoint(_uri);
             sp.ConnectionLeaseTimeout = 60000;  // 1 minute
         }
