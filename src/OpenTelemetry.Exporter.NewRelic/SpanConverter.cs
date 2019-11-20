@@ -13,34 +13,34 @@ namespace OpenTelemetry.Exporter.NewRelic
         private const string _attribName_url = "http.url";
         private const string _NewRelicTraceEndpoint = "https://trace-api.newrelic.com/trace/v1";        //Make this injected
 
-        public static NRSpans.Span ToNewRelicSpan(Span otSpan, string serviceName)
+        public static NRSpans.Span ToNewRelicSpan(Span openTelemetrySpan, string serviceName)
         {
-            if (otSpan == null) throw new ArgumentNullException(nameof(otSpan));
-            if (otSpan.Context == null) throw new NullReferenceException($"{nameof(otSpan)}.Context");
-            if (otSpan.Context.SpanId == null) throw new NullReferenceException($"{nameof(otSpan)}.Context.SpanId");
-            if (otSpan.Context.TraceId == null) throw new NullReferenceException($"{nameof(otSpan)}.Context.TraceId");
-            if (otSpan.StartTimestamp == null) throw new NullReferenceException($"{nameof(otSpan)}.StartTimestamp");
+            if (openTelemetrySpan == null) throw new ArgumentNullException(nameof(openTelemetrySpan));
+            if (openTelemetrySpan.Context == null) throw new NullReferenceException($"{nameof(openTelemetrySpan)}.Context");
+            if (openTelemetrySpan.Context.SpanId == null) throw new NullReferenceException($"{nameof(openTelemetrySpan)}.Context.SpanId");
+            if (openTelemetrySpan.Context.TraceId == null) throw new NullReferenceException($"{nameof(openTelemetrySpan)}.Context.TraceId");
+            if (openTelemetrySpan.StartTimestamp == null) throw new NullReferenceException($"{nameof(openTelemetrySpan)}.StartTimestamp");
            
-            var spanBuilder = NRSpans.SpanBuilder.Create(otSpan.Context.SpanId.ToHexString())
-                   .WithTraceId(otSpan.Context.TraceId.ToHexString())
-                   .WithExecutionTimeInfo(otSpan.StartTimestamp, otSpan.EndTimestamp)   //handles Nulls
-                   .HasError(!otSpan.Status.IsOk)
-                   .WithName(otSpan.Name);       //Handles Nulls
+            var newRelicSpanBuilder = NRSpans.SpanBuilder.Create(openTelemetrySpan.Context.SpanId.ToHexString())
+                   .WithTraceId(openTelemetrySpan.Context.TraceId.ToHexString())
+                   .WithExecutionTimeInfo(openTelemetrySpan.StartTimestamp, openTelemetrySpan.EndTimestamp)   //handles Nulls
+                   .HasError(!openTelemetrySpan.Status.IsOk)
+                   .WithName(openTelemetrySpan.Name);       //Handles Nulls
 
 
             if (!string.IsNullOrWhiteSpace(serviceName))
             {
-                spanBuilder.WithServiceName(serviceName);
+                newRelicSpanBuilder.WithServiceName(serviceName);
             }
 
-            if(otSpan.ParentSpanId != null)
+            if(openTelemetrySpan.ParentSpanId != null)
             {
-                spanBuilder.WithParentId(otSpan.ParentSpanId.ToHexString());
+                newRelicSpanBuilder.WithParentId(openTelemetrySpan.ParentSpanId.ToHexString());
             }
 
-            if (otSpan.Attributes != null)
+            if (openTelemetrySpan.Attributes != null)
             {
-                foreach (var spanAttrib in otSpan.Attributes)
+                foreach (var spanAttrib in openTelemetrySpan.Attributes)
                 {
                     if(string.Equals(spanAttrib.Key, _attribName_url,StringComparison.OrdinalIgnoreCase) 
                         && string.Equals(spanAttrib.Value?.ToString(),_NewRelicTraceEndpoint, StringComparison.OrdinalIgnoreCase))
@@ -48,11 +48,11 @@ namespace OpenTelemetry.Exporter.NewRelic
                         return null;
                     }
 
-                    spanBuilder.WithAttribute(spanAttrib.Key, spanAttrib.Value);
+                    newRelicSpanBuilder.WithAttribute(spanAttrib.Key, spanAttrib.Value);
                 }
             }
 
-            return spanBuilder.Build();
+            return newRelicSpanBuilder.Build();
         }
     }
 }
