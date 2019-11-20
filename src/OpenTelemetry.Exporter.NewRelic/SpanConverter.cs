@@ -1,15 +1,19 @@
 ﻿using NRSpans = NewRelic.Telemetry.Spans;
 using OpenTelemetry.Trace;
 using System;
+using OpenTelemetry.Trace.Export;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OpenTelemetry.Exporter.NewRelic
 {
     internal static class SpanConverter
     {
         private const string _attribName_url = "http.url";
-        private const string _NewRelicTraceEndpoint = "https://trace-api.newrelic.com/trace/v1";
+        private const string _NewRelicTraceEndpoint = "https://trace-api.newrelic.com/trace/v1";        //Make this injected
 
-        public static NRSpans.Span ToNewRelicSpan(this Span otSpan, string serviceName)
+        public static NRSpans.Span ToNewRelicSpan(Span otSpan, string serviceName)
         {
             if (otSpan == null) throw new ArgumentNullException(nameof(otSpan));
             if (otSpan.Context == null) throw new NullReferenceException($"{nameof(otSpan)}.Context");

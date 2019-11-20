@@ -15,15 +15,20 @@ namespace OpenTelemetry.Exporter.NewRelic
     public class NewRelicTraceExporter : SpanExporter, IDisposable
     {
 
-        private string _serviceName;
         private readonly NRSpans.SpanBatchSender _spanBatchSender;
+        private readonly Func<Span, string, NRSpans.Span> _spanConverter;
+        private string _serviceName;
 
+        private static Func<Span, string, NRSpans.Span> _defaultSpanConverter = SpanConverter.ToNewRelicSpan;
 
-        public NewRelicTraceExporter(string serviceName)
+        public NewRelicTraceExporter(string serviceName) : this(SpanConverter.ToNewRelicSpan)
         {
             _serviceName = serviceName;
 
-           
+        }
+
+        internal NewRelicTraceExporter(Func<Span, string, NRSpans.Span> spanConverterImpl)
+        {
 
         }
 
@@ -46,7 +51,7 @@ namespace OpenTelemetry.Exporter.NewRelic
             {
                 try
                 {
-                    spanBatchBuilder.WithSpan(otSpan.ToNewRelicSpan(_serviceName));
+                    _spanConverter(otSpan, _serviceName);
                 }
                 catch(Exception ex)
                 {
@@ -54,9 +59,9 @@ namespace OpenTelemetry.Exporter.NewRelic
             }
 
             var nrSpanBatch = spanBatchBuilder.Build();
-
-            Task.Run(()=> { _spanBatchSender.SendDataAsync(nrSpanBatch); }, cancellationToken);
             throw new NotImplementedException();
+            var result = await _spanBatchSender.SendDataAsync(nrSpanBatch);
+            //return;
         }
 
         public override Task ShutdownAsync(CancellationToken cancellationToken)

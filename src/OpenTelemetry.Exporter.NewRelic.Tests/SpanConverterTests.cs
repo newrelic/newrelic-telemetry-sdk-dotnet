@@ -11,6 +11,7 @@ using OpenTelemetry.Trace.Export;
 namespace OpenTelemetry.Exporter.NewRelic.Tests
 {
 
+    
 
     public class TestSpanProcessor : SimpleSpanProcessor
     {
@@ -39,6 +40,8 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             var testSpan = (tracer.StartSpan("test") as Span);
             testSpan.Status = Status.Ok;
             testSpan.SetAttribute("jason", "feingold");
+
+
 
             //BatchSpanProcessor
             var l = new SimpleSpanProcessor();
