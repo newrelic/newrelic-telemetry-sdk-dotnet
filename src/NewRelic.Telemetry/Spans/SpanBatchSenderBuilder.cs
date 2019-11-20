@@ -9,6 +9,8 @@ namespace NewRelic.Telemetry.Spans
         private string _apiKey;
         private bool _auditLoggingEnabled = false;
 
+        public string TraceUrl { get => _traceUrl; internal set => _traceUrl = value; }
+
         public SpanBatchSender Build()
         {
             SpanBatchMarshaller marshaller = new SpanBatchMarshaller();
@@ -17,13 +19,15 @@ namespace NewRelic.Telemetry.Spans
                 throw new ArgumentNullException("apiKey");
             }
 
-            IBatchDataSender sender = new BatchDataSender(_apiKey, _traceUrl, _auditLoggingEnabled, TimeSpan.FromSeconds(5));
+
+            IBatchDataSender sender = new BatchDataSender(_apiKey, TraceUrl, _auditLoggingEnabled, TimeSpan.FromSeconds(5));
+
             return new SpanBatchSender(sender, marshaller);
         }
 
         public SpanBatchSenderBuilder UrlOverride(string urlOverride)
         {
-            _traceUrl = urlOverride;
+            TraceUrl = urlOverride;
             return this;
         }
 
