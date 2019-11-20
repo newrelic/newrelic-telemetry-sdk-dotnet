@@ -20,6 +20,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         private string _serviceName;
 
         private static Func<Span, string, NRSpans.Span> _defaultSpanConverter = SpanConverter.ToNewRelicSpan;
+        private static 
 
         public NewRelicTraceExporter(string serviceName) : this(SpanConverter.ToNewRelicSpan)
         {
