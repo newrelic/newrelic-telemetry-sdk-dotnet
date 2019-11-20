@@ -16,8 +16,8 @@ namespace NewRelic.Telemetry.Spans
                 throw new ArgumentNullException("apiKey");
             }
 
-            IBatchDataSender sender = new BatchDataSender(_apiKey, _traceUrl, _auditLoggingEnabled);
-            return new SpanBatchSender(sender);
+            IBatchDataSender sender = new BatchDataSender(_apiKey, _traceUrl, _auditLoggingEnabled, TimeSpan.FromSeconds(5));
+            return new SpanBatchSender(sender, marshaller);
         }
 
         public SpanBatchSenderBuilder UrlOverride(string urlOverride)
