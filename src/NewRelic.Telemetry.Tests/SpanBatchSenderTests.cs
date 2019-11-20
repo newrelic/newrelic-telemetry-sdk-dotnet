@@ -13,7 +13,7 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         public void SendAnEmptySpanBatch()
         {
-            var traceId = "123";
+            var traceId =   "123";
             var spanBatch = SpanBatchBuilder.Create()
                 .WithTraceId(traceId)
                 .Build();
