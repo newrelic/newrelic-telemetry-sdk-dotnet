@@ -12,6 +12,28 @@ namespace NewRelic.Telemetry.Tests
 {
     class TelemetryClientTests
     {
+
+
+        /// <summary>
+        /// Test will manipulate the New Relic End point response such that any request with 4 or more spans will result in a 
+        /// RequestTooLarge response. This will test:
+        /// 
+        ///     * The splitting logic is working properly
+        ///     * All of the spans eventually are sent
+        ///     * Spans are only sent once
+        ///     * The Attributes on the span batch are copied on the split batches
+        /// 
+        /// Test Case:  9 Spans
+        ///             A.  Initial Request                     9 spans         --> Too Large (results in B and C)
+        ///             B.  1/2 of Request A                    5 spans         --> Too Large (results in D and E)
+        ///             C.  1/2 of Request A                    4 spans         --> Too Large (results in F and G)
+        ///             D.  1/2 of Request B                    3 spans         --> OK
+        ///             E.  1/2 of Request B                    2 spans         --> OK
+        ///             F.  1/2 of Request C                    2 spans         --> OK
+        ///             G.  1/2 of Request C                    2 spans         --> OK
+        ///         --------------------------------------------------------------------------
+        ///             Total = 7 Requests/Batches              9 spans
+        /// </summary>
         [Test]
         async public Task TestTelemetryClient_RequestTooLarge_SplitSuccess()
         {
@@ -77,6 +99,27 @@ namespace NewRelic.Telemetry.Tests
             Assert.AreEqual(expectedCountSpanBatchAttribSets, successfulSpanBatches.Select(x => x.Attributes).Distinct().Count(), "The attributes on all span batches should be the same");
             Assert.AreEqual(attribs, successfulSpanBatches.Select(x => x.Attributes).FirstOrDefault(), "The Span Batch attribute values on split batches do not match the attributes of the original span batch.");
         }
+
+        /// <summary>
+        /// Test will create a batch of 4-spans (3 named as 'TooLarge' and 1 maked as 'OK').  It will manipulate the New Relic endpoint response such that
+        /// if any of the spans in the batch is named as 'TooLarge' the endpoint will report RequestTooLarge and invoke the splitting logic.
+        /// Basd on the splitting logic, it is expected that there will eventually be a split resulting in a single span of 1 item that is 'TooLarge'.
+        /// 
+        ///     * The splitting logic is working properly
+        ///     * The splitting logic stops if there is only a single span that is Too Large.
+        ///     * The spans that are not too large are eventually sent.
+        /// 
+        /// Test Case:  4 Spans
+        ///             A.  Initial Request             TooLarge1, TooLarge2, TooLarge3, OK         -->  Too Large (results in B and C)
+        ///             B.  1/2 of Request A            TooLarge1, TooLarge2                        -->  Too Large (results in D and E)
+        ///             C.  1/2 of Request A            TooLarge3, OK                               -->  Too Large (results in E and F)
+        ///             D.  1/2 of Request B            TooLarge1                                   -->  Too Large (Can't Split)
+        ///             E.  1/2 of Request B            TooLarge2                                   -->  Too Large (Can't Split)
+        ///             F.  1/2 of Request C            TooLarge3                                   -->  Too Large (Can't Split)
+        ///             G.  1/2 of Request C            OK                                          -->  Success
+        ///         ----------------------------------------------------------------------------------------------------------------------
+        ///             Total = 7 Requests/Batches      4 spans requested, 1 span successful
+        /// </summary>
 
         [Test]
         async public Task TestTelemetryClient_RequestTooLarge_SplitFail()
