@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NewRelic.Telemetry.Spans
 {
@@ -98,6 +99,21 @@ namespace NewRelic.Telemetry.Spans
             }
 
             return this;
+        }
+
+        public static SpanBatch[] Split(SpanBatch spanBatch)
+        {
+            var countSpans = spanBatch.Spans.Count;
+            if (countSpans <= 1) return null;
+
+            var targetSpanCount = countSpans / 2;
+            var batch0Spans = spanBatch.Spans.Take(targetSpanCount).ToList();
+            var batch1Spans = spanBatch.Spans.Skip(targetSpanCount).ToList();
+
+            var batch0 = new SpanBatch(spanBatch.CommonProperties, batch0Spans);
+            var batch1 = new SpanBatch(spanBatch.CommonProperties, batch1Spans);
+
+            return new[] { batch0, batch1 };
         }
 
     }

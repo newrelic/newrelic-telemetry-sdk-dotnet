@@ -13,7 +13,7 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         public void SendAnEmptySpanBatch()
         {
-            var traceId = "123";
+            var traceId =   "123";
             var spanBatch = SpanBatchBuilder.Create()
                 .WithTraceId(traceId)
                 .Build();
@@ -46,7 +46,7 @@ namespace NewRelic.Telemetry.Tests
             var response = spanBatchSender.SendDataAsync(spanBatch).Result;
 
             Assert.AreEqual(true, response.DidSend);
-            Assert.AreEqual(System.Net.HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual(System.Net.HttpStatusCode.OK, response.StatusCode, string.Empty);
         }
     }
 }
