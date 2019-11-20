@@ -104,10 +104,7 @@ namespace NewRelic.Telemetry.Spans
         public static SpanBatch[] Split(SpanBatch spanBatch)
         {
             var countSpans = spanBatch.Spans.Count;
-            if (countSpans <= 1)
-            {
-                return null;
-            }
+            if (countSpans <= 1) return null;
 
             var targetSpanCount = countSpans / 2;
             var batch0Spans = spanBatch.Spans.Take(targetSpanCount).ToList();
