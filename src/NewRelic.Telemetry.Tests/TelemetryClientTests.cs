@@ -15,8 +15,16 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         async public Task TestTelemetryClient_RequestTooLarge_SplitSuccess()
         {
-            const int countSpans = 9;
-            var countCalls = 0;
+            const int expectedCountSpans = 9;
+            const int expectedCountCallsSendData = 7;
+            const int expectedCountSuccessfulSpanBatches = 4;
+            const int expectedCountDistinctTraceIds = 1;
+            const int expectedCountSpanBatchAttribSets = 1;
+            const string expectedTraceID = "TestTrace";
+
+
+            var actualCountCallsSendData = 0;
+            
 
             // Arrange
             var successfulSpanBatches = new List<SpanBatch>();
@@ -26,7 +34,7 @@ namespace NewRelic.Telemetry.Tests
                 
                 .Returns<SpanBatch>((sb) =>
                 {
-                    countCalls++;
+                    actualCountCallsSendData++;
 
                     if (sb.Spans.Count >= 4)
                     {
@@ -43,46 +51,52 @@ namespace NewRelic.Telemetry.Tests
             };
 
             var spans = new List<Span>();
-            for(var i = 0; i < countSpans; i++)
+            for(var i = 0; i < expectedCountSpans; i++)
             {
                 var spanBuilder = new SpanBuilder(i.ToString());
                 spans.Add(spanBuilder.Build());
             }
 
-            var spanBatch = new SpanBatch(spans, attribs, "TestTrace");
+            var spanBatch = new SpanBatch(spans, attribs, expectedTraceID);
 
             // Act
             var client = new TelemetryClient(mockSpanBatchSender.Object);
             await client.SendBatchAsync(spanBatch);
 
             // Assert
-            Assert.AreEqual(7, countCalls);
+            Assert.AreEqual(expectedCountCallsSendData, actualCountCallsSendData);
 
             //Test the Spans
-            Assert.AreEqual(4, successfulSpanBatches.Count,"Unexpected number of calls");
-            Assert.AreEqual(countSpans, successfulSpanBatches.SelectMany(x => x.Spans).Count(),"Unexpected number of successful Spans");
-            Assert.AreEqual(countSpans, successfulSpanBatches.SelectMany(x => x.Spans).Select(x => x.Id).Distinct().Count(),"All Spans should be unique (spanId)");
+            Assert.AreEqual(expectedCountSuccessfulSpanBatches, successfulSpanBatches.Count,"Unexpected number of calls");
+            Assert.AreEqual(expectedCountSpans, successfulSpanBatches.SelectMany(x => x.Spans).Count(),"Unexpected number of successful Spans");
+            Assert.AreEqual(expectedCountSpans, successfulSpanBatches.SelectMany(x => x.Spans).Select(x => x.Id).Distinct().Count(),"All Spans should be unique (spanId)");
             
             //Test the attributes on the spanbatch
-            Assert.AreEqual(1, successfulSpanBatches.Select(x => x.TraceId).Distinct().Count(),"The traceId on split batches are not the same");
-            Assert.AreEqual("TestTrace", successfulSpanBatches.FirstOrDefault().TraceId,"The traceId on split batches does not match the original traceId");
-            Assert.AreEqual(1, successfulSpanBatches.Select(x => x.Attributes).Distinct().Count(), "The attributes on all span batches should be the same");
-            Assert.AreEqual(attribs, successfulSpanBatches.Select(x => x.Attributes).FirstOrDefault(), "The attributes on all span batches should be the same");
+            Assert.AreEqual(expectedCountDistinctTraceIds, successfulSpanBatches.Select(x => x.TraceId).Distinct().Count(),"The traceId on split batches are not the same");
+            Assert.AreEqual(expectedTraceID, successfulSpanBatches.FirstOrDefault().TraceId,"The traceId on split batches does not match the original traceId");
+            Assert.AreEqual(expectedCountSpanBatchAttribSets, successfulSpanBatches.Select(x => x.Attributes).Distinct().Count(), "The attributes on all span batches should be the same");
+            Assert.AreEqual(attribs, successfulSpanBatches.Select(x => x.Attributes).FirstOrDefault(), "The Span Batch attribute values on split batches do not match the attributes of the original span batch.");
         }
 
         [Test]
         async public Task TestTelemetryClient_RequestTooLarge_SplitFail()
         {
-            var countCalls = 0;
+
+            const int expectedCountCallsSendData = 7;
+            const int expectedCountSuccessfulSpanBatches = 1;
+            const string traceID_Success = "OK";
+            const string traceID_SplitBatch_Prefix = "TooLarge";
+
+            var actualCountCallsSendData = 0;
             var successfulSpans = new List<Span>();
 
             var mockSpanBatchSender = new Mock<ISpanBatchSender>();
             mockSpanBatchSender.Setup(x => x.SendDataAsync(It.IsAny<SpanBatch>()))
                 .Returns<SpanBatch>((sb) =>
                 {
-                    countCalls++;
+                    actualCountCallsSendData++;
                     
-                    if(sb.Spans.Any(x=>x.Id.StartsWith("TooLarge")))
+                    if(sb.Spans.Any(x=>x.Id.StartsWith(traceID_SplitBatch_Prefix)))
                     {
                         return Task.FromResult(new Response(true, System.Net.HttpStatusCode.RequestEntityTooLarge));
                     }
@@ -92,10 +106,10 @@ namespace NewRelic.Telemetry.Tests
                 });
 
             var spans = new List<Span>();
-            spans.Add(new SpanBuilder("TooLarge1").Build());
-            spans.Add(new SpanBuilder("TooLarge2").Build());
-            spans.Add(new SpanBuilder("TooLarge3").Build());
-            spans.Add(new SpanBuilder("OK").Build());
+            spans.Add(new SpanBuilder($"{traceID_SplitBatch_Prefix}1").Build());
+            spans.Add(new SpanBuilder($"{traceID_SplitBatch_Prefix}2").Build());
+            spans.Add(new SpanBuilder($"{traceID_SplitBatch_Prefix}3").Build());
+            spans.Add(new SpanBuilder(traceID_Success).Build());
             
             var spanBatch = new SpanBatch(spans, null,null);
 
@@ -104,9 +118,9 @@ namespace NewRelic.Telemetry.Tests
             await client.SendBatchAsync(spanBatch);
 
             // Assert
-            Assert.AreEqual(7, countCalls, "Unexpected number of calls");
-            Assert.AreEqual(1, successfulSpans.Count, "Only 1 span should have successfully sent");
-            Assert.AreEqual("OK", successfulSpans[0].Id, "Incorrect span was sent");
+            Assert.AreEqual(expectedCountCallsSendData, actualCountCallsSendData, "Unexpected number of calls");
+            Assert.AreEqual(expectedCountSuccessfulSpanBatches, successfulSpans.Count, $"Only {expectedCountSuccessfulSpanBatches} span should have successfully sent");
+            Assert.AreEqual(traceID_Success, successfulSpans[0].Id, "Incorrect span was sent");
         }
 
         [Test]
