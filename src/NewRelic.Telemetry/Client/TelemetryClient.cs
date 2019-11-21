@@ -94,11 +94,11 @@ namespace NewRelic.Telemetry.Client
 
         private async Task RetryOn429StatusCode(SpanBatch spanBatch, int retryNum, Response responseMessage)
         {
-            var waitTimeInMilliSeconds = (int?)responseMessage.RetryAfter?.TotalMilliseconds;
-            await Retry(spanBatch, retryNum, waitTimeInMilliSeconds ?? USING_BACKOFF_SEQUENCE);
+            var waitTimeInSeconds = (int?)responseMessage.RetryAfter?.TotalSeconds;
+            await Retry(spanBatch, retryNum, waitTimeInSeconds ?? USING_BACKOFF_SEQUENCE);
         }
 
-        private async Task Retry(SpanBatch spanBatch, int retryNum, int waitTime)
+        private async Task Retry(SpanBatch spanBatch, int retryNum, int waitTimeInSeconds)
         {
             retryNum++;
             if (retryNum > MAX_RETRIES)
@@ -107,14 +107,14 @@ namespace NewRelic.Telemetry.Client
                 return;
             }
 
-            if (waitTime < 0)
+            if (waitTimeInSeconds < 0)
             {
-                waitTime = (int)Math.Min(BACKOFF_MAX_SECONDS, BACKOFF_FACTOR_SECONDS * Math.Pow(2, retryNum - 1)) * 1000;
+                waitTimeInSeconds = (int)Math.Min(BACKOFF_MAX_SECONDS, BACKOFF_FACTOR_SECONDS * Math.Pow(2, retryNum - 1));
             }
 
-            Logging.LogWarning($@"Retry({retryNum}) after {waitTime} seconds.");
+            Logging.LogWarning($@"Retry({retryNum}) after {waitTimeInSeconds} seconds.");
 
-            await _delayer(waitTime);
+            await _delayer(waitTimeInSeconds * 1000);
             await SendBatchAsyncInternal(spanBatch, retryNum);
             return;
         }
