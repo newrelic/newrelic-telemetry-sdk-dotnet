@@ -5,6 +5,7 @@ using System.Net;
 namespace NewRelic.Telemetry.Transport
 {
     public class Response
+
     {
         public bool DidSend { get; }
         
