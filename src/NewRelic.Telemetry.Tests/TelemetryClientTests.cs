@@ -1,20 +1,16 @@
 ﻿using Moq;
-using NewRelic.Telemetry.Client;
 using NewRelic.Telemetry.Spans;
 using NewRelic.Telemetry.Transport;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace NewRelic.Telemetry.Tests
 {
     class TelemetryClientTests
     {
-
-
         /// <summary>
         /// Test will manipulate the New Relic End point response such that any request with 4 or more spans will result in a 
         /// RequestTooLarge response. This will test:
