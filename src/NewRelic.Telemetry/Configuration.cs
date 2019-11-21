@@ -2,17 +2,17 @@
 
 namespace NewRelic.Telemetry
 {
-    public static class Configuration
+    public class Configuration
     {
         private static IConfiguration _configuration;
 
-        internal static string TraceUrl { get; private set; } = "https://trace-api.newrelic.com/trace/v1";
+        public static string TraceUrl { get; internal set; } = "https://trace-api.newrelic.com/trace/v1";
 
-        internal static string ApiKey { get; private set; }
+        public static string ApiKey { get; internal set; }
 
-        internal static bool AuditLoggingEnabled { get; private set; } = false;
+        public static bool AuditLoggingEnabled { get; internal set; } = false;
 
-        public static IConfiguration Config
+        public IConfiguration Config
         {
             set
             {

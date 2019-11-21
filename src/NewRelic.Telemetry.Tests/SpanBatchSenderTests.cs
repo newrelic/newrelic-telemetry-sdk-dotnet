@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Moq;
@@ -18,10 +17,12 @@ namespace NewRelic.Telemetry.Tests
                 .WithTraceId(traceId)
                 .Build();
 
-            var mockBatchDataSender = new Mock<IBatchDataSender>();
-            mockBatchDataSender.Setup(x => x.SendBatchAsync(It.IsAny<string>())).Returns(Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK)));
+            //var mockBatchDataSender = new Mock<IBatchDataSender>();
+            //mockBatchDataSender.Setup(x => x.SendBatchAsync(It.IsAny<string>())).Returns(Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK)));
 
-            var spanBatchSender = new SpanBatchSender(mockBatchDataSender.Object);
+            var mockBatchDataSender = new Mock<BatchDataSender>();
+            mockBatchDataSender.Setup(x => x.SendBatchAsync(It.IsAny<string>())).Returns(Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK)));
+            var spanBatchSender = new SpanBatchSender();
 
             var response = spanBatchSender.SendDataAsync(spanBatch).Result;
 
@@ -38,10 +39,9 @@ namespace NewRelic.Telemetry.Tests
                 .WithSpan(new Mock<Span>().Object)
                 .Build();
 
-            var mockBatchDataSender = new Mock<IBatchDataSender>();
+            var mockBatchDataSender = new Mock<BatchDataSender>();
             mockBatchDataSender.Setup(x => x.SendBatchAsync(It.IsAny<string>())).Returns(Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK)));
-
-            var spanBatchSender = new SpanBatchSender(mockBatchDataSender.Object);
+            var spanBatchSender = new SpanBatchSender();
 
             var response = spanBatchSender.SendDataAsync(spanBatch).Result;
 
