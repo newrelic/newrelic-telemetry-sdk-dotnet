@@ -54,11 +54,8 @@ namespace NewRelic.Telemetry.Tests
         public void SendANonEmptySpanBatch_ResponseHasCorrectRetryAfterValue_RetryAfterWithDateSpecific()
         {
             var traceId = "123";
-
-            var now = DateTimeOffset.Now;
             var retryDuration = TimeSpan.FromSeconds(10);
-            var retryOnSpecificTime = now + retryDuration;
-            var errorMargin = TimeSpan.FromMilliseconds(500);
+            var errorMargin = TimeSpan.FromMilliseconds(50);
 
             var spanBatch = SpanBatchBuilder.Create()
                 .WithTraceId(traceId)
@@ -69,6 +66,7 @@ namespace NewRelic.Telemetry.Tests
             mockBatchDataSender.Setup(x => x.SendBatchAsync(It.IsAny<string>())).Returns(() =>
             {
                 var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+                var retryOnSpecificTime = DateTimeOffset.Now + retryDuration;
                 response.Headers.RetryAfter = new System.Net.Http.Headers.RetryConditionHeaderValue(retryOnSpecificTime);
                 return Task.FromResult(response);
             });
@@ -80,8 +78,8 @@ namespace NewRelic.Telemetry.Tests
             Assert.AreEqual(true, response.DidSend);
             Assert.AreEqual(System.Net.HttpStatusCode.OK, response.StatusCode, string.Empty);
 
-            Assert.LessOrEqual(response.RetryAfter, retryDuration, string.Empty);
-            Assert.GreaterOrEqual(response.RetryAfter, retryDuration - errorMargin, string.Empty);
+            var difference = retryDuration - response.RetryAfter;
+            Assert.LessOrEqual(difference, errorMargin, string.Empty);
         }
 
         [Test]
