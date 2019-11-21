@@ -6,6 +6,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace NewRelic.Telemetry.Tests
@@ -60,11 +61,11 @@ namespace NewRelic.Telemetry.Tests
 
                     if (sb.Spans.Count >= 4)
                     {
-                        return Task.FromResult(new Response(true, System.Net.HttpStatusCode.RequestEntityTooLarge));
+                        return Task.FromResult( new Response(true, System.Net.HttpStatusCode.RequestEntityTooLarge, null));
                     }
 
                     successfulSpanBatches.Add(sb);
-                    return Task.FromResult(new Response(true, System.Net.HttpStatusCode.OK));
+                    return Task.FromResult(new Response(true, System.Net.HttpStatusCode.OK, null));
                 });
 
             var attribs = new Dictionary<string, object>()
@@ -143,11 +144,11 @@ namespace NewRelic.Telemetry.Tests
                     
                     if(sb.Spans.Any(x=>x.Id.StartsWith(traceID_SplitBatch_Prefix)))
                     {
-                        return Task.FromResult(new Response(true, System.Net.HttpStatusCode.RequestEntityTooLarge));
+                        return Task.FromResult(new Response(true, System.Net.HttpStatusCode.RequestEntityTooLarge, null));
                     }
 
                     successfulSpans.AddRange(sb.Spans);
-                    return Task.FromResult(new Response(true, System.Net.HttpStatusCode.OK));
+                    return Task.FromResult(new Response(true, System.Net.HttpStatusCode.OK, null));
                 });
 
             var spanBatchBuilder = SpanBatchBuilder.Create();
@@ -197,7 +198,7 @@ namespace NewRelic.Telemetry.Tests
             mockSpanBatchSender.Setup(x => x.SendDataAsync(It.IsAny<SpanBatch>()))
                 .Returns(() =>
                 {
-                    return Task.FromResult(new Response(true, System.Net.HttpStatusCode.RequestTimeout));
+                    return Task.FromResult(new Response(true, System.Net.HttpStatusCode.RequestTimeout, null));
                 });
 
             var client = new TelemetryClient(mockSpanBatchSender.Object, customDelayer);
@@ -236,10 +237,10 @@ namespace NewRelic.Telemetry.Tests
                     callCount++;
                     if (callCount < 4)
                     {
-                        return Task.FromResult(new Response(true, System.Net.HttpStatusCode.RequestTimeout));
+                        return Task.FromResult(new Response(true, System.Net.HttpStatusCode.RequestTimeout, null));
                     }
 
-                    return Task.FromResult(new Response(true, System.Net.HttpStatusCode.Accepted));
+                    return Task.FromResult(new Response(true, System.Net.HttpStatusCode.Accepted, null));
 
                 });
 
@@ -251,5 +252,89 @@ namespace NewRelic.Telemetry.Tests
             CollectionAssert.AreEqual(expectedBackoffSequenceFromTestRun, actualBackoffSequenceFromTestRun);
             return;
         }
+
+        [Test]
+        async public Task TestTelemetryClient_RetryOn429_RetriesExceeded()
+        {
+            var expectedNumSendBatchAsyncCall = 9; // 1 first call + 3 calls from retries
+            var expectedBackoffSequenceFromTestRun = new List<int>()
+            {
+                10000,
+                10000,
+                10000,
+                10000,
+                10000,
+                10000,
+                10000,
+                10000
+            };
+            var actualBackoffSequenceFromTestRun = new List<int>();
+
+            var customDelayer = new Func<int, Task>(async (int milliSecondsDelay) =>
+            {
+                actualBackoffSequenceFromTestRun.Add(milliSecondsDelay);
+                await Task.Delay(0);
+            });
+
+            var callCount = 0;
+            var mockSpanBatchSender = new Mock<ISpanBatchSender>();
+            mockSpanBatchSender.Setup(x => x.SendDataAsync(It.IsAny<SpanBatch>()))
+                .Returns(() =>
+                {
+                    callCount++;
+
+                    var response = new Response(true, (System.Net.HttpStatusCode)429, TimeSpan.FromSeconds(10));
+                    return Task.FromResult(response);
+                });
+
+            var client = new TelemetryClient(mockSpanBatchSender.Object, customDelayer);
+
+            await client.SendBatchAsync(It.IsAny<SpanBatch>());
+
+            mockSpanBatchSender.Verify(x => x.SendDataAsync(It.IsAny<SpanBatch>()), Times.Exactly(expectedNumSendBatchAsyncCall));
+            CollectionAssert.AreEqual(expectedBackoffSequenceFromTestRun, actualBackoffSequenceFromTestRun);
+            return;
+        }
+
+
+        [Test]
+        async public Task TestTelemetryClient_RetryOn429_429HappensOnce()
+        {
+            var expectedNumSendBatchAsyncCall = 2; // 1 first call + 3 calls from retries
+            var expectedBackoffSequenceFromTestRun = new List<int>()
+            {
+                10000,
+            };
+            var actualBackoffSequenceFromTestRun = new List<int>();
+
+            var customDelayer = new Func<int, Task>(async (int milliSecondsDelay) =>
+            {
+                actualBackoffSequenceFromTestRun.Add(milliSecondsDelay);
+                await Task.Delay(0);
+            });
+
+            var callCount = 0;
+            var mockSpanBatchSender = new Mock<ISpanBatchSender>();
+            mockSpanBatchSender.Setup(x => x.SendDataAsync(It.IsAny<SpanBatch>()))
+                .Returns(() =>
+                {
+                    callCount++;
+                    if (callCount < 2)
+                    {
+                        var response = new Response(true, (System.Net.HttpStatusCode)429, TimeSpan.FromSeconds(10));
+                        return Task.FromResult(response);
+                    }
+                    return Task.FromResult(new Response(true, System.Net.HttpStatusCode.Accepted, null));
+                });
+
+            var client = new TelemetryClient(mockSpanBatchSender.Object, customDelayer);
+
+            await client.SendBatchAsync(It.IsAny<SpanBatch>());
+
+            mockSpanBatchSender.Verify(x => x.SendDataAsync(It.IsAny<SpanBatch>()), Times.Exactly(expectedNumSendBatchAsyncCall));
+            CollectionAssert.AreEqual(expectedBackoffSequenceFromTestRun, actualBackoffSequenceFromTestRun);
+            return;
+        }
+
     }
 }
