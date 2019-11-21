@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -15,9 +16,14 @@ namespace NewRelic.Telemetry.Spans
     {
         private IBatchDataSender _sender;
 
-        internal SpanBatchSender(IBatchDataSender sender) 
+        // only exists for Testing
+        internal SpanBatchSender(IBatchDataSender sender)
         {
             _sender = sender;
+        }
+
+        internal SpanBatchSender() : this(new BatchDataSender(Configuration.ApiKey, Configuration.TraceUrl, Configuration.AuditLoggingEnabled, TimeSpan.FromSeconds(5)))
+        {
         }
 
         public async Task<Response> SendDataAsync(SpanBatch spanBatch)

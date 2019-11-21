@@ -18,8 +18,6 @@ namespace NewRelic.Telemetry.Transport
         public string EndpointUrl { get; }
         public bool AuditLoggingEnabled { get; }
 
-        private const string _dataFormat = "newrelic";
-        private const string _dataFormatVersion = "1";
         private const string _userAgent = "NewRelic-Dotnet-TelemetrySDK";
         private const string _implementationVersion = "/1.0.0";
 
@@ -29,6 +27,10 @@ namespace NewRelic.Telemetry.Transport
         internal BatchDataSender(
           string apiKey, string endpointUrl, bool auditLoggingEnabled, TimeSpan timeout)
         {
+            if (apiKey == null)
+            {
+                throw new ArgumentNullException("apiKey");
+            }
             ApiKey = apiKey;
             EndpointUrl = endpointUrl;
             AuditLoggingEnabled = auditLoggingEnabled;

@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Moq;
@@ -41,7 +40,6 @@ namespace NewRelic.Telemetry.Tests
 
             var mockBatchDataSender = new Mock<IBatchDataSender>();
             mockBatchDataSender.Setup(x => x.SendBatchAsync(It.IsAny<string>())).Returns(Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK)));
-
             var spanBatchSender = new SpanBatchSender(mockBatchDataSender.Object);
 
             var response = spanBatchSender.SendDataAsync(spanBatch).Result;
