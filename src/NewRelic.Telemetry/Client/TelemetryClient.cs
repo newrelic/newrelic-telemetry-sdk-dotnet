@@ -1,6 +1,8 @@
 ﻿using NewRelic.Telemetry.Spans;
+using NewRelic.Telemetry.Transport;
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace NewRelic.Telemetry.Client
@@ -9,7 +11,7 @@ namespace NewRelic.Telemetry.Client
     {
         private ISpanBatchSender _spanBatchSender;
         private const int BACKOFF_FACTOR_SECONDS = 5; // In seconds.
-        private const int BACKOFF_MAX_SECONDS = 80; // In seconds. 
+        private const int BACKOFF_MAX_SECONDS = 80; // In seconds.
         private const int MAX_RETRIES = 8;
         private readonly Func<int, Task> _delayer;
 
@@ -59,7 +61,8 @@ namespace NewRelic.Telemetry.Client
 
                     break;
                 case (HttpStatusCode)429:
-                    //TODO: handle 429 error according to the spec.
+                    Logging.LogWarning($@"Response from New Relic ingest API: code: {response.StatusCode}. ");
+                    await Handle429Response(spanBatch, retryNum, response);
                     break;
                 default:
                     Logging.LogError($@"Response from New Relic ingest API: code: {response.StatusCode}");
@@ -88,7 +91,13 @@ namespace NewRelic.Telemetry.Client
             await Task.WhenAll(taskList);
         }
 
-        private async Task Retry(SpanBatch spanBatch, int retryNum)
+        private async Task Handle429Response(SpanBatch spanBatch, int retryNum, Response responseMessage)
+        {
+            var waitTimeInSeconds = (int?)responseMessage.RetryAfter?.TotalSeconds;
+            await Retry(spanBatch, retryNum, waitTimeInSeconds);
+        }
+
+        private async Task Retry(SpanBatch spanBatch, int retryNum, int? waitTimeInSeconds = null)
         {
             retryNum++;
             if (retryNum > MAX_RETRIES)
@@ -97,11 +106,11 @@ namespace NewRelic.Telemetry.Client
                 return;
             }
 
-            Logging.LogWarning($@"Retry({retryNum}).");
+            waitTimeInSeconds = waitTimeInSeconds ?? (int)Math.Min(BACKOFF_MAX_SECONDS, BACKOFF_FACTOR_SECONDS * Math.Pow(2, retryNum - 1));
 
-            var waitTime = (int) Math.Min(BACKOFF_MAX_SECONDS, BACKOFF_FACTOR_SECONDS * Math.Pow(2, retryNum - 1)) * 1000;
+            Logging.LogWarning($@"Retry({retryNum}) after {waitTimeInSeconds} seconds.");
 
-            await _delayer(waitTime);
+            await _delayer(waitTimeInSeconds.Value * 1000);
             await SendBatchAsyncInternal(spanBatch, retryNum);
             return;
         }
