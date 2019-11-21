@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using NewRelic.Telemetry.Transport;
 
@@ -22,14 +24,22 @@ namespace NewRelic.Telemetry.Spans
         {
             if ((spanBatch?.Spans?.Count).GetValueOrDefault(0) == 0)
             {
-                return new Response(false, (HttpStatusCode)0);
+                return new Response(false, 0, null);
             }
 
             var serializedPayload = spanBatch.ToJson();
 
             var response = await _sender.SendBatchAsync(serializedPayload);
 
-            return new Response(true, response.StatusCode);
+            var retryAfterAPeriod = response.Headers?.RetryAfter?.Delta;
+            var retryAfterASpecificTime = response.Headers?.RetryAfter?.Date;
+
+            if (!retryAfterAPeriod.HasValue && retryAfterASpecificTime.HasValue) 
+            {
+                retryAfterAPeriod = retryAfterASpecificTime - DateTimeOffset.Now;
+            }
+
+            return new Response(true, response.StatusCode, retryAfterAPeriod);
         }
     }
 }
