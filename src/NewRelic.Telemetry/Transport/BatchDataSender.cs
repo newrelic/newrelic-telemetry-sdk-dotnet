@@ -10,6 +10,7 @@ namespace NewRelic.Telemetry.Transport
     internal interface IBatchDataSender
     {
         Task<HttpResponseMessage> SendBatchAsync(string serializedPayload);
+        string EndpointUrl { get; }
     }
 
     internal class BatchDataSender : IBatchDataSender
@@ -24,19 +25,19 @@ namespace NewRelic.Telemetry.Transport
         private const string _implementationVersion = "/1.0.0";
 
         private HttpClient _httpClient;
-        private Uri _uri;
 
-        internal BatchDataSender(
-          string apiKey, string endpointUrl, bool auditLoggingEnabled, TimeSpan timeout)
+        public Uri EndpointUri { get; private set; }
+
+        internal BatchDataSender(string apiKey, string endpointUrl, bool auditLoggingEnabled, TimeSpan timeout)
         {
             ApiKey = apiKey;
             EndpointUrl = endpointUrl;
             AuditLoggingEnabled = auditLoggingEnabled;
 
-            _uri = new Uri(endpointUrl);
+            EndpointUri = new Uri(endpointUrl);
             _httpClient = new HttpClient();
             _httpClient.Timeout = timeout;
-            var sp = System.Net.ServicePointManager.FindServicePoint(_uri);
+            var sp = System.Net.ServicePointManager.FindServicePoint(EndpointUri);
             sp.ConnectionLeaseTimeout = 60000;  // 1 minute
         }
 
@@ -58,7 +59,7 @@ namespace NewRelic.Telemetry.Transport
                 streamContent.Headers.Add("Content-Encoding", "gzip");
                 streamContent.Headers.ContentLength = memoryStream.Length;
 
-                var requestMessage = new HttpRequestMessage(HttpMethod.Post, _uri);
+                var requestMessage = new HttpRequestMessage(HttpMethod.Post, EndpointUri);
                 requestMessage.Content = streamContent;
                 requestMessage.Headers.Add("User-Agent", _userAgent + _implementationVersion);
                 requestMessage.Headers.Add("Api-Key", ApiKey);

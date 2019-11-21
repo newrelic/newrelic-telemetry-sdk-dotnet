@@ -1,32 +1,10 @@
 using NUnit.Framework;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Trace.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using Telerik.JustMock;
-using OpenTelemetry.Exporter.NewRelic;
-using OpenTelemetry.Trace.Export;
-using NRSpans = NewRelic.Telemetry.Spans;
-using NewRelic.Telemetry.Transport;
-using System.Threading.Tasks;
-using System.Linq;
-using OpenTelemetry.Context.Propagation;
+using System.Threading;
 
 namespace OpenTelemetry.Exporter.NewRelic.Tests
 {
-    public class TestBatchSender : NRSpans.ISpanBatchSender
-    {
-        public readonly List<NRSpans.SpanBatch> CapturedSpanBatches = new List<NRSpans.SpanBatch>();
-        public Dictionary<string, NRSpans.Span> CapturedSpansDic => CapturedSpanBatches.SelectMany(x => x.Spans).ToDictionary(x => x.Id);
-        
-        public Task<Response> SendDataAsync(NRSpans.SpanBatch spanBatch)
-        {
-            CapturedSpanBatches.Add(spanBatch);
-
-            return Task.FromResult(new Response(true, System.Net.HttpStatusCode.OK));
-        }
-    }
 
     public class SpanConverterTests
 	{
@@ -38,11 +16,13 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         private ISpan _otSpan0;
         private ISpan _otSpan1;
         private ISpan _otSpan2;
+        private ISpan _otSpan3;
 
         [SetUp]
 		public void Setup()
 		{
             _mockSender = new TestBatchSender();
+
             var exporter = new NewRelicTraceExporter(_mockSender)
                 .WithServiceName(testServiceName);
 
@@ -55,19 +35,21 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
                 _otSpan0 = tracer.StartRootSpan("Test Span 1");
                 _otSpan1 = tracer.StartSpan("Test Span 2", _otSpan0);
                 _otSpan2 = tracer.StartRootSpan("Test Span 3");
-
-                var l = tracer.StartSpan("xsdf");
-                l.PutHttpRawUrlAttribute("https://cnn.com");
-               
-
+                _otSpan3 = tracer.StartRootSpan("xsdf").PutHttpRawUrlAttribute(_mockSender.TraceUrl);
 
                 _otSpan0.Status = Status.Ok;
                 _otSpan1.Status = Status.Aborted;
                 _otSpan2.Status = Status.Ok;
+                _otSpan3.Status = Status.Ok;
 
+                Thread.Sleep(100);
                 _otSpan1.End();
+                Thread.Sleep(125);
                 _otSpan0.End();
+                Thread.Sleep(150);
                 _otSpan2.End();
+                Thread.Sleep(175);
+                _otSpan3.End();
             }
         }
 
@@ -117,18 +99,37 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             Assert.AreNotEqual(resultSpan0.TraceId, resultSpan2.TraceId, "Mismatch on TraceId - testSpan0 and testSpan2 should NOT belong to the same trace");
         }
 
+        [Test]
+        public void Test_FilterOutNewRelicEndpoint()
+        {
+            var resultNRSpansDic = _mockSender.CapturedSpansDic;
 
-        /*
-         * OTSpanRequired
-         * OTSpanRequiresContext
-         * SpanId
-         * StartTime
-         * NR Endpoint not returned
-         * Execution Time - Start
-         * Executions Time - start + End also has duration
-         * Parent
-         * Attributes
-         * 
-         */
+            Assert.IsFalse(resultNRSpansDic.ContainsKey(_otSpan3.Context.SpanId.ToHexString()), "Endpoint calls to New Relic should be excluded");
+        }
+
+        [Test]
+        public void Test_Timestamps()
+        {
+            var resultNRSpansDic = _mockSender.CapturedSpansDic;
+
+            var otSpans = new Span[]
+            {
+                _otSpan0 as Span,
+                _otSpan1 as Span,
+                _otSpan2 as Span,
+            };
+
+            foreach(var otSpan in otSpans)
+            {
+                var nrSpan = resultNRSpansDic[otSpan.Context.SpanId.ToHexString()];
+
+                var expectedStartTimestampUnixMs = otSpan.StartTimestamp.ToUnixTimeMilliseconds();
+                var expectedEndTimestampUnixMs = otSpan.EndTimestamp.ToUnixTimeMilliseconds();
+                var expectedDurationMs = expectedEndTimestampUnixMs - expectedStartTimestampUnixMs;
+
+                Assert.AreEqual(expectedStartTimestampUnixMs, nrSpan.Timestamp,$"{otSpan.Name} - Open Telemetry StartTime should translate to {expectedStartTimestampUnixMs}");
+                Assert.AreEqual(expectedDurationMs, nrSpan.Attributes["duration.ms"]);
+            }
+        }
     }
 }

@@ -5,10 +5,11 @@ namespace NewRelic.Telemetry.Spans
 {
     public class SpanBatchSenderBuilder
     {
-        private string _traceUrl = "https://trace-api.newrelic.com/trace/v1";
         private string _apiKey;
         private bool _auditLoggingEnabled = false;
-        
+
+        public string TraceUrl { get; private set; } = "https://trace-api.newrelic.com/trace/v1";
+
         public static SpanBatchSenderBuilder Create()
         {
             return new SpanBatchSenderBuilder();
@@ -22,14 +23,14 @@ namespace NewRelic.Telemetry.Spans
             }
 
 
-            IBatchDataSender sender = new BatchDataSender(_apiKey, _traceUrl, _auditLoggingEnabled, TimeSpan.FromSeconds(5));
+            IBatchDataSender sender = new BatchDataSender(_apiKey, TraceUrl, _auditLoggingEnabled, TimeSpan.FromSeconds(5));
 
             return new SpanBatchSender(sender);
         }
 
         public SpanBatchSenderBuilder WithUrlOverride(string urlOverride)
         {
-            _traceUrl = urlOverride;
+            TraceUrl = urlOverride;
             return this;
         }
 

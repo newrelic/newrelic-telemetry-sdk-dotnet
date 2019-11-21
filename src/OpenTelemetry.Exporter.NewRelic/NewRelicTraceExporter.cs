@@ -10,18 +10,12 @@ using System;
 
 namespace OpenTelemetry.Exporter.NewRelic
 {
-
-
-    public class NewRelicTraceExporter : SpanExporter, IDisposable
+    public class NewRelicTraceExporter : SpanExporter
     {
-
         private readonly NRSpans.ISpanBatchSender _spanBatchSender;
 
         private string _serviceName;
         private const string _attribName_url = "http.url";
-        
-        //TODO: this needs to be replaced;
-        private const string _nrEndpointUrl = "https://trace-api.newrelic.com/trace/v1";
 
         public NewRelicTraceExporter() : this(new NRSpans.SpanBatchSenderBuilder().Build())
         {
@@ -70,7 +64,6 @@ namespace OpenTelemetry.Exporter.NewRelic
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
 
         private NRSpans.Span ToNewRelicSpan(Span openTelemetrySpan)
@@ -102,7 +95,7 @@ namespace OpenTelemetry.Exporter.NewRelic
                 foreach (var spanAttrib in openTelemetrySpan.Attributes)
                 {
                     if (string.Equals(spanAttrib.Key, _attribName_url, StringComparison.OrdinalIgnoreCase)
-                        && string.Equals(spanAttrib.Value?.ToString(), _nrEndpointUrl, StringComparison.OrdinalIgnoreCase))
+                        && string.Equals(spanAttrib.Value?.ToString(), _spanBatchSender.TraceUrl, StringComparison.OrdinalIgnoreCase))
                     {
                         return null;
                     }

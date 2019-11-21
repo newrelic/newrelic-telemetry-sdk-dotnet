@@ -7,11 +7,13 @@ namespace NewRelic.Telemetry.Spans
     public interface ISpanBatchSender
     {
         Task<Response> SendDataAsync(SpanBatch spanBatch);
+        string TraceUrl { get; }
     }
 
     public class SpanBatchSender : ISpanBatchSender
     {
         private IBatchDataSender _sender;
+        public string TraceUrl => _sender.EndpointUrl;
 
         internal SpanBatchSender(IBatchDataSender sender) 
         {
