@@ -16,21 +16,23 @@ namespace NewRelic.Telemetry.Tests
 
             loggerFactory.AddProvider(customLogProvider);
 
-            TelemetryLogging.LoggerFactory = loggerFactory;
+            var tl = new TelemetryLogging(loggerFactory);
 
-            TelemetryLogging.LogDebug("debug level logging message.");
-            TelemetryLogging.LogInformation("information level logging message.");
-            TelemetryLogging.LogWarning("warning level logging message.");
-            TelemetryLogging.LogError("error level logging message.");
+            tl.Debug("debug level logging message.");
+            tl.Info("information level logging message.");
+            tl.Warning("warning level logging message.");
+            tl.Error("error level logging message.");
+            tl.Exception(new Exception("Test Exception level logging"));
 
             Assert.IsTrue(customLogProvider.LogOutput.ContainsKey("NewRelic.Telemetry"));
             var logs = customLogProvider.LogOutput["NewRelic.Telemetry"];
 
-            Assert.AreEqual(4, logs.Count);
-            Assert.Contains("NewRelic: debug level logging message.", logs);
-            Assert.Contains("NewRelic: information level logging message.", logs);
-            Assert.Contains("NewRelic: warning level logging message.", logs);
-            Assert.Contains("NewRelic: error level logging message.", logs);
+            Assert.AreEqual(5, logs.Count);
+            Assert.Contains("NewRelic Telemetry: debug level logging message.", logs);
+            Assert.Contains("NewRelic Telemetry: information level logging message.", logs);
+            Assert.Contains("NewRelic Telemetry: warning level logging message.", logs);
+            Assert.Contains("NewRelic Telemetry: error level logging message.", logs);
+            //TODO: Assert for Exception (need to get text for execption)
         }
     }
 

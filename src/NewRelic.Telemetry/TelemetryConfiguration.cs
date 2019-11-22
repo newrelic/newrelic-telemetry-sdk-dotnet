@@ -10,6 +10,7 @@ namespace NewRelic.Telemetry
     //      6.  More info on the NR response (response code and content)
     //      7.  HttpClient - should we dispose it? (strange case of IDisposable - read about it online for the reuse-usecase)
     //      8.  Lazy Instantiate the HttpClient on first use.
+    //      9.  Clean up templated code in the Test CustomLogger
 
     public class TelemetryConfiguration
     {

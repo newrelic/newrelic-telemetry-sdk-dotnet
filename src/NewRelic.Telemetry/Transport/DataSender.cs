@@ -15,12 +15,13 @@ namespace NewRelic.Telemetry.Transport
         protected readonly TelemetryConfiguration _config;
         protected readonly TelemetryLogging _logger;
 
+        private Func<string, Task<HttpResponseMessage>> _httpHandlerDelegate;
+
         private const string _userAgent = "NewRelic-Dotnet-TelemetrySDK";
         private const string _implementationVersion = "/1.0.0";
         private HttpClient _httpClient;
 
         private Func<int, Task> _delayer;
-
         private static readonly Func<int, Task> _defaultDelayer = new Func<int, Task>(async (int milliseconds) => await Task.Delay(milliseconds));
 
         protected abstract string EndpointUrl { get; }
@@ -35,18 +36,22 @@ namespace NewRelic.Telemetry.Transport
             return this;
         }
 
-        private DataSender()
+        internal void WithHttpHandlerImpl(Func<string, Task<HttpResponseMessage>> httpHandler)
         {
-            //Supporting HTTP Client Reuse
-            var sp = System.Net.ServicePointManager.FindServicePoint(new Uri(EndpointUrl));
-            sp.ConnectionLeaseTimeout = 60000;  // 1 minute
+            _httpHandlerDelegate = httpHandler;
         }
 
-        protected DataSender(TelemetryConfiguration config) : this()
+
+        protected DataSender(TelemetryConfiguration config) 
         {
             _config = config;
             _httpClient = new HttpClient();
             _httpClient.Timeout = TimeSpan.FromSeconds(_config.SendTimeout);
+
+            var sp = ServicePointManager.FindServicePoint(new Uri(EndpointUrl));
+            sp.ConnectionLeaseTimeout = 60000;  // 1 minute
+
+            _httpHandlerDelegate = SendDataAsync;
         }
 
         protected DataSender(TelemetryConfiguration config, TelemetryLogging logger) : this(config)
@@ -138,13 +143,13 @@ namespace NewRelic.Telemetry.Transport
             return await SendDataAsync(dataToSend, retryNum);
         }
 
-
         public async Task<Response> SendDataAsync(TData dataToSend)
         {
 
             if(string.IsNullOrWhiteSpace(_config.ApiKey))
             {
-                throw new ArgumentNullException("Configuration requires API key");
+                _logger.Exception(new ArgumentNullException("Configuration requires API key"));
+                return Response.ResponseFailure;
             }
 
             return await SendDataAsync(dataToSend, 0);
@@ -159,7 +164,7 @@ namespace NewRelic.Telemetry.Transport
 
             var serializedPayload = dataToSend.ToJson();
 
-            var httpResponse = await SendDataAsync(serializedPayload);
+            var httpResponse = await _httpHandlerDelegate(serializedPayload);
 
             switch (httpResponse.StatusCode)
             {
