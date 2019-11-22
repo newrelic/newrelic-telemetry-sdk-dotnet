@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -24,6 +25,9 @@ namespace NewRelic.Telemetry.Transport
         private Func<int, Task> _delayer;
         private static readonly Func<int, Task> _defaultDelayer = new Func<int, Task>(async (int milliseconds) => await Task.Delay(milliseconds));
 
+        private Action<TData, int> _captureTestDataDelegate = null;
+
+
         protected abstract string EndpointUrl { get; }
 
         protected abstract TData[] Split(TData dataToSplit);
@@ -41,8 +45,21 @@ namespace NewRelic.Telemetry.Transport
             _httpHandlerDelegate = httpHandler;
         }
 
+        internal void WithCaptureTestDataImpl(Action<TData, int> captureTestDataImpl)
+        {
+            _captureTestDataDelegate = captureTestDataImpl;
+        }
 
-        protected DataSender(TelemetryConfiguration config) 
+        protected DataSender(IConfiguration configProvider) : this(configProvider, null)
+        {
+        }
+
+        protected DataSender(IConfiguration configProvider, ILoggerFactory loggerFactory) : this(new TelemetryConfiguration(configProvider), loggerFactory)
+        {
+        }
+
+        
+        protected DataSender(TelemetryConfiguration config) : this(config, null)
         {
             _config = config;
             _httpClient = new HttpClient();
@@ -54,33 +71,24 @@ namespace NewRelic.Telemetry.Transport
             _httpHandlerDelegate = SendDataAsync;
         }
 
-        protected DataSender(TelemetryConfiguration config, TelemetryLogging logger) : this(config)
+        protected DataSender(TelemetryConfiguration config, ILoggerFactory loggerFactory)
         {
-            _logger = logger;
+            _logger = new TelemetryLogging(loggerFactory);
         }
 
 
-        protected DataSender(IConfiguration configProvider) : this(new TelemetryConfiguration(configProvider))
-        {
-        }
 
-        protected DataSender(IConfiguration configProvider, TelemetryLogging logger) : this(configProvider)
-        {
-            _logger = logger;
-        }
-
-        
         private async Task<Response> RetryWithSplit(TData data)
         {
             var newBatches = Split(data);
 
             if (newBatches == null)
             {
-                _logger?.Error($@"Cannot send data because it exceeds the size limit and cannot be split.");
-                return Response.ResponseFailure;
+                _logger.Error($@"Cannot send data because it exceeds the size limit and cannot be split.");
+                return Response.Failure(HttpStatusCode.RequestEntityTooLarge,"Cannot send data because it exceeds size limit and cannot be further split.");
             }
 
-            _logger?.Warning("Splitting the data and retrying.");
+            _logger.Warning("Splitting the data and retrying.");
 
             var taskList = new Task<Response>[newBatches.Length];
 
@@ -96,7 +104,7 @@ namespace NewRelic.Telemetry.Transport
                 return Response.Success;
             }
 
-            return Response.ResponseFailure;
+            return Response.Failure(HttpStatusCode.Ambiguous, $"{responses.Count(x=>x.ResponseStatus != NewRelicResponseStatus.SendSuccess)} of {responses.Length} requests were NOT successful.");
         }
  
         private async Task<Response> RetryWithDelay(TData data, int retryNum, int? waitTimeInSeconds = null)
@@ -104,13 +112,13 @@ namespace NewRelic.Telemetry.Transport
             retryNum++;
             if (retryNum > _config.MaxRetryAttempts)
             {
-                _logger?.Error($@"Send Data failed after {_config.MaxRetryAttempts} attempts.");
-                return Response.ResponseFailure;
+                _logger.Error($@"Send Data failed after {_config.MaxRetryAttempts} attempts.");
+                return Response.Failure(HttpStatusCode.RequestTimeout, $"Send Data failed after {_config.MaxRetryAttempts} attempts");
             }
 
             waitTimeInSeconds = waitTimeInSeconds ?? (int)Math.Min(_config.BackoffMaxSeconds, _config.BackoffDelayFactorSeconds * Math.Pow(2, retryNum - 1));
 
-            _logger?.Warning($@"Attempting retry({retryNum}) after {waitTimeInSeconds} seconds.");
+            _logger.Warning($@"Attempting retry({retryNum}) after {waitTimeInSeconds} seconds.");
 
             await (_delayer ?? _defaultDelayer)(waitTimeInSeconds.Value * 1000);
 
@@ -123,8 +131,8 @@ namespace NewRelic.Telemetry.Transport
             retryNum++;
             if (retryNum > _config.MaxRetryAttempts)
             {
-                _logger?.Error($@"Send Data failed after {_config.MaxRetryAttempts} attempts.");
-                return Response.ResponseFailure;
+                _logger.Error($@"Send Data failed after {_config.MaxRetryAttempts} attempts.");
+                return Response.Failure(HttpStatusCode.RequestTimeout, $"Send Data failed after {_config.MaxRetryAttempts} attempts");
             }
 
             var retryAfterDelay = httpResponse.Headers?.RetryAfter?.Delta;
@@ -145,11 +153,10 @@ namespace NewRelic.Telemetry.Transport
 
         public async Task<Response> SendDataAsync(TData dataToSend)
         {
-
             if(string.IsNullOrWhiteSpace(_config.ApiKey))
             {
                 _logger.Exception(new ArgumentNullException("Configuration requires API key"));
-                return Response.ResponseFailure;
+                return Response.Failure(HttpStatusCode.Unauthorized,$"API Key was not available");
             }
 
             return await SendDataAsync(dataToSend, 0);
@@ -157,9 +164,11 @@ namespace NewRelic.Telemetry.Transport
 
         private async Task<Response> SendDataAsync(TData dataToSend, int retryNum)
         {
-            if(ContainsNoData(dataToSend))
+            _captureTestDataDelegate?.Invoke(dataToSend, retryNum);
+
+            if (ContainsNoData(dataToSend))
             {
-                return Response.ResponseDidNotSend;
+                return Response.DidNotSend;
             }
 
             var serializedPayload = dataToSend.ToJson();
@@ -170,7 +179,7 @@ namespace NewRelic.Telemetry.Transport
             {
                 //Success
                 case HttpStatusCode code when code >= HttpStatusCode.OK && code <= (HttpStatusCode)299:
-                    _logger?.Debug($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
+                    _logger.Debug($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
                     return Response.Success;
 
                 case HttpStatusCode.BadRequest:
@@ -179,24 +188,24 @@ namespace NewRelic.Telemetry.Transport
                 case HttpStatusCode.NotFound:
                 case HttpStatusCode.MethodNotAllowed:
                 case HttpStatusCode.LengthRequired:
-                    _logger?.Error($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
-                    return Response.ResponseFailure;
+                    _logger.Error($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
+                    return Response.Failure(httpResponse.StatusCode, httpResponse.Content?.ToString());
 
                 case HttpStatusCode.RequestEntityTooLarge:
-                    _logger?.Warning($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}. Response indicates payload is too large.");
+                    _logger.Warning($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}. Response indicates payload is too large.");
                     return await RetryWithSplit(dataToSend);
 
                 case HttpStatusCode.RequestTimeout:
-                    _logger?.Warning($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
+                    _logger.Warning($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
                     return await RetryWithDelay(dataToSend, retryNum);
 
                 case (HttpStatusCode)429:
-                    _logger?.Warning($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}. ");
+                    _logger.Warning($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}. ");
                     return await RetryWithServerDelay(dataToSend, retryNum, httpResponse);
                 
                 default:
-                    _logger?.Error($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
-                    return Response.ResponseFailure;
+                    _logger.Error($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
+                    return Response.Failure(httpResponse.StatusCode, httpResponse.Content?.ToString());
             }
         }
 
@@ -228,7 +237,7 @@ namespace NewRelic.Telemetry.Transport
 
                 if (_config.AuditLoggingEnabled)
                 {
-                    _logger?.Debug($@"Sent payload: '{serializedPayload}'");
+                    _logger.Debug($@"Sent payload: '{serializedPayload}'");
                 }
 
                 return response;

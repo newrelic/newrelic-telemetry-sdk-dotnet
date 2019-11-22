@@ -5,14 +5,14 @@ namespace NewRelic.Telemetry
 {
     public class TelemetryLogging
     {
-        private const string _prefix = "NewRelic Telemetry: ";
+        private const string _prefix = "NewRelic Telemetry:";
         private const string _category = "NewRelic.Telemetry";
 
         private ILogger _logger;
 
         private static string MessageFormatter(object state, Exception error)
         {
-            return $"{_prefix} {state}";
+            return $"{_prefix} {state} {error}".Trim();
         }
 
         internal TelemetryLogging(ILoggerFactory loggerFactory)

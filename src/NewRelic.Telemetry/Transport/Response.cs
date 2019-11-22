@@ -1,4 +1,6 @@
-﻿namespace NewRelic.Telemetry.Transport
+﻿using System.Net;
+
+namespace NewRelic.Telemetry.Transport
 {
     public enum NewRelicResponseStatus
     {
@@ -22,11 +24,25 @@
 
     public class Response
     {
-        public readonly static Response ResponseFailure = new Response(NewRelicResponseStatus.SendFailure);
-        public readonly static Response ResponseDidNotSend = new Response(NewRelicResponseStatus.DidNotSend);
+       
+        public readonly static Response DidNotSend = new Response(NewRelicResponseStatus.DidNotSend);
         public readonly static Response Success = new Response(NewRelicResponseStatus.SendSuccess);
 
+        public static Response Failure(HttpStatusCode httpStatusCode, string responseMessage)
+        {
+            var result = new Response(NewRelicResponseStatus.SendFailure);
+            result.HttpStatusCode = httpStatusCode;
+            result.Body = responseMessage;
+
+            return result;
+        }
+
+
         public NewRelicResponseStatus ResponseStatus { get; private set; }
+
+        public HttpStatusCode HttpStatusCode { get; private set; }
+
+        public string Body { get; private set; }
 
         internal Response(NewRelicResponseStatus responseStatus)
         {

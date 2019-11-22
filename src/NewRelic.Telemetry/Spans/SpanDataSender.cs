@@ -13,18 +13,16 @@ namespace NewRelic.Telemetry.Spans
         {
         }
 
-        public SpanDataSender(TelemetryConfiguration configOptions, TelemetryLogging logger) : base(configOptions, logger)
+        public SpanDataSender(TelemetryConfiguration configOptions, ILoggerFactory loggerFactory) : base(configOptions, loggerFactory)
         {
         }
-
 
         public SpanDataSender(IConfiguration configProvider) : base(configProvider)
         {
         }
 
-        public SpanDataSender(IConfiguration configProvider, TelemetryLogging logger) : base(configProvider, logger)
+        public SpanDataSender(IConfiguration configProvider, ILoggerFactory loggerFactory) : base(configProvider, loggerFactory)
         {
-
         }
 
         protected override bool ContainsNoData(SpanBatch dataToCheck)
