@@ -45,9 +45,7 @@ namespace NewRelic.Telemetry.Spans
         {
             if (string.IsNullOrWhiteSpace(attribName))
             {
-                var ex = new InvalidOperationException($"{nameof(attribName)} cannot be empty.");
-                Logging.LogException(ex);
-                throw ex;
+                throw new InvalidOperationException($"{nameof(attribName)} cannot be empty.");
             }
 
             _attributes[attribName] = attribValue;

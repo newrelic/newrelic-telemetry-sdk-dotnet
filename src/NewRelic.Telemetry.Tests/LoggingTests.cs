@@ -16,12 +16,12 @@ namespace NewRelic.Telemetry.Tests
 
             loggerFactory.AddProvider(customLogProvider);
 
-            Logging.LoggerFactory = loggerFactory;
+            TelemetryLogging.LoggerFactory = loggerFactory;
 
-            Logging.LogDebug("debug level logging message.");
-            Logging.LogInformation("information level logging message.");
-            Logging.LogWarning("warning level logging message.");
-            Logging.LogError("error level logging message.");
+            TelemetryLogging.LogDebug("debug level logging message.");
+            TelemetryLogging.LogInformation("information level logging message.");
+            TelemetryLogging.LogWarning("warning level logging message.");
+            TelemetryLogging.LogError("error level logging message.");
 
             Assert.IsTrue(customLogProvider.LogOutput.ContainsKey("NewRelic.Telemetry"));
             var logs = customLogProvider.LogOutput["NewRelic.Telemetry"];

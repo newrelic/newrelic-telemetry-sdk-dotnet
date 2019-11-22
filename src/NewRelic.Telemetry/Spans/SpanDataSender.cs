@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using NewRelic.Telemetry.Transport;
 using System.Linq;
 
@@ -12,8 +13,18 @@ namespace NewRelic.Telemetry.Spans
         {
         }
 
+        public SpanDataSender(TelemetryConfiguration configOptions, TelemetryLogging logger) : base(configOptions, logger)
+        {
+        }
+
+
         public SpanDataSender(IConfiguration configProvider) : base(configProvider)
         {
+        }
+
+        public SpanDataSender(IConfiguration configProvider, TelemetryLogging logger) : base(configProvider, logger)
+        {
+
         }
 
         protected override bool ContainsNoData(SpanBatch dataToCheck)
