@@ -1,29 +1,58 @@
-﻿using NRTelemetry = NewRelic.Telemetry;
+﻿using NewRelic.Telemetry;
+using NewRelic.Telemetry.Transport;
 using NRSpans = NewRelic.Telemetry.Spans;
-using NRTransport = NewRelic.Telemetry.Spans;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Trace.Export;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 
 namespace OpenTelemetry.Exporter.NewRelic
 {
     public class NewRelicTraceExporter : SpanExporter
     {
-        private readonly NRSpans.ISpanBatchSender _spanBatchSender;
+        private readonly NRSpans.SpanDataSender _spanDataSender;
 
         private string _serviceName;
         private const string _attribName_url = "http.url";
 
-        public NewRelicTraceExporter() : this(new NRSpans.SpanBatchSenderBuilder().Build())
+        private readonly ILogger _logger;
+        private readonly TelemetryConfiguration _config;
+
+       
+
+
+        public NewRelicTraceExporter(IConfiguration configProvider) : this(configProvider, null)
+        {
+        }
+        public NewRelicTraceExporter(IConfiguration configProvider, ILoggerFactory loggerFactory) : this(new TelemetryConfiguration(configProvider), loggerFactory)
         {
         }
 
-        internal NewRelicTraceExporter(NRSpans.ISpanBatchSender spanBatchSender)
+        public NewRelicTraceExporter(TelemetryConfiguration config) : this(config, null)
         {
-            _spanBatchSender = spanBatchSender;
+           
+        }
+
+        public NewRelicTraceExporter(TelemetryConfiguration config, ILoggerFactory loggerFactory) : this(new NRSpans.SpanDataSender(config, loggerFactory),config,loggerFactory)
+        {
+            
+        }
+
+        internal NewRelicTraceExporter(NRSpans.SpanDataSender spanDataSender, TelemetryConfiguration config, ILoggerFactory loggerFactory)
+        {
+            _spanDataSender = spanDataSender;
+
+            _config = config;
+
+            if (loggerFactory != null)
+            {
+                _logger = loggerFactory.CreateLogger("NewRelicTraceExporter");
+            }
+
         }
 
         public NewRelicTraceExporter WithServiceName(string serviceName)
@@ -47,14 +76,14 @@ namespace OpenTelemetry.Exporter.NewRelic
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogError(null, ex, $"Error translating Open Telemetry Span {otSpan.Context.SpanId.ToHexString()} to New Relic Span.");
                 }
             }
 
             var nrSpanBatch = spanBatchBuilder.Build();
-
-            return await Task.FromResult(_spanBatchSender.SendDataAsync(nrSpanBatch).IsCompleted
-                ? ExportResult.Success
-                : ExportResult.FailedNotRetryable);
+            
+            var result = await _spanDataSender.SendDataAsync(nrSpanBatch);
+            return result.ResponseStatus == NewRelicResponseStatus.SendSuccess ? ExportResult.Success : ExportResult.FailedNotRetryable;
         }
 
         public override Task ShutdownAsync(CancellationToken cancellationToken)
@@ -92,14 +121,17 @@ namespace OpenTelemetry.Exporter.NewRelic
 
             if (openTelemetrySpan.Attributes != null)
             {
+                
+
                 foreach (var spanAttrib in openTelemetrySpan.Attributes)
                 {
-                    if (string.Equals(spanAttrib.Key, _attribName_url, StringComparison.OrdinalIgnoreCase)
-                        && string.Equals(spanAttrib.Value?.ToString(), _spanBatchSender.TraceUrl, StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(spanAttrib.Key, _attribName_url, StringComparison.OrdinalIgnoreCase))
                     {
-                        return null;
+                        if (string.Equals(spanAttrib.Value?.ToString(), _config.TraceUrl, StringComparison.OrdinalIgnoreCase))
+                        {
+                            return null;
+                        }
                     }
-
                     newRelicSpanBuilder.WithAttribute(spanAttrib.Key, spanAttrib.Value);
                 }
             }
