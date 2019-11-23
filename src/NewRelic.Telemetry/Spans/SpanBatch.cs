@@ -3,10 +3,11 @@ using System.Runtime.Serialization;
 using Utf8Json;
 using Utf8Json.Resolvers;
 using System.Linq;
+using NewRelic.Telemetry.Transport;
 
 namespace NewRelic.Telemetry.Spans
 {
-    public class SpanBatch
+    public class SpanBatch : ITelemetryDataType
     {
         [DataMember(Name = "common")]
         public SpanBatchCommonProperties CommonProperties { get; internal set; }
