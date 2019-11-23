@@ -24,7 +24,6 @@ namespace NewRelic.Telemetry.Transport
 
     public class Response
     {
-       
         public readonly static Response DidNotSend = new Response(NewRelicResponseStatus.DidNotSend);
         public readonly static Response Success = new Response(NewRelicResponseStatus.SendSuccess);
 
@@ -36,7 +35,6 @@ namespace NewRelic.Telemetry.Transport
 
             return result;
         }
-
 
         public NewRelicResponseStatus ResponseStatus { get; private set; }
 
