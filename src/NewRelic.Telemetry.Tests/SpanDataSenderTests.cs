@@ -183,7 +183,7 @@ namespace NewRelic.Telemetry.Tests
 
             // Mock the behavior to return EntityTooLarge for any span batch with 4 or more spans.
             // Anything with less than 4 will return success.
-            dataSender.WithCaptureTestDataImpl((spanBatch, retryNum) =>
+            dataSender.WithCaptureSendDataAsyncDelegate((spanBatch, retryNum) =>
             {
                 actualCountCallsSendData++;
 
@@ -274,7 +274,7 @@ namespace NewRelic.Telemetry.Tests
 
             // Mock the behavior to return EntityTooLarge for any span batch that has a span with an 
             // id that starts with TooLarge.
-            dataSender.WithCaptureTestDataImpl((spanBatch, retryNum) =>
+            dataSender.WithCaptureSendDataAsyncDelegate((spanBatch, retryNum) =>
             {
                 actualCountCallsSendData++;
 
@@ -342,7 +342,7 @@ namespace NewRelic.Telemetry.Tests
                 return;
             });
 
-            dataSender.WithCaptureTestDataImpl((spanBatch, retryNum) =>
+            dataSender.WithCaptureSendDataAsyncDelegate((spanBatch, retryNum) =>
             {
                 actualCountCallsSendData++;
             });
@@ -386,7 +386,7 @@ namespace NewRelic.Telemetry.Tests
             });
 
             var actualCountCallsSendData = 0;
-            dataSender.WithCaptureTestDataImpl((spanBatch, retryNum) =>
+            dataSender.WithCaptureSendDataAsyncDelegate((spanBatch, retryNum) =>
             {
                 actualCountCallsSendData++;
             });
@@ -442,7 +442,7 @@ namespace NewRelic.Telemetry.Tests
             });
 
             var actualCountCallsSendData = 0;
-            dataSender.WithCaptureTestDataImpl((spanBatch, retryNum) =>
+            dataSender.WithCaptureSendDataAsyncDelegate((spanBatch, retryNum) =>
             {
                 actualCountCallsSendData++;
             });
@@ -488,7 +488,7 @@ namespace NewRelic.Telemetry.Tests
             });
 
             var actualCountCallsSendData = 0;
-            dataSender.WithCaptureTestDataImpl((spanBatch, retryNum) =>
+            dataSender.WithCaptureSendDataAsyncDelegate((spanBatch, retryNum) =>
             {
                 actualCountCallsSendData++;
             });

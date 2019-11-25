@@ -13,19 +13,17 @@ namespace NewRelic.Telemetry.Transport
 {
     public abstract class DataSender<TData> where TData : ITelemetryDataType
     {
-        protected readonly TelemetryConfiguration _config;
-        protected readonly TelemetryLogging _logger;
-
-        private Func<string, Task<HttpResponseMessage>> _httpHandlerDelegate;
-
         private const string _userAgent = "NewRelic-Dotnet-TelemetrySDK";
         private const string _implementationVersion = "/1.0.0";
-        private HttpClient _httpClient;
 
-        private Func<int, Task> _delayer;
-        private static readonly Func<int, Task> _defaultDelayer = new Func<int, Task>(async (int milliseconds) => await Task.Delay(milliseconds));
+        protected readonly TelemetryConfiguration _config;
+        protected readonly TelemetryLogging _logger;
+        private readonly HttpClient _httpClient;
 
-        private Action<TData, int> _captureTestDataDelegate = null;
+        //Delegate functions in support of testing
+        private Func<string, Task<HttpResponseMessage>> _httpHandlerImpl;
+        private Func<int, Task> _delayerImpl = new Func<int, Task>(async (int milliseconds) => await Task.Delay(milliseconds));
+        private Action<TData, int> _captureSendDataAsyncCallDelegate = null;
 
 
         protected abstract string EndpointUrl { get; }
@@ -36,18 +34,18 @@ namespace NewRelic.Telemetry.Transport
 
         internal DataSender<TData> WithDelayFunction(Func<int, Task> delayerImpl)
         {
-            _delayer = delayerImpl;
+            _delayerImpl = delayerImpl;
             return this;
         }
 
         internal void WithHttpHandlerImpl(Func<string, Task<HttpResponseMessage>> httpHandler)
         {
-            _httpHandlerDelegate = httpHandler;
+            _httpHandlerImpl = httpHandler;
         }
 
-        internal void WithCaptureTestDataImpl(Action<TData, int> captureTestDataImpl)
+        internal void WithCaptureSendDataAsyncDelegate(Action<TData, int> captureTestDataImpl)
         {
-            _captureTestDataDelegate = captureTestDataImpl;
+            _captureSendDataAsyncCallDelegate = captureTestDataImpl;
         }
 
         protected DataSender(IConfiguration configProvider) : this(configProvider, null)
@@ -62,13 +60,15 @@ namespace NewRelic.Telemetry.Transport
         protected DataSender(TelemetryConfiguration config) : this(config, null)
         {
             _config = config;
+
             _httpClient = new HttpClient();
             _httpClient.Timeout = TimeSpan.FromSeconds(_config.SendTimeout);
 
+            //Ensures that DNS expires regularly.
             var sp = ServicePointManager.FindServicePoint(new Uri(EndpointUrl));
             sp.ConnectionLeaseTimeout = 60000;  // 1 minute
 
-            _httpHandlerDelegate = SendDataAsync;
+            _httpHandlerImpl = SendDataAsync;
         }
 
         protected DataSender(TelemetryConfiguration config, ILoggerFactory loggerFactory)
@@ -120,9 +120,10 @@ namespace NewRelic.Telemetry.Transport
 
             _logger.Warning($@"Attempting retry({retryNum}) after {waitTimeInSeconds} seconds.");
 
-            await (_delayer ?? _defaultDelayer)(waitTimeInSeconds.Value * 1000);
+            await _delayerImpl(waitTimeInSeconds.Value * 1000);
 
             var result = await SendDataAsync(data, retryNum);
+
             return result;
         }
 
@@ -146,7 +147,7 @@ namespace NewRelic.Telemetry.Transport
             var delayMs = (int)retryAfterDelay.Value.TotalMilliseconds;
 
             //Perform the delay using the waiter delegate
-            await (_delayer ?? _defaultDelayer)(delayMs);
+            await _delayerImpl(delayMs);
 
             return await SendDataAsync(dataToSend, retryNum);
         }
@@ -164,7 +165,7 @@ namespace NewRelic.Telemetry.Transport
 
         private async Task<Response> SendDataAsync(TData dataToSend, int retryNum)
         {
-            _captureTestDataDelegate?.Invoke(dataToSend, retryNum);
+            _captureSendDataAsyncCallDelegate?.Invoke(dataToSend, retryNum);
 
             if (ContainsNoData(dataToSend))
             {
@@ -173,7 +174,7 @@ namespace NewRelic.Telemetry.Transport
 
             var serializedPayload = dataToSend.ToJson();
 
-            var httpResponse = await _httpHandlerDelegate(serializedPayload);
+            var httpResponse = await _httpHandlerImpl(serializedPayload);
 
             switch (httpResponse.StatusCode)
             {
