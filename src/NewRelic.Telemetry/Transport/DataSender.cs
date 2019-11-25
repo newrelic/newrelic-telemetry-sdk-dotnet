@@ -185,7 +185,7 @@ namespace NewRelic.Telemetry.Transport
                 return Response.Exception(ex.InnerException ?? ex);
             }
 
-            switch (httpResponse?.StatusCode)
+            switch (httpResponse.StatusCode)
             {
                 //Success is any 2xx response
                 case HttpStatusCode code when code >= HttpStatusCode.OK && code <= (HttpStatusCode)299:
