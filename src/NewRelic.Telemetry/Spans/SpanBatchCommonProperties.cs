@@ -9,8 +9,8 @@ namespace NewRelic.Telemetry.Spans
     public class SpanBatchCommonProperties
     {
         /// <summary>
-        /// The unique identifier for the batch.  This field is optional and should
-        /// be used when all spans being reported represent the same operation.
+        /// The unique identifier that links all of the Spans that are part of this batch.  This field is 
+        /// optional and should be used when all spans being reported in this Span Batch represent the same operation.
         /// </summary>
         [DataMember(Name = "trace.id")]
         public string TraceId { get; internal set; }

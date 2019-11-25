@@ -142,7 +142,8 @@ namespace NewRelic.Telemetry.Spans
         }
 
         /// <summary>
-        /// Used to record both the start and end time as well as the duration
+        /// Used to record both the start and end time as well as the duration of the work 
+        /// represented by this Span.
         /// </summary>
         /// <param name="startTimestamp"></param>
         /// <param name="endTimestamp"></param>
@@ -169,7 +170,7 @@ namespace NewRelic.Telemetry.Spans
 
         /// <summary>
         /// Sets the name of the span to something meaningful for later analysis.  This should not be a unique 
-        /// identifier for the span (see SpanId).  It should describe the operation so that the execution of
+        /// identifier for the span (see SpanId).  It should describe the operation such that executions of
         /// similiar operations can be compared/analyzed.
         /// </summary>
         /// <param name="name"></param>
@@ -182,9 +183,9 @@ namespace NewRelic.Telemetry.Spans
 
         /// <summary>
         /// Identifies this Span as a sub-operation of another span.  Used to measure inner-work as part of 
-        /// a large operation.
+        /// a larger operation.
         /// </summary>
-        /// <param name="parentId"></param>
+        /// <param name="parentId">The Id of the Span to which this Span belongs.  See SpanId.</param>
         /// <returns></returns>
         public SpanBuilder WithParentId(string parentId)
         {
@@ -194,7 +195,7 @@ namespace NewRelic.Telemetry.Spans
 
 
         /// <summary>
-        /// Identifies a service that 
+        /// Identifies the service being measured by these spans.
         /// </summary>
         /// <param name="serviceName"></param>
         /// <returns></returns>
@@ -204,6 +205,13 @@ namespace NewRelic.Telemetry.Spans
             return this;
         }
 
+        /// <summary>
+        /// Allows custom attribution of the Span to provide additional contextual/meaningful
+        /// information for later analysis.  
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="attributes">Key/Value pairs representing the custom attributes.  In the event of a duplicate key, the last value will be used.</param>
+        /// <returns></returns>
         public SpanBuilder WithAttributes<T>(IEnumerable<KeyValuePair<string,T>> attributes)
         {
             if (attributes == null)
@@ -220,6 +228,13 @@ namespace NewRelic.Telemetry.Spans
 
         }
     
+        /// <summary>
+        /// Allows custom attribution of the Span
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="attribName">the name of the attribute.  If an attribute with this name already exists, the previous value will be overwritten</param>
+        /// <param name="attribVal">the value of the attribute</param>
+        /// <returns></returns>
         public SpanBuilder WithAttribute<T>(string attribName, T attribVal)
         {
             if (string.IsNullOrWhiteSpace(attribName))

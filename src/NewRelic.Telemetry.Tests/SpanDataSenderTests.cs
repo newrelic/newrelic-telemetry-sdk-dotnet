@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Moq;
 using NewRelic.Telemetry.Spans;
 using NewRelic.Telemetry.Transport;
 

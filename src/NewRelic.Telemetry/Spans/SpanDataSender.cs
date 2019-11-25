@@ -5,22 +5,50 @@ using System.Linq;
 
 namespace NewRelic.Telemetry.Spans
 {
+    /// <summary>
+    /// The SpanDataSender is used to send Span data to New Relic.  It manages the communication 
+    /// with the New Relic end points and reports outcomes.
+    /// </summary>
     public class SpanDataSender : DataSender<SpanBatch>
     {
         protected override string EndpointUrl => _config.TraceUrl;
 
+        /// <summary>
+        /// Creates new SpanDataSender setting the options using an instance of TelemetryConfiguration
+        /// to specify settings.
+        /// </summary>
+        /// <param name="configOptions"></param>
         public SpanDataSender(TelemetryConfiguration configOptions) : base(configOptions)
         {
         }
 
+        /// <summary>
+        /// Creates new SpanDataSender setting the options using an instance of TelemetryConfiguration
+        /// to specify settings and a Logger Factory that will be used to log information about the
+        /// interactions with New Relic endpoints.
+        /// </summary>
+        /// <param name="configOptions"></param>
         public SpanDataSender(TelemetryConfiguration configOptions, ILoggerFactory loggerFactory) : base(configOptions, loggerFactory)
         {
         }
 
+        /// <summary>
+        /// Creates new SpanDataSender obtaining configuration settings from a Configuration Provider 
+        /// that is compatible with Microsoft.Extensions.Configuration.
+        /// </summary>
+        /// <param name="configOptions"></param>
         public SpanDataSender(IConfiguration configProvider) : base(configProvider)
         {
         }
 
+
+        /// <summary>
+        /// Creates new SpanDataSender obtaining configuration settings from a Configuration Provider 
+        /// that is compatible with Microsoft.Extensions.Configuration.  it also accepts a logger factory
+        /// that will be used to log information about the interactions with New Relic endpoints.
+        /// </summary>
+        /// <param name="configOptions"></param>
+        /// <param name="loggerFactory"></param>
         public SpanDataSender(IConfiguration configProvider, ILoggerFactory loggerFactory) : base(configProvider, loggerFactory)
         {
         }

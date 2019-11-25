@@ -80,7 +80,7 @@ namespace NewRelic.Telemetry.Spans
         }
 
         /// <summary>
-        /// Used to apply a series of custom attributes values that are common to all spans being reported
+        /// Used to apply a series of custom attribute values that are common to all spans being reported
         /// as part of this SpanBatch.
         /// </summary>
         /// <param name="attributes">Collection of Key/Value pairs of attributes.  The keys should be unique.</param>
@@ -101,7 +101,7 @@ namespace NewRelic.Telemetry.Spans
         }
 
         /// <summary>
-        /// Adds a single span to this batch.
+        /// Adds a single span to this Span Batch.
         /// </summary>
         /// <param name="span"></param>
         /// <returns></returns>

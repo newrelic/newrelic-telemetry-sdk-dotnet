@@ -150,6 +150,11 @@ namespace NewRelic.Telemetry.Transport
             return await SendDataAsync(dataToSend, retryNum);
         }
 
+        /// <summary>
+        /// Method used to send a data to New Relic.  Handles the communication with the New Relic endpoints
+        /// </summary>
+        /// <param name="dataToSend">The data to send to New Relic</param>
+        /// <returns>New Relic response indicating the outcome and additional information about the interaction with the New Relic endpoint.</returns>
         public async Task<Response> SendDataAsync(TData dataToSend)
         {
             if(string.IsNullOrWhiteSpace(_config.ApiKey))

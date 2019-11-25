@@ -6,29 +6,33 @@ namespace NewRelic.Telemetry.Transport
     public enum NewRelicResponseStatus
     {
         /// <summary>
-        /// Data was not sent
+        /// A request was made to send data to New Relic with an empty payload.  This is not an
+        /// error condition, but may represent an issue with the usage of the Telemetry SDK.
         /// </summary>
         DidNotSend_NoData,
 
         /// <summary>
-        /// An attempt was made to send data to New Relic endpoint, but it was not accepted by the endpoint
-        /// Represents Http Response Codes other than 2xx
+        /// An attempt was made to send data to New Relic endpoint, but an unexpected failure occurred and
+        /// the data was not sent.
         /// </summary>
         Failure,
 
         /// <summary>
         /// Data was sent to New Relic endpoint. It was accepted.
-        /// Represents Https Response Codes 2xx
+        /// Represents Http Response Codes 2xx
         /// </summary>
         Success
     }
 
+    /// <summary>
+    /// Provides information regarding the outcome of a request to send data to a New Relic endpoint.
+    /// </summary>
     public class Response
     {
-        public readonly static Response DidNotSend = new Response(NewRelicResponseStatus.DidNotSend_NoData);
-        public readonly static Response Success = new Response(NewRelicResponseStatus.Success);
+        internal readonly static Response DidNotSend = new Response(NewRelicResponseStatus.DidNotSend_NoData);
+        internal readonly static Response Success = new Response(NewRelicResponseStatus.Success);
 
-        public static Response Failure(HttpStatusCode? httpStatusCode, string responseMessage)
+        internal static Response Failure(HttpStatusCode? httpStatusCode, string responseMessage)
         {
             var result = new Response(NewRelicResponseStatus.Failure);
             result.HttpStatusCode = httpStatusCode;
@@ -37,12 +41,12 @@ namespace NewRelic.Telemetry.Transport
             return result;
         }
 
-        public static Response Failure(string responseMessage)
+        internal static Response Failure(string responseMessage)
         {
             return Failure(null, responseMessage);
         }
 
-        public static Response Exception(Exception ex)
+        internal static Response Exception(Exception ex)
         {
             var result = new Response(NewRelicResponseStatus.Failure);
 
@@ -52,10 +56,20 @@ namespace NewRelic.Telemetry.Transport
         }
 
 
+        /// <summary>
+        /// Summarizes the outcome of the request.  See <see cref="NewRelicResponseStatus"/> for the possible outcomes
+        /// </summary>
         public NewRelicResponseStatus ResponseStatus { get; private set; }
 
+        /// <summary>
+        /// If able to communicate with the New Relic endpoint, the HTTP response code returned by the endpoint.
+        /// This value will be NULL if a failure occurred prior to the communication with New Relic.
+        /// </summary>
         public HttpStatusCode? HttpStatusCode { get; private set; }
 
+        /// <summary>
+        /// Provides additional contextual information about the outcome
+        /// </summary>
         public string Message { get; private set; }
 
         internal Response(NewRelicResponseStatus responseStatus)
