@@ -5,7 +5,6 @@ namespace NewRelic.Telemetry
     public class TelemetryConfiguration
     {
         public string TraceUrl { get; private set; } = "https://trace-api.newrelic.com/trace/v1";
-        public string MetricsUrl { get; private set; } = "https://trace-api.newrelic.com/metrics/v1";
         public string ApiKey { get; private set; }
         public bool AuditLoggingEnabled { get; private set; } = false;
         public int SendTimeout { get; private set; } = 5;
