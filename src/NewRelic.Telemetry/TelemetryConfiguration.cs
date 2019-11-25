@@ -89,7 +89,7 @@ namespace NewRelic.Telemetry
             }
         }
 
-        public TelemetryConfiguration WithEndpointURL_Trace(string url)
+        public TelemetryConfiguration WithOverrideEndpointUrl_Trace(string url)
         {
             TraceUrl = url;
             return this;
