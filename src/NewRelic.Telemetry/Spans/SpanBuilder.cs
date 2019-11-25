@@ -113,7 +113,7 @@ namespace NewRelic.Telemetry.Spans
 
         /// <summary>
         /// Used to record the duration of the operation represented by this Span and downstream work
-        /// 
+        /// that it has requested.
         /// </summary>
         /// <param name="durationMs">duration in milliseconds</param>
         /// <returns></returns>
@@ -123,6 +123,13 @@ namespace NewRelic.Telemetry.Spans
             return this;
         }
 
+        /// <summary>
+        /// Calculates and records the duration of the operation represented by this Span and downstream work
+        /// that it has requested.
+        /// </summary>
+        /// <param name="startTimestamp">The start time of the operation</param>
+        /// <param name="endTimestamp">The end time of the operation</param>
+        /// <returns></returns>
         public SpanBuilder WithDurationMs(DateTimeOffset startTimestamp, DateTimeOffset endTimestamp)
         {
             if(startTimestamp == null || endTimestamp == null)
@@ -134,6 +141,12 @@ namespace NewRelic.Telemetry.Spans
                 - DateTimeExtensions.ToUnixTimeMilliseconds(startTimestamp));
         }
 
+        /// <summary>
+        /// Used to record both the start and end time as well as the duration
+        /// </summary>
+        /// <param name="startTimestamp"></param>
+        /// <param name="endTimestamp"></param>
+        /// <returns></returns>
         public SpanBuilder WithExecutionTimeInfo(DateTimeOffset startTimestamp, DateTimeOffset endTimestamp)
         {
             if(startTimestamp == null)
@@ -154,18 +167,37 @@ namespace NewRelic.Telemetry.Spans
             return this;
         }
 
+        /// <summary>
+        /// Sets the name of the span to something meaningful for later analysis.  This should not be a unique 
+        /// identifier for the span (see SpanId).  It should describe the operation so that the execution of
+        /// similiar operations can be compared/analyzed.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public SpanBuilder WithName(string name)
         {
             WithAttribute(attribName_Name, name);
             return this;
         }
 
+        /// <summary>
+        /// Identifies this Span as a sub-operation of another span.  Used to measure inner-work as part of 
+        /// a large operation.
+        /// </summary>
+        /// <param name="parentId"></param>
+        /// <returns></returns>
         public SpanBuilder WithParentId(string parentId)
         {
             WithAttribute(attribName_ParentID, parentId);
             return this;
         }
 
+
+        /// <summary>
+        /// Identifies a service that 
+        /// </summary>
+        /// <param name="serviceName"></param>
+        /// <returns></returns>
         public SpanBuilder WithServiceName(string serviceName)
         {
             WithAttribute(attribName_ServiceName, serviceName);
