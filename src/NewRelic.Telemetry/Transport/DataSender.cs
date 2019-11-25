@@ -25,7 +25,7 @@ namespace NewRelic.Telemetry.Transport
         private Func<int, Task> _delayer;
         private static readonly Func<int, Task> _defaultDelayer = new Func<int, Task>(async (int milliseconds) => await Task.Delay(milliseconds));
 
-        private Action<TData, int> _captureTestDataDelegate = null;
+        private Action<TData, int> _captureSendDataAsyncCallDelegate = null;
 
 
         protected abstract string EndpointUrl { get; }
@@ -45,9 +45,9 @@ namespace NewRelic.Telemetry.Transport
             _httpHandlerDelegate = httpHandler;
         }
 
-        internal void WithCaptureTestDataImpl(Action<TData, int> captureTestDataImpl)
+        internal void WithCaptureSendDataAsyncDelegate(Action<TData, int> captureTestDataImpl)
         {
-            _captureTestDataDelegate = captureTestDataImpl;
+            _captureSendDataAsyncCallDelegate = captureTestDataImpl;
         }
 
         protected DataSender(IConfiguration configProvider) : this(configProvider, null)
@@ -62,9 +62,11 @@ namespace NewRelic.Telemetry.Transport
         protected DataSender(TelemetryConfiguration config) : this(config, null)
         {
             _config = config;
+
             _httpClient = new HttpClient();
             _httpClient.Timeout = TimeSpan.FromSeconds(_config.SendTimeout);
 
+            //Ensures that DNS expires regularly.
             var sp = ServicePointManager.FindServicePoint(new Uri(EndpointUrl));
             sp.ConnectionLeaseTimeout = 60000;  // 1 minute
 
@@ -164,7 +166,7 @@ namespace NewRelic.Telemetry.Transport
 
         private async Task<Response> SendDataAsync(TData dataToSend, int retryNum)
         {
-            _captureTestDataDelegate?.Invoke(dataToSend, retryNum);
+            _captureSendDataAsyncCallDelegate?.Invoke(dataToSend, retryNum);
 
             if (ContainsNoData(dataToSend))
             {

@@ -2,16 +2,6 @@
 
 namespace NewRelic.Telemetry
 {
-    // TOODO:
-    //      2.  Inject Logging Factory (Replace Logging Singleton?)
-    //      3.  Remove the Metrics Example (config too)
-    //      4.  See if we can preserve GZIP/JSON on retry (STRETCH)
-    //      5.  Need to determine if we should throw exception on NULL api key or just return response.failure.
-    //      6.  More info on the NR response (response code and content)
-    //      7.  HttpClient - should we dispose it? (strange case of IDisposable - read about it online for the reuse-usecase)
-    //      8.  Lazy Instantiate the HttpClient on first use.
-    //      9.  Clean up templated code in the Test CustomLogger
-
     public class TelemetryConfiguration
     {
         public string TraceUrl { get; private set; } = "https://trace-api.newrelic.com/trace/v1";
@@ -22,6 +12,7 @@ namespace NewRelic.Telemetry
         public int MaxRetryAttempts { get; private set; } = 8;
         public int BackoffMaxSeconds { get; private set; } = 80;
         public int BackoffDelayFactorSeconds { get; private set; } = 5;
+        public string ServiceName { get; private set; }
 
         public TelemetryConfiguration()
         {
@@ -86,6 +77,12 @@ namespace NewRelic.Telemetry
                     BackoffDelayFactorSeconds = backoffDelayFactorSeconds;
                 }
             }
+
+            string serviceName;
+            if (!string.IsNullOrEmpty(serviceName = configProvider["Newrelic.Telemetry.ServiceName"]))
+            {
+                ServiceName = serviceName;
+            }
         }
 
         public TelemetryConfiguration WithEndpointURL_Trace(string url)
@@ -127,6 +124,12 @@ namespace NewRelic.Telemetry
         public TelemetryConfiguration WithBackoffDelayFactorSeconds(int delayFactorSeconds)
         {
             BackoffDelayFactorSeconds = delayFactorSeconds;
+            return this;
+        }
+
+        public TelemetryConfiguration WithServiceName(string serviceName)
+        {
+            ServiceName = serviceName;
             return this;
         }
     }
