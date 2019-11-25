@@ -174,23 +174,24 @@ namespace NewRelic.Telemetry.Transport
 
             var serializedPayload = dataToSend.ToJson();
 
-            var httpResponse = await _httpHandlerImpl(serializedPayload);
+            HttpResponseMessage httpResponse;
 
-            switch (httpResponse.StatusCode)
+            try
+            {
+                httpResponse = await _httpHandlerImpl(serializedPayload);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.Exception(ex.InnerException);
+                return Response.Failure(HttpStatusCode.InternalServerError, ex.InnerException.Message);
+            }
+
+            switch (httpResponse?.StatusCode)
             {
                 //Success
                 case HttpStatusCode code when code >= HttpStatusCode.OK && code <= (HttpStatusCode)299:
                     _logger.Debug($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
                     return Response.Success;
-
-                case HttpStatusCode.BadRequest:
-                case HttpStatusCode.Unauthorized:
-                case HttpStatusCode.Forbidden:
-                case HttpStatusCode.NotFound:
-                case HttpStatusCode.MethodNotAllowed:
-                case HttpStatusCode.LengthRequired:
-                    _logger.Error($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
-                    return Response.Failure(httpResponse.StatusCode, httpResponse.Content?.ToString());
 
                 case HttpStatusCode.RequestEntityTooLarge:
                     _logger.Warning($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}. Response indicates payload is too large.");
@@ -203,15 +204,16 @@ namespace NewRelic.Telemetry.Transport
                 case (HttpStatusCode)429:
                     _logger.Warning($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}. ");
                     return await RetryWithServerDelay(dataToSend, retryNum, httpResponse);
-                
+
                 default:
                     _logger.Error($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
                     return Response.Failure(httpResponse.StatusCode, httpResponse.Content?.ToString());
             }
+
         }
 
         private async Task<HttpResponseMessage> SendDataAsync(string serializedPayload)
-        {
+        { 
             var serializedBytes = new UTF8Encoding().GetBytes(serializedPayload);
 
             using (var memoryStream = new MemoryStream())
@@ -234,14 +236,21 @@ namespace NewRelic.Telemetry.Transport
                 requestMessage.Headers.Add("Api-Key", _config.ApiKey);
                 requestMessage.Method = HttpMethod.Post;
 
-                var response = await _httpClient.SendAsync(requestMessage);
-
-                if (_config.AuditLoggingEnabled)
+                try
                 {
-                    _logger.Debug($@"Sent payload: '{serializedPayload}'");
-                }
+                    var response = await _httpClient.SendAsync(requestMessage);
 
-                return response;
+                    if (_config.AuditLoggingEnabled)
+                    {
+                        _logger.Debug($@"Sent payload: '{serializedPayload}'");
+                    }
+
+                    return response;
+                }
+                catch
+                {
+                    throw;
+                }
             }
         }
     }
