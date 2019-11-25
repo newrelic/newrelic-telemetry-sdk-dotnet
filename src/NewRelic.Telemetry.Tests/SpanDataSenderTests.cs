@@ -516,5 +516,41 @@ namespace NewRelic.Telemetry.Tests
             Assert.AreEqual(expectedNumSendBatchAsyncCall, actualCountCallsSendData, "Unexpected Number of SendDataAsync calls");
             CollectionAssert.AreEqual(expectedBackoffSequenceFromTestRun, actualBackoffSequenceFromTestRun);
         }
+
+        [Test]
+        async public Task SpanBatchDataSender_SendDataAsyncThrowsException()
+        {
+            const int expectedNumSendBatchAsyncCall = 1;
+
+            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithAPIKey("123456"));
+
+            dataSender.WithDelayFunction(async (int milliSecondsDelay) =>
+            {
+                await Task.Delay(0);
+                return;
+            });
+
+            var actualCountCallsSendData = 0;
+            dataSender.WithCaptureSendDataAsyncDelegate((spanBatch, retryNum) =>
+            {
+                actualCountCallsSendData++;
+            });
+
+            dataSender.WithHttpHandlerImpl((json) =>
+            {
+                throw new HttpRequestException("Server Error", new Exception("Inner exception message"));
+            });
+
+            var spanBatch = SpanBatchBuilder.Create()
+               .WithSpan(SpanBuilder.Create("Test Span").Build())
+               .Build();
+
+            var result = await dataSender.SendDataAsync(spanBatch);
+
+            Assert.AreEqual(NewRelicResponseStatus.SendFailure, result.ResponseStatus);
+            Assert.AreEqual("Inner exception message", result.Body);
+
+            Assert.AreEqual(expectedNumSendBatchAsyncCall, actualCountCallsSendData, "Unexpected Number of SendDataAsync calls");
+        }
     }
 }

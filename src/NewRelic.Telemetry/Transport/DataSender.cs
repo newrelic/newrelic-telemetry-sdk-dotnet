@@ -180,10 +180,10 @@ namespace NewRelic.Telemetry.Transport
             {
                 httpResponse = await _httpHandlerImpl(serializedPayload);
             }
-            catch (HttpRequestException ex)
+            catch (Exception ex)
             {
-                _logger.Exception(ex.InnerException);
-                return Response.Failure(HttpStatusCode.InternalServerError, ex.InnerException.Message);
+                _logger.Exception(ex.InnerException == null ? ex : ex.InnerException);
+                return Response.Failure(HttpStatusCode.InternalServerError, ex.InnerException == null ? ex.Message : ex.InnerException.Message);
             }
 
             switch (httpResponse?.StatusCode)
