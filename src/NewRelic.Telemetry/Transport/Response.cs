@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 
 namespace NewRelic.Telemetry.Transport
 {
@@ -27,7 +28,7 @@ namespace NewRelic.Telemetry.Transport
         public readonly static Response DidNotSend = new Response(NewRelicResponseStatus.DidNotSend);
         public readonly static Response Success = new Response(NewRelicResponseStatus.SendSuccess);
 
-        public static Response Failure(HttpStatusCode httpStatusCode, string responseMessage)
+        public static Response Failure(HttpStatusCode? httpStatusCode, string responseMessage)
         {
             var result = new Response(NewRelicResponseStatus.SendFailure);
             result.HttpStatusCode = httpStatusCode;
@@ -36,9 +37,24 @@ namespace NewRelic.Telemetry.Transport
             return result;
         }
 
+        public static Response Failure(string responseMessage)
+        {
+            return Failure(null, responseMessage);
+        }
+
+        public static Response Exception(Exception ex)
+        {
+            var result = new Response(NewRelicResponseStatus.SendFailure);
+
+            result.Message = ex.Message;
+
+            return result;
+        }
+
+
         public NewRelicResponseStatus ResponseStatus { get; private set; }
 
-        public HttpStatusCode HttpStatusCode { get; private set; }
+        public HttpStatusCode? HttpStatusCode { get; private set; }
 
         public string Message { get; private set; }
 

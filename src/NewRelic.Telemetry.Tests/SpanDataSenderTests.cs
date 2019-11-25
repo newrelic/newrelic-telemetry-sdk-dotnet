@@ -163,7 +163,7 @@ namespace NewRelic.Telemetry.Tests
         ///             Total = 7 Requests/Batches              9 spans
         /// </summary>
         [Test]
-        async public Task TestTelemetryClient_RequestTooLarge_SplitSuccess()
+        async public Task DataSender_RequestTooLarge_SplitSuccess()
         {
             const int expectedCountSpans = 9;
             const int expectedCountCallsSendData = 7;
@@ -258,7 +258,7 @@ namespace NewRelic.Telemetry.Tests
         ///             Total = 7 Requests/Batches      4 spans requested, 1 span successful
         /// </summary>
         [Test]
-        async public Task TestTelemetryClient_RequestTooLarge_SplitFail()
+        async public Task DataSender_RequestTooLarge_SplitFail()
         {
             const int expectedCountCallsSendData = 7;
             const int expectedCountSuccessfulSpanBatches = 1;
@@ -317,7 +317,7 @@ namespace NewRelic.Telemetry.Tests
         }
 
         [Test]
-        async public Task TestTelemetryClient_RetryBackoffSequence_RetriesExceeded()
+        async public Task DataSender_RetryBackoffSequence_RetriesExceeded()
         {
             var expectedNumSendBatchAsyncCall = 9; //1 first call + 8 calls from retries
             var expectedBackoffSequenceFromTestRun = new List<int>()
@@ -365,7 +365,7 @@ namespace NewRelic.Telemetry.Tests
         }
 
         [Test]
-        async public Task TestTelemetryClient_RetryBackoffSequence_RemoteSeriviceTimeOutNotForLong()
+        async public Task DataSender_RetryBackoffSequence_RemoteSeriviceTimeOutNotForLong()
         {
             var expectedNumSendBatchAsyncCall = 4; // 1 first call + 3 calls from retries
             var expectedBackoffSequenceFromTestRun = new List<int>()
@@ -415,7 +415,7 @@ namespace NewRelic.Telemetry.Tests
         }
 
         [Test]
-        async public Task TestTelemetryClient_RetryOn429_RetriesExceeded()
+        async public Task DataSender_RetryOn429_RetriesExceeded()
         {
             const int delayMS = 10000;
             const int expectedNumSendBatchAsyncCall = 9; // 1 first call + 3 calls from retries
@@ -467,7 +467,7 @@ namespace NewRelic.Telemetry.Tests
         }
 
         [Test]
-        async public Task TestTelemetryClient_RetryOn429_429HappensOnce()
+        async public Task DataSender_RetryOn429_429HappensOnce()
         {
             const int delayMS = 10000;
             const int expectedNumSendBatchAsyncCall = 2;
@@ -518,7 +518,7 @@ namespace NewRelic.Telemetry.Tests
         }
 
         [Test]
-        async public Task SpanBatchDataSender_SendDataAsyncThrowsException()
+        async public Task SpanBatchDataSender_SendDataAsyncThrowsHttpException()
         {
             const int expectedNumSendBatchAsyncCall = 1;
 
@@ -548,9 +548,53 @@ namespace NewRelic.Telemetry.Tests
             var result = await dataSender.SendDataAsync(spanBatch);
 
             Assert.AreEqual(NewRelicResponseStatus.SendFailure, result.ResponseStatus);
-            Assert.AreEqual("Inner exception message", result.Body);
+            Assert.AreEqual("Inner exception message", result.Message);
+            Assert.IsNull(result.HttpStatusCode);
+            Assert.AreEqual(expectedNumSendBatchAsyncCall, actualCountCallsSendData, "Unexpected Number of SendDataAsync calls");
+        }
+
+
+        [Test]
+        async public Task SpanBatchDataSender_SendDataAsyncThrowsNonHttpException()
+        {
+            const int expectedNumSendBatchAsyncCall = 1;
+            const int expectedNumHttpHandlerCall = 0;
+
+            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithAPIKey("123456"));
+
+            dataSender.WithDelayFunction(async (int milliSecondsDelay) =>
+            {
+                await Task.Delay(0);
+                return;
+            });
+
+            var actualCountCallsSendData = 0;
+            dataSender.WithCaptureSendDataAsyncDelegate((sb, retry) =>
+            {
+                actualCountCallsSendData++;
+                throw new Exception("Test Exception");
+            });
+
+            var actualCallsHttpHandler = 0;
+            dataSender.WithHttpHandlerImpl((json) =>
+            {
+                actualCallsHttpHandler++;
+                return Task.FromResult(new HttpResponseMessage() { StatusCode = HttpStatusCode.OK });
+            });
+
+
+            var spanBatch = SpanBatchBuilder.Create()
+               .WithSpan(SpanBuilder.Create("Test Span").Build())
+               .Build();
+
+            var result = await dataSender.SendDataAsync(spanBatch);
+
+            Assert.AreEqual(NewRelicResponseStatus.SendFailure, result.ResponseStatus);
+            Assert.AreEqual("Test Exception", result.Message);
+            Assert.IsNull(result.HttpStatusCode);
 
             Assert.AreEqual(expectedNumSendBatchAsyncCall, actualCountCallsSendData, "Unexpected Number of SendDataAsync calls");
+            Assert.AreEqual(expectedNumHttpHandlerCall, actualCallsHttpHandler, "Unexpected Number of SendDataAsync calls");
         }
     }
 }

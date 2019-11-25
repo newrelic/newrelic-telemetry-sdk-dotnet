@@ -157,7 +157,7 @@ namespace NewRelic.Telemetry.Transport
             if(string.IsNullOrWhiteSpace(_config.ApiKey))
             {
                 _logger.Exception(new ArgumentNullException("Configuration requires API key"));
-                return Response.Failure(HttpStatusCode.Unauthorized,$"API Key was not available");
+                return Response.Failure("API Key was not available");
             }
 
             return await SendDataAsync(dataToSend, 0);
@@ -165,30 +165,31 @@ namespace NewRelic.Telemetry.Transport
 
         private async Task<Response> SendDataAsync(TData dataToSend, int retryNum)
         {
-            _captureSendDataAsyncCallDelegate?.Invoke(dataToSend, retryNum);
-
-            if (ContainsNoData(dataToSend))
-            {
-                return Response.DidNotSend;
-            }
-
-            var serializedPayload = dataToSend.ToJson();
 
             HttpResponseMessage httpResponse;
 
             try
             {
+                _captureSendDataAsyncCallDelegate?.Invoke(dataToSend, retryNum);
+
+                if (ContainsNoData(dataToSend))
+                {
+                    return Response.DidNotSend;
+                }
+
+                var serializedPayload = dataToSend.ToJson();
+
                 httpResponse = await _httpHandlerImpl(serializedPayload);
             }
             catch (Exception ex)
             {
-                _logger.Exception(ex.InnerException == null ? ex : ex.InnerException);
-                return Response.Failure(HttpStatusCode.InternalServerError, ex.InnerException == null ? ex.Message : ex.InnerException.Message);
+                _logger.Exception(ex.InnerException ?? ex);
+                return Response.Exception(ex.InnerException ?? ex);
             }
 
             switch (httpResponse?.StatusCode)
             {
-                //Success
+                //Success is any 2xx response
                 case HttpStatusCode code when code >= HttpStatusCode.OK && code <= (HttpStatusCode)299:
                     _logger.Debug($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
                     return Response.Success;
@@ -209,35 +210,34 @@ namespace NewRelic.Telemetry.Transport
                     _logger.Error($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
                     return Response.Failure(httpResponse.StatusCode, httpResponse.Content?.ToString());
             }
-
         }
 
         private async Task<HttpResponseMessage> SendDataAsync(string serializedPayload)
-        { 
-            var serializedBytes = new UTF8Encoding().GetBytes(serializedPayload);
-
-            using (var memoryStream = new MemoryStream())
+        {
+            try
             {
-                using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Compress, true))
+                var serializedBytes = new UTF8Encoding().GetBytes(serializedPayload);
+
+                using (var memoryStream = new MemoryStream())
                 {
-                    gzipStream.Write(serializedBytes, 0, serializedBytes.Length);
-                }
+                    using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Compress, true))
+                    {
+                        gzipStream.Write(serializedBytes, 0, serializedBytes.Length);
+                    }
 
-                memoryStream.Position = 0;
+                    memoryStream.Position = 0;
 
-                var streamContent = new StreamContent(memoryStream);
-                streamContent.Headers.Add("Content-Type", "application/json; charset=utf-8");
-                streamContent.Headers.Add("Content-Encoding", "gzip");
-                streamContent.Headers.ContentLength = memoryStream.Length;
+                    var streamContent = new StreamContent(memoryStream);
+                    streamContent.Headers.Add("Content-Type", "application/json; charset=utf-8");
+                    streamContent.Headers.Add("Content-Encoding", "gzip");
+                    streamContent.Headers.ContentLength = memoryStream.Length;
 
-                var requestMessage = new HttpRequestMessage(HttpMethod.Post, EndpointUrl);
-                requestMessage.Content = streamContent;
-                requestMessage.Headers.Add("User-Agent", _userAgent + _implementationVersion);
-                requestMessage.Headers.Add("Api-Key", _config.ApiKey);
-                requestMessage.Method = HttpMethod.Post;
+                    var requestMessage = new HttpRequestMessage(HttpMethod.Post, EndpointUrl);
+                    requestMessage.Content = streamContent;
+                    requestMessage.Headers.Add("User-Agent", _userAgent + _implementationVersion);
+                    requestMessage.Headers.Add("Api-Key", _config.ApiKey);
+                    requestMessage.Method = HttpMethod.Post;
 
-                try
-                {
                     var response = await _httpClient.SendAsync(requestMessage);
 
                     if (_config.AuditLoggingEnabled)
@@ -247,10 +247,11 @@ namespace NewRelic.Telemetry.Transport
 
                     return response;
                 }
-                catch
-                {
-                    throw;
-                }
+            }
+            // Catch and rethrow exception here to ensure that asynchronous error is handled properly
+            catch
+            {
+                throw;
             }
         }
     }
