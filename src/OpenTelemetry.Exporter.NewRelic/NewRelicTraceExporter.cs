@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
 
 namespace OpenTelemetry.Exporter.NewRelic
 {
@@ -20,6 +21,7 @@ namespace OpenTelemetry.Exporter.NewRelic
 
         private readonly ILogger _logger;
         private readonly TelemetryConfiguration _config;
+        private readonly string[] _nrEndpoints;
 
 
         public NewRelicTraceExporter(IConfiguration configProvider) : this(configProvider, null)
@@ -31,12 +33,10 @@ namespace OpenTelemetry.Exporter.NewRelic
 
         public NewRelicTraceExporter(TelemetryConfiguration config) : this(config, null)
         {
-           
         }
 
         public NewRelicTraceExporter(TelemetryConfiguration config, ILoggerFactory loggerFactory) : this(new NRSpans.SpanDataSender(config, loggerFactory),config,loggerFactory)
         {
-            
         }
 
         internal NewRelicTraceExporter(NRSpans.SpanDataSender spanDataSender, TelemetryConfiguration config, ILoggerFactory loggerFactory)
@@ -45,11 +45,12 @@ namespace OpenTelemetry.Exporter.NewRelic
 
             _config = config;
 
+            _nrEndpoints = config.NewRelicEndpoints.Select(x => x.ToLower()).ToArray();
+
             if (loggerFactory != null)
             {
                 _logger = loggerFactory.CreateLogger("NewRelicTraceExporter");
             }
-
         }
 
         public async override Task<ExportResult> ExportAsync(IEnumerable<Span> otSpanBatch, CancellationToken cancellationToken)
@@ -74,6 +75,7 @@ namespace OpenTelemetry.Exporter.NewRelic
             var nrSpanBatch = spanBatchBuilder.Build();
             
             var result = await _spanDataSender.SendDataAsync(nrSpanBatch);
+
             return result.ResponseStatus == NewRelicResponseStatus.SendSuccess ? ExportResult.Success : ExportResult.FailedNotRetryable;
         }
 
@@ -114,9 +116,9 @@ namespace OpenTelemetry.Exporter.NewRelic
             {
                 foreach (var spanAttrib in openTelemetrySpan.Attributes)
                 {
-                    //Filter out calls to New Relic endpoint
+                    //Filter out calls to New Relic endpoint as these will cause an infinite loop
                     if (string.Equals(spanAttrib.Key, _attribName_url, StringComparison.OrdinalIgnoreCase)
-                        && string.Equals(spanAttrib.Value?.ToString(), _config.TraceUrl, StringComparison.OrdinalIgnoreCase))
+                        && _nrEndpoints.Contains(spanAttrib.Value?.ToString().ToLower()))
                     {
                         return null;
                     }

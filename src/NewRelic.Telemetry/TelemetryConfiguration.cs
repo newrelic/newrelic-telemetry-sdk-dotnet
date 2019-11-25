@@ -13,6 +13,11 @@ namespace NewRelic.Telemetry
         public int BackoffDelayFactorSeconds { get; private set; } = 5;
         public string ServiceName { get; private set; }
 
+        public string[] NewRelicEndpoints => new []
+        {
+            TraceUrl
+        };
+
         public TelemetryConfiguration()
         {
         }
