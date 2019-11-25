@@ -76,8 +76,6 @@ namespace NewRelic.Telemetry.Transport
             _logger = new TelemetryLogging(loggerFactory);
         }
 
-
-
         private async Task<Response> RetryWithSplit(TData data)
         {
             var newBatches = Split(data);
@@ -99,12 +97,12 @@ namespace NewRelic.Telemetry.Transport
             
             var responses = await Task.WhenAll(taskList);
 
-            if(responses.All(x=>x.ResponseStatus == NewRelicResponseStatus.SendSuccess))
+            if(responses.All(x=>x.ResponseStatus == NewRelicResponseStatus.Success))
             {
                 return Response.Success;
             }
 
-            return Response.Failure(HttpStatusCode.Ambiguous, $"{responses.Count(x=>x.ResponseStatus != NewRelicResponseStatus.SendSuccess)} of {responses.Length} requests were NOT successful.");
+            return Response.Failure(HttpStatusCode.Ambiguous, $"{responses.Count(x=>x.ResponseStatus != NewRelicResponseStatus.Success)} of {responses.Length} requests were NOT successful.");
         }
  
         private async Task<Response> RetryWithDelay(TData data, int retryNum, int? waitTimeInSeconds = null)
@@ -206,6 +204,7 @@ namespace NewRelic.Telemetry.Transport
                     _logger.Warning($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}. ");
                     return await RetryWithServerDelay(dataToSend, retryNum, httpResponse);
 
+                //Anything else is interpreted as a failure condition.  No further attempts are made.
                 default:
                     _logger.Error($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
                     return Response.Failure(httpResponse.StatusCode, httpResponse.Content?.ToString());
