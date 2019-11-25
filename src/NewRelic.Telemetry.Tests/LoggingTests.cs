@@ -16,21 +16,25 @@ namespace NewRelic.Telemetry.Tests
 
             loggerFactory.AddProvider(customLogProvider);
 
-            Logging.LoggerFactory = loggerFactory;
+            var tl = new TelemetryLogging(loggerFactory);
 
-            Logging.LogDebug("debug level logging message.");
-            Logging.LogInformation("information level logging message.");
-            Logging.LogWarning("warning level logging message.");
-            Logging.LogError("error level logging message.");
+            var ex = new Exception("Test Exception level logging");
+
+            tl.Debug("debug level logging message.");
+            tl.Info("information level logging message.");
+            tl.Warning("warning level logging message.");
+            tl.Error("error level logging message.");
+            tl.Exception(ex);
 
             Assert.IsTrue(customLogProvider.LogOutput.ContainsKey("NewRelic.Telemetry"));
             var logs = customLogProvider.LogOutput["NewRelic.Telemetry"];
 
-            Assert.AreEqual(4, logs.Count);
-            Assert.Contains("NewRelic: debug level logging message.", logs);
-            Assert.Contains("NewRelic: information level logging message.", logs);
-            Assert.Contains("NewRelic: warning level logging message.", logs);
-            Assert.Contains("NewRelic: error level logging message.", logs);
+            Assert.AreEqual(5, logs.Count);
+            Assert.Contains("NewRelic Telemetry: debug level logging message.", logs);
+            Assert.Contains("NewRelic Telemetry: information level logging message.", logs);
+            Assert.Contains("NewRelic Telemetry: warning level logging message.", logs);
+            Assert.Contains("NewRelic Telemetry: error level logging message.", logs);
+            Assert.Contains($"NewRelic Telemetry: Exception {ex.GetType().FullName}: {ex.Message}", logs);
         }
     }
 
@@ -117,7 +121,7 @@ namespace NewRelic.Telemetry.Tests
 
         void ILogger.Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            var message = formatter(state, null);
+            var message = formatter(state, exception);
             var logs = Provider.LogOutput.GetOrAdd(Category, new List<string>());
             logs.Add(message);
         }
