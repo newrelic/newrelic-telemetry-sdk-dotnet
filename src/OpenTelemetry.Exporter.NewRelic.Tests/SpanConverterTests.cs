@@ -24,11 +24,11 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         [SetUp]
 		public void Setup()
 		{
-            var config = new TelemetryConfiguration().WithAPIKey("123456");
+            var config = new TelemetryConfiguration().WithAPIKey("123456").WithServiceName(testServiceName);
             var mockDataSender = new NRSpans.SpanDataSender(config);
 
             //Capture the spans that were requested to be sent to New Relic.
-            mockDataSender.WithCaptureTestDataImpl((sb, retryId) =>
+            mockDataSender.WithCaptureSendDataAsyncDelegate((sb, retryId) =>
             {
                 _resultNRSpans.AddRange(sb.Spans);
             });
@@ -39,8 +39,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
                 return Task.FromResult(new System.Net.Http.HttpResponseMessage(System.Net.HttpStatusCode.OK));
             });
 
-            var exporter = new NewRelicTraceExporter(mockDataSender, config, null)
-                .WithServiceName(testServiceName);
+            var exporter = new NewRelicTraceExporter(mockDataSender, config, null);
 
             using (var tracerFactory = TracerFactory.Create(
                                   builder => builder.AddProcessorPipeline(

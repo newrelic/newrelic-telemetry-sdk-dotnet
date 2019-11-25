@@ -16,13 +16,10 @@ namespace OpenTelemetry.Exporter.NewRelic
     {
         private readonly NRSpans.SpanDataSender _spanDataSender;
 
-        private string _serviceName;
         private const string _attribName_url = "http.url";
 
         private readonly ILogger _logger;
         private readonly TelemetryConfiguration _config;
-
-       
 
 
         public NewRelicTraceExporter(IConfiguration configProvider) : this(configProvider, null)
@@ -53,12 +50,6 @@ namespace OpenTelemetry.Exporter.NewRelic
                 _logger = loggerFactory.CreateLogger("NewRelicTraceExporter");
             }
 
-        }
-
-        public NewRelicTraceExporter WithServiceName(string serviceName)
-        {
-            _serviceName = serviceName;
-            return this;
         }
 
         public async override Task<ExportResult> ExportAsync(IEnumerable<Span> otSpanBatch, CancellationToken cancellationToken)
@@ -109,9 +100,9 @@ namespace OpenTelemetry.Exporter.NewRelic
                    .HasError(!openTelemetrySpan.Status.IsOk)
                    .WithName(openTelemetrySpan.Name);       //Handles Nulls
 
-            if (!string.IsNullOrWhiteSpace(_serviceName))
+            if (!string.IsNullOrWhiteSpace(_config.ServiceName))
             {
-                newRelicSpanBuilder.WithServiceName(_serviceName);
+                newRelicSpanBuilder.WithServiceName(_config.ServiceName);
             }
 
             if (openTelemetrySpan.ParentSpanId != null)
@@ -121,17 +112,15 @@ namespace OpenTelemetry.Exporter.NewRelic
 
             if (openTelemetrySpan.Attributes != null)
             {
-                
-
                 foreach (var spanAttrib in openTelemetrySpan.Attributes)
                 {
-                    if (string.Equals(spanAttrib.Key, _attribName_url, StringComparison.OrdinalIgnoreCase))
+                    //Filter out calls to New Relic endpoint
+                    if (string.Equals(spanAttrib.Key, _attribName_url, StringComparison.OrdinalIgnoreCase)
+                        && string.Equals(spanAttrib.Value?.ToString(), _config.TraceUrl, StringComparison.OrdinalIgnoreCase))
                     {
-                        if (string.Equals(spanAttrib.Value?.ToString(), _config.TraceUrl, StringComparison.OrdinalIgnoreCase))
-                        {
-                            return null;
-                        }
+                        return null;
                     }
+
                     newRelicSpanBuilder.WithAttribute(spanAttrib.Key, spanAttrib.Value);
                 }
             }
