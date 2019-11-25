@@ -10,7 +10,7 @@ namespace NewRelic.Telemetry.Transport
         DidNotSend,
 
         /// <summary>
-        /// An attempt was made to send data to NR endpoint, but it was not accepted by the endpoint
+        /// An attempt was made to send data to New Relic endpoint, but it was not accepted by the endpoint
         /// Represents Http Response Codes other than 2xx
         /// </summary>
         SendFailure,
@@ -31,7 +31,7 @@ namespace NewRelic.Telemetry.Transport
         {
             var result = new Response(NewRelicResponseStatus.SendFailure);
             result.HttpStatusCode = httpStatusCode;
-            result.Body = responseMessage;
+            result.Message = responseMessage;
 
             return result;
         }
@@ -40,7 +40,7 @@ namespace NewRelic.Telemetry.Transport
 
         public HttpStatusCode HttpStatusCode { get; private set; }
 
-        public string Body { get; private set; }
+        public string Message { get; private set; }
 
         internal Response(NewRelicResponseStatus responseStatus)
         {
