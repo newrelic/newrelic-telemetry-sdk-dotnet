@@ -594,7 +594,7 @@ namespace NewRelic.Telemetry.Tests
             Assert.IsNull(result.HttpStatusCode);
 
             Assert.AreEqual(expectedNumSendBatchAsyncCall, actualCountCallsSendData, "Unexpected Number of SendDataAsync calls");
-            Assert.AreEqual(expectedNumHttpHandlerCall, actualCallsHttpHandler, "Unexpected Number of SendDataAsync calls");
+            Assert.AreEqual(expectedNumHttpHandlerCall, actualCallsHttpHandler, "Unexpected Number of Http Handler calls");
         }
     }
 }
