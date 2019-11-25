@@ -13,13 +13,12 @@ namespace NewRelic.Telemetry.Transport
 {
     public abstract class DataSender<TData> where TData : ITelemetryDataType
     {
-        protected readonly TelemetryConfiguration _config;
-        protected readonly TelemetryLogging _logger;
-
         private const string _userAgent = "NewRelic-Dotnet-TelemetrySDK";
         private const string _implementationVersion = "/1.0.0";
-        private HttpClient _httpClient;
 
+        protected readonly TelemetryConfiguration _config;
+        protected readonly TelemetryLogging _logger;
+        private readonly HttpClient _httpClient;
 
         //Delegate functions in support of testing
         private Func<string, Task<HttpResponseMessage>> _httpHandlerImpl;
