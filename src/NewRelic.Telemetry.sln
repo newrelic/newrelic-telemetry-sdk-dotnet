@@ -7,8 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Telemetry", "NewRe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Telemetry.Tests", "NewRelic.Telemetry.Tests\NewRelic.Telemetry.Tests.csproj", "{46FE3771-EB5C-4C05-B76C-DDEF7BCC7706}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1F32F4A4-3650-48B6-B384-445DB48ECF20}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{1F32F4A4-3650-48B6-B384-445DB48ECF20}"
 	ProjectSection(SolutionItems) = preProject
+		..\CHANGELOG.md = ..\CHANGELOG.md
 		..\README.md = ..\README.md
 		..\THIRD_PARTY_NOTICES.md = ..\THIRD_PARTY_NOTICES.md
 	EndProjectSection
@@ -17,7 +18,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetry.Exporter.NewR
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetry.Exporter.NewRelic.Tests", "OpenTelemetry.Exporter.NewRelic.Tests\OpenTelemetry.Exporter.NewRelic.Tests.csproj", "{4D5BC297-24D2-47FE-85C2-051A29A59B7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleAspNetCoreApp", "..\sample\SampleAspNetCoreApp\SampleAspNetCoreApp.csproj", "{583642EE-8AC9-4E87-AD51-6FECF8F255DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleAspNetCoreApp", "..\sample\SampleAspNetCoreApp\SampleAspNetCoreApp.csproj", "{583642EE-8AC9-4E87-AD51-6FECF8F255DC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Telemetry SDK", "Telemetry SDK", "{D095AF96-3B3A-46D6-99FE-1DC845FA4BCE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Open Telemetry", "Open Telemetry", "{82DD26D6-9333-4B4B-999B-E32E7359D7BE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{FECC3BEB-820C-4B94-BB0E-98228ADE6237}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -92,6 +99,14 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{62CE6D9B-449B-4956-94FC-0FBBA235145F} = {D095AF96-3B3A-46D6-99FE-1DC845FA4BCE}
+		{46FE3771-EB5C-4C05-B76C-DDEF7BCC7706} = {D095AF96-3B3A-46D6-99FE-1DC845FA4BCE}
+		{2477CD19-50D2-44E3-BC83-BCFE027B60B8} = {82DD26D6-9333-4B4B-999B-E32E7359D7BE}
+		{4D5BC297-24D2-47FE-85C2-051A29A59B7D} = {82DD26D6-9333-4B4B-999B-E32E7359D7BE}
+		{583642EE-8AC9-4E87-AD51-6FECF8F255DC} = {FECC3BEB-820C-4B94-BB0E-98228ADE6237}
+		{FECC3BEB-820C-4B94-BB0E-98228ADE6237} = {82DD26D6-9333-4B4B-999B-E32E7359D7BE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {08D1630D-EA85-4E78-ABBA-34195DCA7595}
