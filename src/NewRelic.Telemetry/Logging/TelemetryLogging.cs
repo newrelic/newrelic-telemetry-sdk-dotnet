@@ -3,11 +3,6 @@ using System;
 
 namespace NewRelic.Telemetry
 {
-     /// <summary>
-     /// Log provider for use within the Telemetry SDK.
-     /// Based on ILoggerFactory so that it can support any
-     /// logging infastructure within its client application.
-     /// </summary>
     public class TelemetryLogging
     {
         private const string _prefix = "NewRelic Telemetry:";

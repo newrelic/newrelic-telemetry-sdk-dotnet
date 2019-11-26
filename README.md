@@ -3,17 +3,6 @@
 The New Relic Telemetry SDK for .NET sends Telemetry Data to New Relic.
 
 
-### Minimum Requirements
-* You will need a New Relic Insights Insert API Key.
-* Microsoft <a target="_blank" href="https://dotnet.microsoft.com/download/dotnet-framework">.NET Framework 4.5+</a> or  <a target="_blank" href="https://dotnet.microsoft.com/download/dotnet-core">.NET Core 2.0+</a>
-
-### Installing the Telemetry SDK for .NET
-* Incorporate the New Relic Telemetric SDK for .NET pack
-
-
-
-
-
 ### Limitations
 The New Relic Telemetry APIs are rate limited. Please reference the documentation for New Relic Metrics API and New Relic Trace API Requirements and Limits on the specifics of the rate limits.
 

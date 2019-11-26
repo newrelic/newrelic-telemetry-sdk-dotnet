@@ -24,9 +24,6 @@ namespace NewRelic.Telemetry.Transport
         Success
     }
 
-    /// <summary>
-    /// Provides information regarding the outcome of a request to send data to a New Relic endpoint.
-    /// </summary>
     public class Response
     {
         internal readonly static Response DidNotSend = new Response(NewRelicResponseStatus.DidNotSend_NoData);
@@ -56,20 +53,10 @@ namespace NewRelic.Telemetry.Transport
         }
 
 
-        /// <summary>
-        /// Summarizes the outcome of the request.  See <see cref="NewRelicResponseStatus"/> for the possible outcomes
-        /// </summary>
         public NewRelicResponseStatus ResponseStatus { get; private set; }
 
-        /// <summary>
-        /// If able to communicate with the New Relic endpoint, the HTTP response code returned by the endpoint.
-        /// This value will be NULL if a failure occurred prior to the communication with New Relic.
-        /// </summary>
         public HttpStatusCode? HttpStatusCode { get; private set; }
 
-        /// <summary>
-        /// Provides additional contextual information about the outcome
-        /// </summary>
         public string Message { get; private set; }
 
         internal Response(NewRelicResponseStatus responseStatus)

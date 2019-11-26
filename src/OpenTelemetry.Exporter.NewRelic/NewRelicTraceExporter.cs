@@ -78,9 +78,9 @@ namespace OpenTelemetry.Exporter.NewRelic
 
 
         /// <summary>
-        /// Responsible for sending Open Telemetry Spans to New Relic End point.
+        /// Responsible for sending Open Telemetry Spans to New Relic endpoint.
         /// </summary>
-        /// <param name="otSpanBatch">Collection of Spans to be sent to New Relic</param>
+        /// <param name="otSpanBatch">Collection of Open Telemetry spans to be sent to New Relic</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public async override Task<ExportResult> ExportAsync(IEnumerable<Span> otSpanBatch, CancellationToken cancellationToken)

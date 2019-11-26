@@ -9,16 +9,9 @@ namespace NewRelic.Telemetry.Spans
 {
     public class SpanBatch : ITelemetryDataType
     {
-
-        /// <summary>
-        /// Properties that are common to all spans being sent as part of this SpanBatch.
-        /// </summary>
         [DataMember(Name = "common")]
         public SpanBatchCommonProperties CommonProperties { get; internal set; }
 
-        /// <summary>
-        /// The spans that are being reported as part of this batch.
-        /// </summary>
         public List<Span> Spans { get; internal set; }
 
         internal SpanBatch()
