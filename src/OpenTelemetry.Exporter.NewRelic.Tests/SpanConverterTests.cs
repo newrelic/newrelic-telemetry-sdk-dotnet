@@ -112,7 +112,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         [Test]
         public void Test_FilterOutNewRelicEndpoint()
         {
-            Assert.IsFalse(resultNRSpansDic.ContainsKey(_otSpans[4].Context.SpanId.ToHexString()), "Endpoint calls to New Relic should be excluded");
+            Assert.IsFalse(resultNRSpansDic.ContainsKey(_otSpans[3].Context.SpanId.ToHexString()), "Endpoint calls to New Relic should be excluded");
         }
 
         [Test]
