@@ -26,21 +26,21 @@ namespace NewRelic.Telemetry
         public bool AuditLoggingEnabled { get; private set; } = false;
 
         /// <summary>
-        /// The number of seconds that the data sender will wait for a response from
-        /// a New Relic endpoint.  Requesets that exceed this limit will be assumed to have
+        /// The number of seconds that the DataSender will wait for a response from
+        /// a New Relic endpoint.  Requests that exceed this limit will be assumed to have
         /// failed.
         /// </summary>
         public int SendTimeout { get; private set; } = 5;
 
         /// <summary>
         /// In the event of a failure, the DataSender will wait a certain amount of time (back-off) and retry.
-        /// This setting indicates how many times the Data Sender will re-attempt to send information
+        /// This setting indicates how many times the DataSender will re-attempt to send information
         /// prior to failing.
         /// </summary>
         public int MaxRetryAttempts { get; private set; } = 8;
 
         /// <summary>
-        /// Between each retry, the DataSender waits a certain amount of time.  This is a back-off period.
+        /// Between each retry, the DataSender waits a variable amount of time.  This is a back-off period.
         /// This setting indicates the maximum wait time for a back-off.
         /// </summary>
         public int BackoffMaxSeconds { get; private set; } = 80;
@@ -175,7 +175,7 @@ namespace NewRelic.Telemetry
         }
 
         /// <summary>
-        /// Allows detailed logging of the information sent-to/received from New Relic endpoints.
+        /// Allows detailed logging of the information sent to/received from New Relic endpoints.
         /// This setting is useful for testing and should not be enabled in production environments.
         /// </summary>
         /// <param name="enabled"></param>
