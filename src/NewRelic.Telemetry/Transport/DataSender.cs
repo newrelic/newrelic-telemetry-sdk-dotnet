@@ -76,8 +76,6 @@ namespace NewRelic.Telemetry.Transport
             _logger = new TelemetryLogging(loggerFactory);
         }
 
-
-
         private async Task<Response> RetryWithSplit(TData data)
         {
             var newBatches = Split(data);
@@ -99,12 +97,12 @@ namespace NewRelic.Telemetry.Transport
             
             var responses = await Task.WhenAll(taskList);
 
-            if(responses.All(x=>x.ResponseStatus == NewRelicResponseStatus.SendSuccess))
+            if(responses.All(x=>x.ResponseStatus == NewRelicResponseStatus.Success))
             {
                 return Response.Success;
             }
 
-            return Response.Failure(HttpStatusCode.Ambiguous, $"{responses.Count(x=>x.ResponseStatus != NewRelicResponseStatus.SendSuccess)} of {responses.Length} requests were NOT successful.");
+            return Response.Failure(HttpStatusCode.Ambiguous, $"{responses.Count(x=>x.ResponseStatus != NewRelicResponseStatus.Success)} of {responses.Length} requests were NOT successful.");
         }
  
         private async Task<Response> RetryWithDelay(TData data, int retryNum, int? waitTimeInSeconds = null)
@@ -157,7 +155,7 @@ namespace NewRelic.Telemetry.Transport
             if(string.IsNullOrWhiteSpace(_config.ApiKey))
             {
                 _logger.Exception(new ArgumentNullException("Configuration requires API key"));
-                return Response.Failure(HttpStatusCode.Unauthorized,$"API Key was not available");
+                return Response.Failure("API Key was not available");
             }
 
             return await SendDataAsync(dataToSend, 0);
@@ -165,32 +163,34 @@ namespace NewRelic.Telemetry.Transport
 
         private async Task<Response> SendDataAsync(TData dataToSend, int retryNum)
         {
-            _captureSendDataAsyncCallDelegate?.Invoke(dataToSend, retryNum);
 
-            if (ContainsNoData(dataToSend))
+            HttpResponseMessage httpResponse;
+
+            try
             {
-                return Response.DidNotSend;
+                _captureSendDataAsyncCallDelegate?.Invoke(dataToSend, retryNum);
+
+                if (ContainsNoData(dataToSend))
+                {
+                    return Response.DidNotSend;
+                }
+
+                var serializedPayload = dataToSend.ToJson();
+
+                httpResponse = await _httpHandlerImpl(serializedPayload);
             }
-
-            var serializedPayload = dataToSend.ToJson();
-
-            var httpResponse = await _httpHandlerImpl(serializedPayload);
+            catch (Exception ex)
+            {
+                _logger.Exception(ex.InnerException ?? ex);
+                return Response.Exception(ex.InnerException ?? ex);
+            }
 
             switch (httpResponse.StatusCode)
             {
-                //Success
+                //Success is any 2xx response
                 case HttpStatusCode code when code >= HttpStatusCode.OK && code <= (HttpStatusCode)299:
                     _logger.Debug($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
                     return Response.Success;
-
-                case HttpStatusCode.BadRequest:
-                case HttpStatusCode.Unauthorized:
-                case HttpStatusCode.Forbidden:
-                case HttpStatusCode.NotFound:
-                case HttpStatusCode.MethodNotAllowed:
-                case HttpStatusCode.LengthRequired:
-                    _logger.Error($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
-                    return Response.Failure(httpResponse.StatusCode, httpResponse.Content?.ToString());
 
                 case HttpStatusCode.RequestEntityTooLarge:
                     _logger.Warning($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}. Response indicates payload is too large.");
@@ -203,7 +203,8 @@ namespace NewRelic.Telemetry.Transport
                 case (HttpStatusCode)429:
                     _logger.Warning($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}. ");
                     return await RetryWithServerDelay(dataToSend, retryNum, httpResponse);
-                
+
+                //Anything else is interpreted as a failure condition.  No further attempts are made.
                 default:
                     _logger.Error($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
                     return Response.Failure(httpResponse.StatusCode, httpResponse.Content?.ToString());
