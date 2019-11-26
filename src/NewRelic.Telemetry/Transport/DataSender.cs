@@ -213,44 +213,36 @@ namespace NewRelic.Telemetry.Transport
 
         private async Task<HttpResponseMessage> SendDataAsync(string serializedPayload)
         {
-            try
-            {
-                var serializedBytes = new UTF8Encoding().GetBytes(serializedPayload);
+            var serializedBytes = new UTF8Encoding().GetBytes(serializedPayload);
 
-                using (var memoryStream = new MemoryStream())
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Compress, true))
                 {
-                    using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Compress, true))
-                    {
-                        gzipStream.Write(serializedBytes, 0, serializedBytes.Length);
-                    }
-
-                    memoryStream.Position = 0;
-
-                    var streamContent = new StreamContent(memoryStream);
-                    streamContent.Headers.Add("Content-Type", "application/json; charset=utf-8");
-                    streamContent.Headers.Add("Content-Encoding", "gzip");
-                    streamContent.Headers.ContentLength = memoryStream.Length;
-
-                    var requestMessage = new HttpRequestMessage(HttpMethod.Post, EndpointUrl);
-                    requestMessage.Content = streamContent;
-                    requestMessage.Headers.Add("User-Agent", _userAgent + _implementationVersion);
-                    requestMessage.Headers.Add("Api-Key", _config.ApiKey);
-                    requestMessage.Method = HttpMethod.Post;
-
-                    var response = await _httpClient.SendAsync(requestMessage);
-
-                    if (_config.AuditLoggingEnabled)
-                    {
-                        _logger.Debug($@"Sent payload: '{serializedPayload}'");
-                    }
-
-                    return response;
+                    gzipStream.Write(serializedBytes, 0, serializedBytes.Length);
                 }
-            }
-            // Catch and rethrow exception here to ensure that asynchronous error is handled properly
-            catch
-            {
-                throw;
+
+                memoryStream.Position = 0;
+
+                var streamContent = new StreamContent(memoryStream);
+                streamContent.Headers.Add("Content-Type", "application/json; charset=utf-8");
+                streamContent.Headers.Add("Content-Encoding", "gzip");
+                streamContent.Headers.ContentLength = memoryStream.Length;
+
+                var requestMessage = new HttpRequestMessage(HttpMethod.Post, EndpointUrl);
+                requestMessage.Content = streamContent;
+                requestMessage.Headers.Add("User-Agent", _userAgent + _implementationVersion);
+                requestMessage.Headers.Add("Api-Key", _config.ApiKey);
+                requestMessage.Method = HttpMethod.Post;
+
+                var response = await _httpClient.SendAsync(requestMessage);
+
+                if (_config.AuditLoggingEnabled)
+                {
+                    _logger.Debug($@"Sent payload: '{serializedPayload}'");
+                }
+
+                return response;
             }
         }
     }
