@@ -12,7 +12,7 @@ namespace NewRelic.Telemetry.Spans
         private readonly SpanBatch _spanBatch;
 
         /// <summary>
-        /// Creates a new SpanBatch.
+        /// Creates a new SpanBatch Builder.
         /// </summary>
         /// <returns></returns>
         public static SpanBatchBuilder Create()
@@ -26,7 +26,7 @@ namespace NewRelic.Telemetry.Spans
         }
 
         /// <summary>
-        /// Returns a completed SpanBatch to the caller.
+        /// Returns the biilt SpanBatch to the caller.
         /// </summary>
         /// <returns></returns>
         public SpanBatch Build()
@@ -41,7 +41,7 @@ namespace NewRelic.Telemetry.Spans
         private List<Span> _spans => _spanBatch.Spans ?? (_spanBatch.Spans = new List<Span>());
 
         /// <summary>
-        /// Setting the traceId for the SpanBatch indicates that all spans being reported are from 
+        /// Optional:  Setting the traceId for the SpanBatch indicates that all spans being reported are from 
         /// the same trace/operation.  New Relic will use this to group the spans together.
         /// The traceId should be an identifier that is unique across all operations being performed.
         /// Alternatively, the traceId can be specified on each span individually.
@@ -64,8 +64,8 @@ namespace NewRelic.Telemetry.Spans
         /// Used to set the value of a custom attribute that is common to all spans being reported 
         /// as part of this SpanBatch.
         /// </summary>
-        /// <param name="attribName">The name of the attribute.  If the name is already used, this operation will overwrite the existing value</param>
-        /// <param name="attribValue">The value of the attribute.</param>
+        /// <param name="attribName">Required: The name of the attribute.  If the name is already used, this operation will overwrite any existing value.</param>
+        /// <param name="attribValue">The value of the attribute.  A NULL value will NOT be reported to the New Relic endpoint.</param>
         /// <returns></returns>
         public SpanBatchBuilder WithAttribute(string attribName, object attribValue)
         {
@@ -80,10 +80,11 @@ namespace NewRelic.Telemetry.Spans
         }
 
         /// <summary>
-        /// Used to apply a series of custom attribute values that are common to all spans being reported
+        /// Used to apply a set of custom attribute values that are common to all spans being reported
         /// as part of this SpanBatch.
         /// </summary>
-        /// <param name="attributes">Collection of Key/Value pairs of attributes.  The keys should be unique.</param>
+        /// <param name="attributes">Collection of Key/Value pairs of attributes.  The keys should be unique.  
+        /// In the event of duplicate keys, the last value will be accepted.</param>
         /// <returns></returns>
         public SpanBatchBuilder WithAttributes(ICollection<KeyValuePair<string, object>> attributes)
         {

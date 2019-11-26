@@ -20,7 +20,7 @@ namespace NewRelic.Telemetry.Transport
         protected readonly TelemetryLogging _logger;
         private readonly HttpClient _httpClient;
 
-        //Delegate functions in support of testing
+        //Delegate functions in support of unit testing
         private Func<string, Task<HttpResponseMessage>> _httpHandlerImpl;
         private Func<int, Task> _delayerImpl = new Func<int, Task>(async (int milliseconds) => await Task.Delay(milliseconds));
         private Action<TData, int> _captureSendDataAsyncCallDelegate = null;
@@ -59,7 +59,12 @@ namespace NewRelic.Telemetry.Transport
         
         protected DataSender(TelemetryConfiguration config) : this(config, null)
         {
+        }
+
+        protected DataSender(TelemetryConfiguration config, ILoggerFactory loggerFactory)
+        {
             _config = config;
+            _logger = new TelemetryLogging(loggerFactory);
 
             _httpClient = new HttpClient();
             _httpClient.Timeout = TimeSpan.FromSeconds(_config.SendTimeout);
@@ -69,11 +74,6 @@ namespace NewRelic.Telemetry.Transport
             sp.ConnectionLeaseTimeout = 60000;  // 1 minute
 
             _httpHandlerImpl = SendDataAsync;
-        }
-
-        protected DataSender(TelemetryConfiguration config, ILoggerFactory loggerFactory)
-        {
-            _logger = new TelemetryLogging(loggerFactory);
         }
 
         private async Task<Response> RetryWithSplit(TData data)
@@ -151,7 +151,7 @@ namespace NewRelic.Telemetry.Transport
         }
 
         /// <summary>
-        /// Method used to send a data to New Relic.  Handles the communication with the New Relic endpoints
+        /// Method used to send a data to New Relic endpoint.  Handles the communication with the New Relic endpoints.
         /// </summary>
         /// <param name="dataToSend">The data to send to New Relic</param>
         /// <returns>New Relic response indicating the outcome and additional information about the interaction with the New Relic endpoint.</returns>

@@ -4,9 +4,7 @@ using System;
 namespace NewRelic.Telemetry
 {
      /// <summary>
-     /// Log provider for use within the Telemetry SDK.
-     /// Based on ILoggerFactory so that it can support any
-     /// logging infastructure within its client application.
+     /// Manages logging within the Telemetry SDK.
      /// </summary>
     public class TelemetryLogging
     {

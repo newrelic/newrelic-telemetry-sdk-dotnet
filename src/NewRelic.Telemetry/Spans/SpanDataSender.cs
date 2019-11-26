@@ -28,15 +28,16 @@ namespace NewRelic.Telemetry.Spans
         /// interactions with New Relic endpoints.
         /// </summary>
         /// <param name="configOptions"></param>
+        /// <param name="loggerFactory"></param>
         public SpanDataSender(TelemetryConfiguration configOptions, ILoggerFactory loggerFactory) : base(configOptions, loggerFactory)
         {
         }
 
         /// <summary>
         /// Creates new SpanDataSender obtaining configuration settings from a Configuration Provider 
-        /// that is compatible with Microsoft.Extensions.Configuration.
+        /// that is compatible with <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration.</see>
         /// </summary>
-        /// <param name="configOptions"></param>
+        /// <param name="configProvider"></param>
         public SpanDataSender(IConfiguration configProvider) : base(configProvider)
         {
         }
@@ -44,10 +45,11 @@ namespace NewRelic.Telemetry.Spans
 
         /// <summary>
         /// Creates new SpanDataSender obtaining configuration settings from a Configuration Provider 
-        /// that is compatible with Microsoft.Extensions.Configuration.  it also accepts a logger factory
+        /// that is compatible with <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration.</see>
+        /// It also accepts a <see cref="Microsoft.Extensions.Logging.ILoggerFactory">logger factory</see> 
         /// that will be used to log information about the interactions with New Relic endpoints.
         /// </summary>
-        /// <param name="configOptions"></param>
+        /// <param name="configProvider"></param>
         /// <param name="loggerFactory"></param>
         public SpanDataSender(IConfiguration configProvider, ILoggerFactory loggerFactory) : base(configProvider, loggerFactory)
         {

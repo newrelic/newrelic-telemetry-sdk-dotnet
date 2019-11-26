@@ -18,7 +18,7 @@ namespace NewRelic.Telemetry.Transport
         Failure,
 
         /// <summary>
-        /// Data was sent to New Relic endpoint. It was accepted.
+        /// Data was sent to New Relic endpoint and was accepted for processing.
         /// Represents Http Response Codes 2xx
         /// </summary>
         Success
@@ -62,8 +62,8 @@ namespace NewRelic.Telemetry.Transport
         public NewRelicResponseStatus ResponseStatus { get; private set; }
 
         /// <summary>
-        /// If able to communicate with the New Relic endpoint, the HTTP response code returned by the endpoint.
-        /// This value will be NULL if a failure occurred prior to the communication with New Relic.
+        /// If able to communicate with the New Relic endpoint, this is the HTTP response code returned by the endpoint.
+        /// This value will be NULL if a failure occurred prior to or during the communication with New Relic.
         /// </summary>
         public HttpStatusCode? HttpStatusCode { get; private set; }
 

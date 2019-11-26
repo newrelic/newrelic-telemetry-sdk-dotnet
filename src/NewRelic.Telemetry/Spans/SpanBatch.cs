@@ -11,7 +11,7 @@ namespace NewRelic.Telemetry.Spans
     {
 
         /// <summary>
-        /// Properties that are common to all spans being sent as part of this SpanBatch.
+        /// Properties that are common to all spans being submitted as part of this SpanBatch.
         /// </summary>
         [DataMember(Name = "common")]
         public SpanBatchCommonProperties CommonProperties { get; internal set; }
