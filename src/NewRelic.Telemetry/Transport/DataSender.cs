@@ -59,7 +59,12 @@ namespace NewRelic.Telemetry.Transport
         
         protected DataSender(TelemetryConfiguration config) : this(config, null)
         {
+        }
+
+        protected DataSender(TelemetryConfiguration config, ILoggerFactory loggerFactory)
+        {
             _config = config;
+            _logger = new TelemetryLogging(loggerFactory);
 
             _httpClient = new HttpClient();
             _httpClient.Timeout = TimeSpan.FromSeconds(_config.SendTimeout);
@@ -69,11 +74,7 @@ namespace NewRelic.Telemetry.Transport
             sp.ConnectionLeaseTimeout = 60000;  // 1 minute
 
             _httpHandlerImpl = SendDataAsync;
-        }
 
-        protected DataSender(TelemetryConfiguration config, ILoggerFactory loggerFactory)
-        {
-            _logger = new TelemetryLogging(loggerFactory);
         }
 
         private async Task<Response> RetryWithSplit(TData data)
