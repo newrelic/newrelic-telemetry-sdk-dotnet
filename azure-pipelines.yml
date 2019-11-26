@@ -12,7 +12,10 @@ steps:
   displayName: 'Build (configuration=$(buildConfiguration))'
 
 - script: dotnet test src/NewRelic.Telemetry.Tests --no-build --no-restore --configuration $(buildConfiguration) --logger trx
-  displayName: 'Run tests'
+  displayName: 'Run tests - TelemetrySDK'
+
+- script: dotnet test src/OpenTelemetry.Exporter.NewRelic.Tests --no-build --no-restore --configuration $(buildConfiguration) --logger trx
+  displayName: 'Run tests - OpenTelemetry'
 
 - task: PublishTestResults@2
   inputs:
@@ -22,15 +25,29 @@ steps:
 - task: CopyFiles@2
   inputs:
     contents: 'src/NewRelic.Telemetry/bin/$(buildConfiguration)/**/*'
-    targetFolder: '$(Build.ArtifactStagingDirectory)'
+    targetFolder: '$(Build.ArtifactStagingDirectory)/TelemetrySDK'
+
+- task: CopyFiles@2
+  inputs:
+    contents: 'src/OpenTelemetry.Exporter.NewRelic/bin/$(buildConfiguration)/**/*'
+    targetFolder: '$(Build.ArtifactStagingDirectory)/OpenTelemetry'
 
 - task: PublishBuildArtifacts@1
 
 - task: NuGetCommand@2
-  condition: and(succeeded(), eq(variables['pushNupkg'], 'true'))
-  displayName: 'Push NuGet Packages'
+  condition: and(succeeded(), eq(variables['pushNupkgTelemetrySDK'], 'true'))
+  displayName: 'Push NuGet Packages - Telemetry SDK'
   inputs:
     command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/TelemetrySDK/**/*.nupkg'
+    nuGetFeedType: 'external'
+    publishFeedCredentials: 'NuGet'
+
+- task: NuGetCommand@2
+  condition: and(succeeded(), eq(variables['pushNupkgOpenTelemetry'], 'true'))
+  displayName: 'Push NuGet Packages - OpenTelemetry Exporter'
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/OpenTelemetry/**/*.nupkg'
     nuGetFeedType: 'external'
     publishFeedCredentials: 'NuGet'
