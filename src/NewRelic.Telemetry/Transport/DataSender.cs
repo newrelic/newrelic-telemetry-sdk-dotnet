@@ -20,11 +20,10 @@ namespace NewRelic.Telemetry.Transport
         protected readonly TelemetryLogging _logger;
         private readonly HttpClient _httpClient;
 
-        //Delegate functions in support of testing
+        //Delegate functions in support of unit testing
         private Func<string, Task<HttpResponseMessage>> _httpHandlerImpl;
         private Func<int, Task> _delayerImpl = new Func<int, Task>(async (int milliseconds) => await Task.Delay(milliseconds));
         private Action<TData, int> _captureSendDataAsyncCallDelegate = null;
-
 
         protected abstract string EndpointUrl { get; }
 
@@ -32,6 +31,33 @@ namespace NewRelic.Telemetry.Transport
 
         protected abstract bool ContainsNoData(TData dataToCheck);
 
+        protected DataSender(IConfiguration configProvider) : this(configProvider, null)
+        {
+        }
+
+        protected DataSender(IConfiguration configProvider, ILoggerFactory loggerFactory) : this(new TelemetryConfiguration(configProvider), loggerFactory)
+        {
+        }
+        
+        protected DataSender(TelemetryConfiguration config) : this(config, null)
+        {
+        }
+
+        protected DataSender(TelemetryConfiguration config, ILoggerFactory loggerFactory)
+        {
+            _config = config;
+            _logger = new TelemetryLogging(loggerFactory);
+
+            _httpClient = new HttpClient();
+            _httpClient.Timeout = TimeSpan.FromSeconds(_config.SendTimeout);
+
+            //Ensures that DNS expires regularly.
+            var sp = ServicePointManager.FindServicePoint(new Uri(EndpointUrl));
+            sp.ConnectionLeaseTimeout = 60000;  // 1 minute
+
+            _httpHandlerImpl = SendDataAsync;
+        }
+        
         internal DataSender<TData> WithDelayFunction(Func<int, Task> delayerImpl)
         {
             _delayerImpl = delayerImpl;
@@ -48,35 +74,7 @@ namespace NewRelic.Telemetry.Transport
             _captureSendDataAsyncCallDelegate = captureTestDataImpl;
         }
 
-        protected DataSender(IConfiguration configProvider) : this(configProvider, null)
-        {
-        }
-
-        protected DataSender(IConfiguration configProvider, ILoggerFactory loggerFactory) : this(new TelemetryConfiguration(configProvider), loggerFactory)
-        {
-        }
-
-        
-        protected DataSender(TelemetryConfiguration config) : this(config, null)
-        {
-            _config = config;
-
-            _httpClient = new HttpClient();
-            _httpClient.Timeout = TimeSpan.FromSeconds(_config.SendTimeout);
-
-            //Ensures that DNS expires regularly.
-            var sp = ServicePointManager.FindServicePoint(new Uri(EndpointUrl));
-            sp.ConnectionLeaseTimeout = 60000;  // 1 minute
-
-            _httpHandlerImpl = SendDataAsync;
-        }
-
-        protected DataSender(TelemetryConfiguration config, ILoggerFactory loggerFactory)
-        {
-            _logger = new TelemetryLogging(loggerFactory);
-        }
-
-        private async Task<Response> RetryWithSplit(TData data)
+       private async Task<Response> RetryWithSplit(TData data)
         {
             var newBatches = Split(data);
 
@@ -150,6 +148,11 @@ namespace NewRelic.Telemetry.Transport
             return await SendDataAsync(dataToSend, retryNum);
         }
 
+        /// <summary>
+        /// Method used to send a data to New Relic endpoint.  Handles the communication with the New Relic endpoints.
+        /// </summary>
+        /// <param name="dataToSend">The data to send to New Relic</param>
+        /// <returns>New Relic response indicating the outcome and additional information about the interaction with the New Relic endpoint.</returns>
         public async Task<Response> SendDataAsync(TData dataToSend)
         {
             if(string.IsNullOrWhiteSpace(_config.ApiKey))
