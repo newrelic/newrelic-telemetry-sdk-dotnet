@@ -1,8 +1,6 @@
 ﻿using NewRelic.Telemetry;
 using NewRelic.Telemetry.Transport;
 using NRSpans = NewRelic.Telemetry.Spans;
-using OpenTelemetry.Trace;
-using OpenTelemetry.Trace.Export;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +8,8 @@ using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
+using OpenTelemetry.Trace.Export;
+using OpenTelemetry.Trace;
 
 namespace OpenTelemetry.Exporter.NewRelic
 {
