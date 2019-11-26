@@ -12,8 +12,7 @@ namespace NewRelic.Telemetry.Transport
         DidNotSend_NoData,
 
         /// <summary>
-        /// An attempt was made to send data to New Relic endpoint, but an unexpected failure occurred and
-        /// the data was not sent.
+        /// An attempt was made to send data to New Relic endpoint, but an unexpected failure occurred.
         /// </summary>
         Failure,
 
@@ -57,7 +56,7 @@ namespace NewRelic.Telemetry.Transport
 
 
         /// <summary>
-        /// Summarizes the outcome of the request.  See <see cref="NewRelicResponseStatus"/> for the possible outcomes
+        /// Summarizes the outcome of the request.  See <see cref="NewRelicResponseStatus"/> for the possible outcomes.
         /// </summary>
         public NewRelicResponseStatus ResponseStatus { get; private set; }
 
@@ -68,7 +67,7 @@ namespace NewRelic.Telemetry.Transport
         public HttpStatusCode? HttpStatusCode { get; private set; }
 
         /// <summary>
-        /// Provides additional contextual information about the outcome
+        /// Provides additional contextual information about the outcome.
         /// </summary>
         public string Message { get; private set; }
 
