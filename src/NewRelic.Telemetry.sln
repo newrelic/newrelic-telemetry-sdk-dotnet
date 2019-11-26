@@ -9,6 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Telemetry.Tests", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{1F32F4A4-3650-48B6-B384-445DB48ECF20}"
 	ProjectSection(SolutionItems) = preProject
+		..\azure-pipelines.yml = ..\azure-pipelines.yml
 		..\CHANGELOG.md = ..\CHANGELOG.md
 		..\README.md = ..\README.md
 		..\THIRD_PARTY_NOTICES.md = ..\THIRD_PARTY_NOTICES.md
@@ -25,6 +26,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Open Telemetry", "Open Telemetry", "{82DD26D6-9333-4B4B-999B-E32E7359D7BE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{FECC3BEB-820C-4B94-BB0E-98228ADE6237}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{F028FF9D-9262-45A6-AC4D-79C54943DB03}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -107,6 +110,7 @@ Global
 		{4D5BC297-24D2-47FE-85C2-051A29A59B7D} = {82DD26D6-9333-4B4B-999B-E32E7359D7BE}
 		{583642EE-8AC9-4E87-AD51-6FECF8F255DC} = {FECC3BEB-820C-4B94-BB0E-98228ADE6237}
 		{FECC3BEB-820C-4B94-BB0E-98228ADE6237} = {82DD26D6-9333-4B4B-999B-E32E7359D7BE}
+		{F028FF9D-9262-45A6-AC4D-79C54943DB03} = {D095AF96-3B3A-46D6-99FE-1DC845FA4BCE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {08D1630D-EA85-4E78-ABBA-34195DCA7595}
