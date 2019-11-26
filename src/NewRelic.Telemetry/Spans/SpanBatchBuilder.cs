@@ -26,7 +26,7 @@ namespace NewRelic.Telemetry.Spans
         }
 
         /// <summary>
-        /// Returns the biilt SpanBatch to the caller.
+        /// Returns the built SpanBatch to the caller.
         /// </summary>
         /// <returns></returns>
         public SpanBatch Build()
