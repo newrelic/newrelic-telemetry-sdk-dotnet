@@ -1,7 +1,6 @@
-# New Relic Telemetry SDK and Open Telemetry  Support for .NET
+# .NET Open Telemetry Provider for New Relic 
 
-This repo contains the New Relic Telemetry SDK and an Open Telemetry Provider for .NET.
-
+The New Relic Data Exporter is a Open Telemetry Provider that sends data to New Relic.
 
 ### Limitations
 The New Relic Telemetry APIs are rate limited. Please reference the documentation for New Relic Metrics API and New Relic Trace API Requirements and Limits on the specifics of the rate limits.
