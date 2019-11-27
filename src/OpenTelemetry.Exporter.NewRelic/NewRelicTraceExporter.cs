@@ -21,6 +21,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         private readonly NRSpans.SpanDataSender _spanDataSender;
 
         private const string _attribName_url = "http.url";
+        private const string _parentId_NullValue = "0000000000000000";
 
         private readonly ILogger _logger;
         private readonly TelemetryConfiguration _config;
@@ -120,9 +121,8 @@ namespace OpenTelemetry.Exporter.NewRelic
 
         private NRSpans.SpanBatch ToNewRelicSpanBatch(IEnumerable<Span> otSpans)
         {
-
             var nrSpans = new List<NRSpans.Span>();
-            var tracesToRemove = new List<string>();
+            var spanIdsToFilter = new List<string>();
 
             foreach (var otSpan in otSpans)
             {
@@ -136,7 +136,7 @@ namespace OpenTelemetry.Exporter.NewRelic
                     var nrSpan = ToNewRelicSpan(otSpan);
                     if(nrSpan == null)
                     {
-                        tracesToRemove.Add(otSpan.Context.TraceId.ToHexString());
+                        spanIdsToFilter.Add(otSpan.Context.SpanId.ToHexString());
                     }
                     else
                     {
@@ -159,14 +159,36 @@ namespace OpenTelemetry.Exporter.NewRelic
                 }
             }
 
+            nrSpans = FilterSpans(nrSpans, spanIdsToFilter);
+
             var spanBatchBuilder = NRSpans.SpanBatchBuilder.Create();
 
-            spanBatchBuilder.WithSpans(nrSpans.Where(x => !tracesToRemove.Contains(x.TraceId)));
+            spanBatchBuilder.WithSpans(nrSpans);
 
             var nrSpanBatch = spanBatchBuilder.Build();
 
             return nrSpanBatch;
         }
+
+        private List<NRSpans.Span> FilterSpans(List<NRSpans.Span> spans, List<string> spanIdsToFilter)
+        {
+            if(spanIdsToFilter.Count == 0)
+            {
+                return spans;
+            }
+
+            var newSpanIdsToFilter = spans.Where(x => spanIdsToFilter.Contains(x.ParentId)).Select(x=>x.Id).ToArray();
+
+            if(newSpanIdsToFilter.Length == 0)
+            {
+                return spans;
+            }
+
+            spanIdsToFilter = spanIdsToFilter.Union(newSpanIdsToFilter).ToList();
+            spans = spans.Where(x => !newSpanIdsToFilter.Contains(x.Id)).ToList();
+            return FilterSpans(spans, spanIdsToFilter);
+        }
+
 
         private NRSpans.Span ToNewRelicSpan(Span openTelemetrySpan)
         {
@@ -187,7 +209,7 @@ namespace OpenTelemetry.Exporter.NewRelic
                 newRelicSpanBuilder.WithServiceName(_config.ServiceName);
             }
 
-            if (openTelemetrySpan.ParentSpanId != null)
+            if (openTelemetrySpan.ParentSpanId != null && openTelemetrySpan.ParentSpanId.ToHexString() != _parentId_NullValue)
             {
                 newRelicSpanBuilder.WithParentId(openTelemetrySpan.ParentSpanId.ToHexString());
             }

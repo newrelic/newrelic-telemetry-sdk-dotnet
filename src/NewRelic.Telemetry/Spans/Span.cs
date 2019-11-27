@@ -14,6 +14,25 @@ namespace NewRelic.Telemetry.Spans
         /// </summary>
         public string Id { get; internal set; }
 
+        [IgnoreDataMember]
+        public string ParentId
+        {
+            get
+            {
+                if (Attributes == null)
+                {
+                    return null;
+                }
+                        
+                if(Attributes.TryGetValue(SpanBuilder.attribName_ParentID, out var parentId))
+                {
+                    return parentId?.ToString();
+                }
+
+                return null;
+            }
+        }
+
         /// <summary>
         /// Identifies this span as a component of a trace/operation.
         /// </summary>

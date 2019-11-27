@@ -12,7 +12,7 @@ namespace NewRelic.Telemetry.Spans
         private const string attribName_ServiceName = "service.name";
         private const string attribName_DurationMs = "duration.ms";
         private const string attribName_Name = "name";
-        private const string attribName_ParentID = "parent.id";
+        internal const string attribName_ParentID = "parent.id";
         private const string attribName_Error = "error";
 
         /// <summary>

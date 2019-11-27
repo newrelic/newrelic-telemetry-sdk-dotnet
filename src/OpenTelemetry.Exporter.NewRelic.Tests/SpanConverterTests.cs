@@ -14,7 +14,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
     public class SpanConverterTests
 	{
         const string testServiceName = "TestService";
-        const int expected_CountSpans = 3;
+        const int expected_CountSpans = 4;
 
         private List<ISpan> _otSpans = new List<ISpan>();
         private List<NRSpans.Span> _resultNRSpans = new List<NRSpans.Span>();
@@ -47,22 +47,21 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             {
                 var tracer = tracerFactory.GetTracer("TestTracer");
 
-                //  Creating the following spans
-                //  -------------------------------------------------------
-                //  0   Test Span 1                                     Trace 1
-                //  1       Test Span 2                                 Trace 1
-                //  2   Test Span 3                                     Trace 2
-                //  3   Should be Filtered - Pipeline                   Trace 3
-                //  4       Shoul be Filtered - HTTP Call to NR         Trace 3
-                //  5           Should be filtered - Child of HTTP      Trace 3
+                //  Creating the following spans                        Trace       Expected Outcome
+                //  -----------------------------------------------------------------------------------
+                //  0   Test Span 1                                     Trace 1     Included
+                //  1       Test Span 2                                 Trace 1     Included
+                //  2   Test Span 3                                     Trace 2     Included
+                //  3   Test Span 4                                     Trace 3     Included
+                //  4       Shoul be Filtered - HTTP Call to NR         Trace 3     Excluded
+                //  5           Should be filtered - Child of HTTP      Trace 3     Excluded
 
                 _otSpans.Add(tracer.StartRootSpan("Test Span 1"));
                 _otSpans.Add(tracer.StartSpan("Test Span 2", _otSpans[0]));
                 _otSpans.Add(tracer.StartRootSpan("Test Span 3"));
-                _otSpans.Add(tracer.StartRootSpan("Should be Filtered - Pipeline"));
+                _otSpans.Add(tracer.StartRootSpan("Test Span 4"));
                 _otSpans.Add(tracer.StartSpan("Should Be Filtered - HTTP Call to NR",_otSpans[3]).PutHttpRawUrlAttribute(config.TraceUrl));
                 _otSpans.Add(tracer.StartSpan("Should Be Filtered - Child of HTTP", _otSpans[4]));
-
 
                 _otSpans[0].Status = Status.Ok;
                 _otSpans[1].Status = Status.Aborted;
@@ -70,7 +69,6 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
                 _otSpans[3].Status = Status.Ok;
                 _otSpans[4].Status = Status.Ok;
                 _otSpans[5].Status = Status.Ok;
-
 
                 Thread.Sleep(100);
                 _otSpans[1].End();
@@ -102,10 +100,12 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             var resultNRSpan0 = resultNRSpansDic[_otSpans[0].Context.SpanId.ToHexString()];
             var resultNRSpan1 = resultNRSpansDic[_otSpans[1].Context.SpanId.ToHexString()];
             var resultNRSpan2 = resultNRSpansDic[_otSpans[2].Context.SpanId.ToHexString()];
+            var resultNRSpan3 = resultNRSpansDic[_otSpans[3].Context.SpanId.ToHexString()];
 
             Assert.IsNotNull(resultNRSpan0, $"Test Span not in output - testSpan0 - {_otSpans[0].Context.SpanId.ToHexString()}");
             Assert.IsNotNull(resultNRSpan1, $"Test Span not in output - testSpan1 - {_otSpans[1].Context.SpanId.ToHexString()}");
             Assert.IsNotNull(resultNRSpan2, $"Test Span not in output - testSpan2 - {_otSpans[2].Context.SpanId.ToHexString()}");
+            Assert.IsNotNull(resultNRSpan3, $"Test Span not in output - testSpan2 - {_otSpans[2].Context.SpanId.ToHexString()}");
         }
 
         [Test]
@@ -114,10 +114,13 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             var resultSpan0 = resultNRSpansDic[_otSpans[0].Context.SpanId.ToHexString()];
             var resultSpan1 = resultNRSpansDic[_otSpans[1].Context.SpanId.ToHexString()];
             var resultSpan2 = resultNRSpansDic[_otSpans[2].Context.SpanId.ToHexString()];
+            var resultSpan3 = resultNRSpansDic[_otSpans[3].Context.SpanId.ToHexString()];
+
 
             Assert.False(resultSpan0.Attributes.ContainsKey("error"), "resultSpan0 should NOT have Error Attribute");
             Assert.AreEqual(resultSpan1.Attributes["error"], true, "resultSpan1 should have Error Attribute = true");
             Assert.False(resultSpan2.Attributes.ContainsKey("error"), "resultSpan2 should NOT have Error Attribute");
+            Assert.False(resultSpan3.Attributes.ContainsKey("error"), "resultSpan3 should NOT have Error Attribute");
         }
 
         [Test]
@@ -126,19 +129,35 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             var resultNRSpan0 = resultNRSpansDic[_otSpans[0].Context.SpanId.ToHexString()];
             var resultNRSpan1 = resultNRSpansDic[_otSpans[1].Context.SpanId.ToHexString()];
             var resultNRSpan2 = resultNRSpansDic[_otSpans[2].Context.SpanId.ToHexString()];
-
+            var resultNRSpan3 = resultNRSpansDic[_otSpans[3].Context.SpanId.ToHexString()];
 
             Assert.AreEqual(resultNRSpan0.TraceId, _otSpans[0].Context.TraceId.ToHexString(), "Mismatch on TraceId - testSpan0");
             Assert.AreEqual(resultNRSpan1.TraceId, _otSpans[1].Context.TraceId.ToHexString(), "Mismatch on TraceId - testSpan1");
             Assert.AreEqual(resultNRSpan2.TraceId, _otSpans[2].Context.TraceId.ToHexString(), "Mismatch on TraceId - testSpan2");
             Assert.AreEqual(resultNRSpan0.TraceId, resultNRSpan1.TraceId, "Mismatch on TraceId - testSpan0 and testSpan1 should belong to the same trace");
             Assert.AreNotEqual(resultNRSpan0.TraceId, resultNRSpan2.TraceId, "Mismatch on TraceId - testSpan0 and testSpan2 should NOT belong to the same trace");
+            Assert.AreNotEqual(resultNRSpan0.TraceId, resultNRSpan3.TraceId, "Mismatch on TraceId - testSpan0 and testSpan3 should NOT belong to the same trace");
+            Assert.AreNotEqual(resultNRSpan2.TraceId, resultNRSpan3.TraceId, "Mismatch on TraceId - testSpan2 and testSpan3 should NOT belong to the same trace");
+
+        }
+
+        public void Test_ParentSpanId()
+        {
+            var resultNRSpan0 = resultNRSpansDic[_otSpans[0].Context.SpanId.ToHexString()];
+            var resultNRSpan1 = resultNRSpansDic[_otSpans[1].Context.SpanId.ToHexString()];
+            var resultNRSpan2 = resultNRSpansDic[_otSpans[2].Context.SpanId.ToHexString()];
+            var resultNRSpan3 = resultNRSpansDic[_otSpans[3].Context.SpanId.ToHexString()];
+
+            Assert.IsNull(resultNRSpan0.ParentId,"Top Level Span should have NULL parentID");
+            Assert.AreEqual(resultNRSpan1.ParentId, resultNRSpan0.Id, "Mismatch on ParentId - Span1 is a child of Span0");
+            Assert.IsNull(resultNRSpan2.ParentId, "Top Level Span should have NULL parentID");
+            Assert.IsNull(resultNRSpan3.ParentId, "Top Level Span should have NULL parentID");
         }
 
         [Test]
         public void Test_FilterOutNewRelicEndpoint()
         {
-            Assert.IsFalse(resultNRSpansDic.ContainsKey(_otSpans[3].Context.SpanId.ToHexString()), "Endpoint calls to New Relic should be excluded");
+            //Assert.IsFalse(resultNRSpansDic.ContainsKey(_otSpans[3].Context.SpanId.ToHexString()), "Endpoint calls to New Relic should be excluded");
             Assert.IsFalse(resultNRSpansDic.ContainsKey(_otSpans[4].Context.SpanId.ToHexString()), "Endpoint calls to New Relic should be excluded");
             Assert.IsFalse(resultNRSpansDic.ContainsKey(_otSpans[5].Context.SpanId.ToHexString()), "Endpoint calls to New Relic should be excluded");
         }
