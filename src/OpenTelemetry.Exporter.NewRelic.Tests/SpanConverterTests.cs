@@ -11,6 +11,30 @@ using NRSpans = NewRelic.Telemetry.Spans;
 
 namespace OpenTelemetry.Exporter.NewRelic.Tests
 { 
+    public class Booger
+    {
+
+        private bool? _useSQS = false;
+        internal bool UseSQS
+        {
+            get
+            {
+                if(_useSQS == null)
+                {
+
+                }
+
+                return _useSQS.Value;
+            }
+        }
+        
+
+
+
+    }
+
+
+
     public class SpanConverterTests
 	{
         const string testServiceName = "TestService";
