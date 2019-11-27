@@ -47,15 +47,30 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             {
                 var tracer = tracerFactory.GetTracer("TestTracer");
 
+                //  Creating the following spans
+                //  -------------------------------------------------------
+                //  0   Test Span 1                                     Trace 1
+                //  1       Test Span 2                                 Trace 1
+                //  2   Test Span 3                                     Trace 2
+                //  3   Should be Filtered - Pipeline                   Trace 3
+                //  4       Shoul be Filtered - HTTP Call to NR         Trace 3
+                //  5           Should be filtered - Child of HTTP      Trace 3
+
                 _otSpans.Add(tracer.StartRootSpan("Test Span 1"));
                 _otSpans.Add(tracer.StartSpan("Test Span 2", _otSpans[0]));
                 _otSpans.Add(tracer.StartRootSpan("Test Span 3"));
-                _otSpans.Add(tracer.StartRootSpan("xsdf").PutHttpRawUrlAttribute(config.TraceUrl));
+                _otSpans.Add(tracer.StartRootSpan("Should be Filtered - Pipeline"));
+                _otSpans.Add(tracer.StartSpan("Should Be Filtered - HTTP Call to NR",_otSpans[3]).PutHttpRawUrlAttribute(config.TraceUrl));
+                _otSpans.Add(tracer.StartSpan("Should Be Filtered - Child of HTTP", _otSpans[4]));
+
 
                 _otSpans[0].Status = Status.Ok;
                 _otSpans[1].Status = Status.Aborted;
                 _otSpans[2].Status = Status.Ok;
                 _otSpans[3].Status = Status.Ok;
+                _otSpans[4].Status = Status.Ok;
+                _otSpans[5].Status = Status.Ok;
+
 
                 Thread.Sleep(100);
                 _otSpans[1].End();
@@ -64,6 +79,10 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
                 Thread.Sleep(150);
                 _otSpans[2].End();
                 Thread.Sleep(175);
+                _otSpans[5].End();
+                Thread.Sleep(100);
+                _otSpans[4].End();
+                Thread.Sleep(50);
                 _otSpans[3].End();
             }
         }
@@ -120,6 +139,8 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         public void Test_FilterOutNewRelicEndpoint()
         {
             Assert.IsFalse(resultNRSpansDic.ContainsKey(_otSpans[3].Context.SpanId.ToHexString()), "Endpoint calls to New Relic should be excluded");
+            Assert.IsFalse(resultNRSpansDic.ContainsKey(_otSpans[4].Context.SpanId.ToHexString()), "Endpoint calls to New Relic should be excluded");
+            Assert.IsFalse(resultNRSpansDic.ContainsKey(_otSpans[5].Context.SpanId.ToHexString()), "Endpoint calls to New Relic should be excluded");
         }
 
         [Test]

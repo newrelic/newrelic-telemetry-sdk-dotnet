@@ -80,30 +80,21 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// <summary>
         /// Responsible for sending Open Telemetry Spans to New Relic endpoint.
         /// </summary>
-        /// <param name="otSpanBatch">Collection of Open Telemetry spans to be sent to New Relic</param>
+        /// <param name="otSpans">Collection of Open Telemetry spans to be sent to New Relic</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async override Task<ExportResult> ExportAsync(IEnumerable<Span> otSpanBatch, CancellationToken cancellationToken)
+        public async override Task<ExportResult> ExportAsync(IEnumerable<Span> otSpans, CancellationToken cancellationToken)
         {
-            if (otSpanBatch == null) throw new ArgumentNullException(nameof(otSpanBatch));
+            if (otSpans == null) throw new ArgumentNullException(nameof(otSpans));
             if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
 
-            var spanBatchBuilder = NRSpans.SpanBatchBuilder.Create();
+            var nrSpanBatch = ToNewRelicSpanBatch(otSpans);
 
-            foreach (var otSpan in otSpanBatch)
+            if(nrSpanBatch.Spans.Count == 0)
             {
-                try
-                {
-                    spanBatchBuilder.WithSpan(ToNewRelicSpan(otSpan));
-                }
-                catch (Exception ex)
-                {
-                    _logger?.LogError(null, ex, $"Error translating Open Telemetry Span {otSpan.Context.SpanId.ToHexString()} to New Relic Span.");
-                }
+                return ExportResult.Success;
             }
 
-            var nrSpanBatch = spanBatchBuilder.Build();
-            
             var result = await _spanDataSender.SendDataAsync(nrSpanBatch);
 
             switch (result.ResponseStatus)
@@ -125,6 +116,56 @@ namespace OpenTelemetry.Exporter.NewRelic
 
         public void Dispose()
         {
+        }
+
+        private NRSpans.SpanBatch ToNewRelicSpanBatch(IEnumerable<Span> otSpans)
+        {
+
+            var nrSpans = new List<NRSpans.Span>();
+            var tracesToRemove = new List<string>();
+
+            foreach (var otSpan in otSpans)
+            {
+                if(otSpan == null)
+                {
+                    continue;
+                }
+
+                try
+                {
+                    var nrSpan = ToNewRelicSpan(otSpan);
+                    if(nrSpan == null)
+                    {
+                        tracesToRemove.Add(otSpan.Context.TraceId.ToHexString());
+                    }
+                    else
+                    {
+                        nrSpans.Add(nrSpan);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (_logger != null)
+                    {
+                        var otSpanId = "<unknown>";
+                        try
+                        {
+                            otSpanId = otSpan.Context.SpanId.ToHexString();
+                        }
+                        catch { }
+
+                        _logger.LogError(null, ex, $"Error translating Open Telemetry Span {otSpanId} to New Relic Span.");
+                    }
+                }
+            }
+
+            var spanBatchBuilder = NRSpans.SpanBatchBuilder.Create();
+
+            spanBatchBuilder.WithSpans(nrSpans.Where(x => !tracesToRemove.Contains(x.TraceId)));
+
+            var nrSpanBatch = spanBatchBuilder.Build();
+
+            return nrSpanBatch;
         }
 
         private NRSpans.Span ToNewRelicSpan(Span openTelemetrySpan)
