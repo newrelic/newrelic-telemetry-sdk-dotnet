@@ -16,6 +16,16 @@
     <PackageTags>newrelic</PackageTags>
     <Authors>New Relic</Authors>
     <Company>New Relic</Company>
+
+    <Major>1</Major>
+    <Minor>0</Minor>
+    <Build>0</Build>
+    <Revision>0</Revision>
+    <Version>$(Major).$(Minor).$(Build).$(Revision)</Version>
+    <PackageVersion>$(Major).$(Minor).$(Build)</PackageVersion>
+    <AssemblyVersion>$(Major).0.0.0</AssemblyVersion>
+    <FileVersion>$(Major).$(Minor).$(Build).$(Revision)</FileVersion>
+
   </PropertyGroup>
 
   <ItemGroup>
