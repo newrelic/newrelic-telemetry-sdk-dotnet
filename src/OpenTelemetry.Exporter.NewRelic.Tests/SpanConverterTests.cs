@@ -68,7 +68,14 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             }
         }
 
-		[Test]
+        [TearDown]
+        public void TearDown()
+        {
+            _resultNRSpans.Clear();
+            _otSpans.Clear();
+        }
+
+        [Test]
 		public void Test_ExpectedSpansCreated()
 		{
             Assert.AreEqual(expected_CountSpans, resultNRSpansDic.Count, "Unexpected number of spans");
