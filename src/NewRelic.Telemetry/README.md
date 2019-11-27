@@ -1,6 +1,6 @@
-# New Relic Telemetry SDK and Open Telemetry  Support for .NET
+# New Relic Telemetry SDK for .NET
 
-This repo contains the New Relic Telemetry SDK and an Open Telemetry Provider for .NET.
+The New Relic Telemetry SDK for .NET sends Telemetry Data to New Relic.
 
 
 ### Limitations
