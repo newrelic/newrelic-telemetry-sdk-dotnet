@@ -12,18 +12,20 @@ namespace NewRelic.Telemetry.Transport
         DidNotSend_NoData,
 
         /// <summary>
-        /// An attempt was made to send data to New Relic endpoint, but an unexpected failure occurred and
-        /// the data was not sent.
+        /// An attempt was made to send data to New Relic endpoint, but an unexpected failure occurred.
         /// </summary>
         Failure,
 
         /// <summary>
-        /// Data was sent to New Relic endpoint. It was accepted.
+        /// Data was sent to New Relic endpoint and was accepted for processing.
         /// Represents Http Response Codes 2xx
         /// </summary>
         Success
     }
 
+    /// <summary>
+    /// Provides information regarding the outcome of a request to send data to a New Relic endpoint.
+    /// </summary>
     public class Response
     {
         internal readonly static Response DidNotSend = new Response(NewRelicResponseStatus.DidNotSend_NoData);
@@ -53,10 +55,20 @@ namespace NewRelic.Telemetry.Transport
         }
 
 
+        /// <summary>
+        /// Summarizes the outcome of the request.  See <see cref="NewRelicResponseStatus"/> for the possible outcomes.
+        /// </summary>
         public NewRelicResponseStatus ResponseStatus { get; private set; }
 
+        /// <summary>
+        /// If able to communicate with the New Relic endpoint, this is the HTTP response code returned by the endpoint.
+        /// This value will be NULL if a failure occurred prior to or during the communication with New Relic.
+        /// </summary>
         public HttpStatusCode? HttpStatusCode { get; private set; }
 
+        /// <summary>
+        /// Provides additional contextual information about the outcome.
+        /// </summary>
         public string Message { get; private set; }
 
         internal Response(NewRelicResponseStatus responseStatus)

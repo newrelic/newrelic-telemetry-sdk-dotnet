@@ -3,6 +3,9 @@ using System;
 
 namespace NewRelic.Telemetry
 {
+     /// <summary>
+     /// Manages logging within the Telemetry SDK.
+     /// </summary>
     public class TelemetryLogging
     {
         private const string _prefix = "NewRelic Telemetry:";

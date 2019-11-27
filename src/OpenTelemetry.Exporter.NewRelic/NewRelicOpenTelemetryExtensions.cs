@@ -14,7 +14,7 @@ namespace OpenTelemetry.Exporter.NewRelic
     {
 
         /// <summary>
-        /// Advanced Configuration the New Relic Data Exporter providing an instance of configuration settings and a logger
+        /// Advanced Configuration the New Relic Data Exporter providing configuration provider and a logger factory
         /// factory.
         /// </summary>
         /// <param name="builder"></param>
@@ -28,7 +28,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         }
 
         /// <summary>
-        /// Advanced Configuration the New Relic Data Exporter providing an instance of configuration settings and a logger
+        /// Advanced Configuration the New Relic Data Exporter that is configured using a Configuration Provider.
         /// factory.
         /// </summary>
         /// <param name="builder"></param>
@@ -40,8 +40,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         }
 
         /// <summary>
-        /// Advanced Configuration the New Relic Data Exporter providing an instance of configuration settings and a logger
-        /// factory.
+        /// Advanced Configuration the New Relic Data Exporter that is configured using an instance of TelemetryConfiguration and a Logger Factory
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="config"></param>
@@ -54,7 +53,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         }
 
         /// <summary>
-        /// Advanced Configuration of the New Relic Data Exporter providing an instance of configuration settings without logging.
+        /// Advanced Configuration of the New Relic Data Exporter providing an instance of TelemetryConfiguration settings without logging.
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="config"></param>

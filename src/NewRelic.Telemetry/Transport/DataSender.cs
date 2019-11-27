@@ -20,33 +20,16 @@ namespace NewRelic.Telemetry.Transport
         protected readonly TelemetryLogging _logger;
         private readonly HttpClient _httpClient;
 
-        //Delegate functions in support of testing
+        //Delegate functions in support of unit testing
         private Func<string, Task<HttpResponseMessage>> _httpHandlerImpl;
         private Func<int, Task> _delayerImpl = new Func<int, Task>(async (int milliseconds) => await Task.Delay(milliseconds));
         private Action<TData, int> _captureSendDataAsyncCallDelegate = null;
-
 
         protected abstract string EndpointUrl { get; }
 
         protected abstract TData[] Split(TData dataToSplit);
 
         protected abstract bool ContainsNoData(TData dataToCheck);
-
-        internal DataSender<TData> WithDelayFunction(Func<int, Task> delayerImpl)
-        {
-            _delayerImpl = delayerImpl;
-            return this;
-        }
-
-        internal void WithHttpHandlerImpl(Func<string, Task<HttpResponseMessage>> httpHandler)
-        {
-            _httpHandlerImpl = httpHandler;
-        }
-
-        internal void WithCaptureSendDataAsyncDelegate(Action<TData, int> captureTestDataImpl)
-        {
-            _captureSendDataAsyncCallDelegate = captureTestDataImpl;
-        }
 
         protected DataSender(IConfiguration configProvider) : this(configProvider, null)
         {
@@ -55,7 +38,6 @@ namespace NewRelic.Telemetry.Transport
         protected DataSender(IConfiguration configProvider, ILoggerFactory loggerFactory) : this(new TelemetryConfiguration(configProvider), loggerFactory)
         {
         }
-
         
         protected DataSender(TelemetryConfiguration config) : this(config, null)
         {
@@ -74,10 +56,25 @@ namespace NewRelic.Telemetry.Transport
             sp.ConnectionLeaseTimeout = 60000;  // 1 minute
 
             _httpHandlerImpl = SendDataAsync;
-
+        }
+        
+        internal DataSender<TData> WithDelayFunction(Func<int, Task> delayerImpl)
+        {
+            _delayerImpl = delayerImpl;
+            return this;
         }
 
-        private async Task<Response> RetryWithSplit(TData data)
+        internal void WithHttpHandlerImpl(Func<string, Task<HttpResponseMessage>> httpHandler)
+        {
+            _httpHandlerImpl = httpHandler;
+        }
+
+        internal void WithCaptureSendDataAsyncDelegate(Action<TData, int> captureTestDataImpl)
+        {
+            _captureSendDataAsyncCallDelegate = captureTestDataImpl;
+        }
+
+       private async Task<Response> RetryWithSplit(TData data)
         {
             var newBatches = Split(data);
 
@@ -151,6 +148,11 @@ namespace NewRelic.Telemetry.Transport
             return await SendDataAsync(dataToSend, retryNum);
         }
 
+        /// <summary>
+        /// Method used to send a data to New Relic endpoint.  Handles the communication with the New Relic endpoints.
+        /// </summary>
+        /// <param name="dataToSend">The data to send to New Relic</param>
+        /// <returns>New Relic response indicating the outcome and additional information about the interaction with the New Relic endpoint.</returns>
         public async Task<Response> SendDataAsync(TData dataToSend)
         {
             if(string.IsNullOrWhiteSpace(_config.ApiKey))

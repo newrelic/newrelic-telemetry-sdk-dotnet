@@ -98,7 +98,7 @@ namespace OpenTelemetry.Exporter.NewRelic
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(null, ex, $"Error translating Open Telemetry Span {otSpan.Context.SpanId.ToHexString()} to New Relic Span.");
+                    _logger?.LogError(null, ex, $"Error translating Open Telemetry Span {otSpan.Context.SpanId.ToHexString()} to New Relic Span.");
                 }
             }
 

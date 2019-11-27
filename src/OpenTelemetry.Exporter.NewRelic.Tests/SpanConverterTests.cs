@@ -11,6 +11,30 @@ using NRSpans = NewRelic.Telemetry.Spans;
 
 namespace OpenTelemetry.Exporter.NewRelic.Tests
 { 
+    public class Booger
+    {
+
+        private bool? _useSQS = false;
+        internal bool UseSQS
+        {
+            get
+            {
+                if(_useSQS == null)
+                {
+
+                }
+
+                return _useSQS.Value;
+            }
+        }
+        
+
+
+
+    }
+
+
+
     public class SpanConverterTests
 	{
         const string testServiceName = "TestService";
@@ -68,7 +92,14 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             }
         }
 
-		[Test]
+        [TearDown]
+        public void TearDown()
+        {
+            _resultNRSpans.Clear();
+            _otSpans.Clear();
+        }
+
+        [Test]
 		public void Test_ExpectedSpansCreated()
 		{
             Assert.AreEqual(expected_CountSpans, resultNRSpansDic.Count, "Unexpected number of spans");
@@ -112,7 +143,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         [Test]
         public void Test_FilterOutNewRelicEndpoint()
         {
-            Assert.IsFalse(resultNRSpansDic.ContainsKey(_otSpans[4].Context.SpanId.ToHexString()), "Endpoint calls to New Relic should be excluded");
+            Assert.IsFalse(resultNRSpansDic.ContainsKey(_otSpans[3].Context.SpanId.ToHexString()), "Endpoint calls to New Relic should be excluded");
         }
 
         [Test]
