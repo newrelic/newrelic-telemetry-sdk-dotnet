@@ -21,7 +21,6 @@ namespace OpenTelemetry.Exporter.NewRelic
         private readonly NRSpans.SpanDataSender _spanDataSender;
 
         private const string _attribName_url = "http.url";
-        private const string _parentId_NullValue = "0000000000000000";
 
         private readonly ILogger _logger;
         private readonly TelemetryConfiguration _config;
