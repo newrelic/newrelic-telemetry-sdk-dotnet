@@ -155,6 +155,18 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         }
 
         [Test]
+        public void Test_ParentSpanId()
+        {
+            var resultNRSpan0 = resultNRSpansDic[_otSpans[0].Context.SpanId.ToHexString()];
+            var resultNRSpan1 = resultNRSpansDic[_otSpans[1].Context.SpanId.ToHexString()];
+            var resultNRSpan2 = resultNRSpansDic[_otSpans[2].Context.SpanId.ToHexString()];
+
+            Assert.IsNull(resultNRSpan0.ParentId, "Top Level Span should have NULL parentID");
+            Assert.AreEqual(resultNRSpan1.ParentId, resultNRSpan0.Id, "Mismatch on ParentId - Span1 is a child of Span0");
+            Assert.IsNull(resultNRSpan2.ParentId, "Top Level Span should have NULL parentID");
+        }
+
+        [Test]
         public void Test_FilterOutNewRelicEndpoint()
         {
             //Assert.IsFalse(resultNRSpansDic.ContainsKey(_otSpans[3].Context.SpanId.ToHexString()), "Endpoint calls to New Relic should be excluded");

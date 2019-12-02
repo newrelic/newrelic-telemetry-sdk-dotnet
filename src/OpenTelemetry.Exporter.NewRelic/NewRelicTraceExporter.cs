@@ -209,7 +209,7 @@ namespace OpenTelemetry.Exporter.NewRelic
                 newRelicSpanBuilder.WithServiceName(_config.ServiceName);
             }
 
-            if (openTelemetrySpan.ParentSpanId != null && openTelemetrySpan.ParentSpanId.ToHexString() != _parentId_NullValue)
+            if (openTelemetrySpan.ParentSpanId != null && openTelemetrySpan.ParentSpanId != default)
             {
                 newRelicSpanBuilder.WithParentId(openTelemetrySpan.ParentSpanId.ToHexString());
             }

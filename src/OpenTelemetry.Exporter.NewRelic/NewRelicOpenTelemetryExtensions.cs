@@ -1,8 +1,6 @@
 ﻿using NewRelic.Telemetry;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
-using OpenTelemetry.Trace.Configuration;
-using OpenTelemetry.Trace;
 using OpenTelemetry.Trace.Export;
 
 namespace OpenTelemetry.Exporter.NewRelic
@@ -48,7 +46,8 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// <returns></returns>
         public static TracerBuilder UseNewRelic(this TracerBuilder builder, TelemetryConfiguration config, ILoggerFactory loggerFactory)
         {
-            builder.AddProcessorPipeline(c => c.SetExporter(new NewRelicTraceExporter(config, loggerFactory)));
+            builder.AddProcessorPipeline(c => c.SetExporter(new NewRelicTraceExporter(config, loggerFactory))
+                                               .SetExportingProcessor(e => new BatchingSpanProcessor(e)));
             return builder;
         }
 
@@ -82,8 +81,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// <returns></returns>
         public static TracerBuilder UseNewRelic(this TracerBuilder builder, string apiKey, ILoggerFactory loggerFactory)
         {
-            builder.AddProcessorPipeline(c => c.SetExporter(new NewRelicTraceExporter(new TelemetryConfiguration().WithAPIKey(apiKey), loggerFactory)));
-            return builder;
+            return UseNewRelic(builder, new TelemetryConfiguration().WithAPIKey(apiKey), loggerFactory);
         }
     }
 }
