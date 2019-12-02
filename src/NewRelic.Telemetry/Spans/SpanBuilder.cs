@@ -9,11 +9,11 @@ namespace NewRelic.Telemetry.Spans
     /// </summary>
     public class SpanBuilder
     {
-        private const string attribName_ServiceName = "service.name";
-        private const string attribName_DurationMs = "duration.ms";
-        private const string attribName_Name = "name";
-        private const string attribName_ParentID = "parent.id";
-        private const string attribName_Error = "error";
+        internal const string attribName_ServiceName = "service.name";
+        internal const string attribName_DurationMs = "duration.ms";
+        internal const string attribName_Name = "name";
+        internal const string attribName_ParentID = "parent.id";
+        internal const string attribName_Error = "error";
 
         /// <summary>
         /// Creates a new SpanBuilder with a unique SpanId Identifier.
