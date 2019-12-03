@@ -137,6 +137,7 @@ namespace OpenTelemetry.Exporter.NewRelic
                     if(nrSpan == null)
                     {
                         spanIdsToFilter.Add(otSpan.Context.SpanId.ToHexString());
+                        _logger?.LogDebug(null, $"The following span was filtered because it describes communication with a New Relic endpoint: Trace={otSpan.Context.TraceId}, Span={otSpan.Context.SpanId}, ParentSpan={otSpan.ParentSpanId}");
                     }
                     else
                     {
