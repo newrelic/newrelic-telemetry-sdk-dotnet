@@ -1,8 +1,8 @@
 ﻿using NewRelic.Telemetry;
 using Microsoft.Extensions.Logging;
-using OpenTelemetry.Trace.Configuration;
 using Microsoft.Extensions.Configuration;
 using OpenTelemetry.Trace.Export;
+using OpenTelemetry.Trace.Configuration;
 
 namespace OpenTelemetry.Exporter.NewRelic
 {

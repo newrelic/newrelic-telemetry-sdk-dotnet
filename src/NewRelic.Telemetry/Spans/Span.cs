@@ -33,7 +33,6 @@ namespace NewRelic.Telemetry.Spans
             }
         }
 
-
         /// <summary>
         /// Identifies this span as a component of a trace/operation.
         /// </summary>

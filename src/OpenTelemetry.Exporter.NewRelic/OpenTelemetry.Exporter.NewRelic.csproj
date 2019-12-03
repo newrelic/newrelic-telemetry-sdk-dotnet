@@ -1,9 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0; net46</TargetFrameworks>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\keys\NewRelic.Telemetry.snk</AssemblyOriginatorKeyFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Copyright>Copyright (c) 2008-2020 New Relic, Inc.  All rights reserved.</Copyright>
+    <Description>Open Telemetry Provider for .NET to send data to New Relic.</Description>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/newrelic/newrelic-telemetry-sdk-dotnet</PackageProjectUrl>
+    <PackageIconUrl>https://newrelic.com/images/avatar-newrelic.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/newrelic/newrelic-telemetry-sdk-dotnet</RepositoryUrl>
+    <PackageReleaseNotes>For detailed information see: https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/CHANGELOG.md</PackageReleaseNotes>
+    <PackageTags>newrelic</PackageTags>
+    <Authors>New Relic</Authors>
+    <Company>New Relic</Company>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +34,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NewRelic.Telemetry\NewRelic.Telemetry.csproj" />
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
