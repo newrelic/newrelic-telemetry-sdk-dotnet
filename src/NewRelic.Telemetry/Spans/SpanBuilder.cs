@@ -39,6 +39,11 @@ namespace NewRelic.Telemetry.Spans
         }
 
         /// <summary>
+        /// The Unique identifier for a span
+        /// </summary>
+        public string SpanId => _span.Id;
+
+        /// <summary>
         /// Returns the built span.
         /// </summary>
         public Span Build()
