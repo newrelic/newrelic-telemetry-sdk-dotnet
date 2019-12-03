@@ -177,18 +177,29 @@ namespace OpenTelemetry.Exporter.NewRelic
                 return spans;
             }
 
-            var newSpanIdsToFilter = spans.Where(x => spanIdsToFilter.Contains(x.ParentId)).Select(x=>x.Id).ToArray();
-
-            if(newSpanIdsToFilter.Length == 0)
+            var newSpansToFilter = spans.Where(x => spanIdsToFilter.Contains(x.ParentId)).ToArray();
+            
+            if (newSpansToFilter.Length == 0)
             {
                 return spans;
+            } 
+            
+            if (_logger?.IsEnabled(LogLevel.Debug) == true)
+            {
+                foreach (var spanToFilter in newSpansToFilter)
+                {
+                    _logger?.LogDebug(null, $"The following span was filtered because it is a descendant of a span that describes communication with a New Relic endpoint: Trace={spanToFilter.TraceId}, Span={spanToFilter.Id}, ParentSpan={spanToFilter.ParentId ?? "<NULL>"}");
+                }
             }
 
+            var newSpanIdsToFilter = newSpansToFilter.Select(x=>x.Id).ToArray();
+
             spanIdsToFilter = spanIdsToFilter.Union(newSpanIdsToFilter).ToList();
-            spans = spans.Where(x => !newSpanIdsToFilter.Contains(x.Id)).ToList();
+
+            spans = spans.Except(newSpansToFilter).ToList();
+            
             return FilterSpans(spans, spanIdsToFilter);
         }
-
 
         private NRSpans.Span ToNewRelicSpan(Span openTelemetrySpan)
         {
@@ -219,9 +230,10 @@ namespace OpenTelemetry.Exporter.NewRelic
                 foreach (var spanAttrib in openTelemetrySpan.Attributes)
                 {
                     //Filter out calls to New Relic endpoint as these will cause an infinite loop
-                    if (string.Equals(spanAttrib.Key, _attribName_url, StringComparison.OrdinalIgnoreCase)
-                        && _nrEndpoints.Contains(spanAttrib.Value?.ToString().ToLower()))
+                    if (string.Equals(spanAttrib.Key, _attribName_url, StringComparison.OrdinalIgnoreCase) && _nrEndpoints.Contains(spanAttrib.Value?.ToString().ToLower()))
                     {
+                        _logger?.LogDebug(null, $"The following span was filtered because it was identified as communication with a New Relic endpoint: Trace={openTelemetrySpan.Context.TraceId}, Span={openTelemetrySpan.Context.SpanId}, ParentSpan={openTelemetrySpan.ParentSpanId}. url={spanAttrib.Value}");
+
                         return null;
                     }
 
