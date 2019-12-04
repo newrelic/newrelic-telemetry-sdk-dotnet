@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
-using NewRelic.Telemetry;
-using NewRelic.Telemetry.Spans;
-
 
 namespace SampleConsoleApplication
 {
     /// <summary>
-    /// Sample program demonstrating the Telemetry SDK for Tracing.  It invokes the following methods, recording most of the work
+    /// Sample program demonstrating the Telemetry SDK for Tracing.  It invokes the following methods, recording the work
     /// as spans.
     /// 
     /// DoHomework                                              Tracked as a Span with 2-child spans
@@ -19,19 +15,23 @@ namespace SampleConsoleApplication
     ///         TakeABreak                                      Time Accounted for in DoScienceHomework, but not tracked as a span
     ///         CallMyBestFriend                                Tracked as a span in which Exception occurs.  But the exception is handled in DoScienceHomework
     ///         DoBiologyHomework                               Tracked as a span
-    ///         
+    ///
     /// </summary>
     class Program
     {
-        static void Main(string[] args)
-        {
 
-            Console.WriteLine("Welcome to the Telemetry SDK sample Application.  Press <Return> to start.");
-            Console.ReadLine();
+        public static void Main(string[] args)
+        {
+            SimpleTracer.WithDefaultConfiguration("Your API Key Here");
+            SimpleTracer.EnableTracing();
+
+            Console.WriteLine("Welcome to the Telemetry SDK sample Application.");
+            Console.WriteLine(new String('-', 100));
 
             DoHomework();
-        }
 
+            SimpleTracer.DisableTracing();
+        }
 
         /// <summary>
         /// This method will be tracked as a span.  Since this is a topmost span, when this work is complete, the SpanBatch
@@ -40,21 +40,11 @@ namespace SampleConsoleApplication
         private static void DoHomework()
         {
             //Track work as span
-            SimpleTracer.TrackWork(() =>
+            SimpleTracer.TrackWork("Do Homework", () =>
             {
-                try
-                {
-                    Console.WriteLine("DoHomework");
-                    SimpleTracer.CurrentSpan(s => s.WithAttribute("Method", "DoHomework"));
-
-                    DoMathHomework(TimeSpan.FromSeconds(2));
-                    TakeABreak(TimeSpan.FromSeconds(1));
-                    DoScienceHomework();
-                }
-                catch(Exception ex)
-                {
-                    Console.WriteLine("an Excpetion has occurred");
-                }
+                DoMathHomework(TimeSpan.FromSeconds(2));
+                TakeABreak(TimeSpan.FromSeconds(1));
+                DoScienceHomework();
 
             });
         }
@@ -62,10 +52,8 @@ namespace SampleConsoleApplication
         private static void DoMathHomework(TimeSpan forHowLong)
         {
             //Track work as span
-            SimpleTracer.TrackWork(() =>
+            SimpleTracer.TrackWork("Do Math Homework",() =>
             {
-                Console.WriteLine("DoMathHomework");
-                SimpleTracer.CurrentSpan(s => s.WithAttribute("Method", "DoMathHomework"));
                 Thread.Sleep(forHowLong);
             });
         }
@@ -77,29 +65,25 @@ namespace SampleConsoleApplication
         /// <param name="forHowLong"></param>
         private static void TakeABreak(TimeSpan forHowLong)
         {
-            Console.WriteLine("TakeABreak");
+            SimpleTracer.CurrentSpan((s) => { s.WithAttribute("Length of Break", forHowLong.TotalSeconds); });
             Thread.Sleep(forHowLong);
         }
 
         private static void DoScienceHomework()
         {
             //Track work as span
-            SimpleTracer.TrackWork(() =>
+            SimpleTracer.TrackWork("Do Science Homework",() =>
             {
-                Console.WriteLine("DoScienceHomework");
-                SimpleTracer.CurrentSpan(s => s.WithAttribute("Method", "DoScienceHomework"));
-
-                DoComputerScienceHomework(TimeSpan.FromSeconds(2)); 
-
-                TakeABreak(TimeSpan.FromSeconds(5));
+                DoComputerScienceHomework(TimeSpan.FromSeconds(1)); 
+                TakeABreak(TimeSpan.FromSeconds(2));
 
                 try
                 {
-                    CallMyBestFriend(TimeSpan.FromSeconds(2));
+                    CallMyBestFriend(TimeSpan.FromSeconds(20));
                 }
                 catch(Exception ex)
                 {
-                    Console.Error.WriteLine(ex);
+                    Console.Error.WriteLine($"Captured Expected Exception - {ex.Message}");
                 }
 
                 DoBiologyHomework(TimeSpan.FromSeconds(1));
@@ -109,22 +93,18 @@ namespace SampleConsoleApplication
         private static void DoComputerScienceHomework(TimeSpan forHowLong)
         {
             //Track work as span
-            SimpleTracer.TrackWork(() => 
-            {
-                Console.WriteLine("DoComputerScienceHomework");
-                SimpleTracer.CurrentSpan(s => s.WithAttribute("Method", "DoComputerScienceHomework"));
-                Thread.Sleep(forHowLong);
-            });
+            SimpleTracer.TrackWork("Do Computer Science Homework", () =>
+             {
+                 SimpleTracer.CurrentSpan(s => s.WithAttribute("Method", "DoComputerScienceHomework"));
+                 Thread.Sleep(forHowLong);
+             });
         }
 
         private static void CallMyBestFriend(TimeSpan forHowLong)
         {
             //Track work as span
-            SimpleTracer.TrackWork(() =>
+            SimpleTracer.TrackWork("Call My Bestie",() =>
             {
-                Console.WriteLine("CallMyBestFriend");
-                SimpleTracer.CurrentSpan(s => s.WithAttribute("Method", "CallMyBestFriend"));
-
                 throw new Exception("Get back to work!!!");
             });
         }
@@ -133,10 +113,8 @@ namespace SampleConsoleApplication
         private static void DoBiologyHomework(TimeSpan forHowLong)
         {
             //Track work as span
-            SimpleTracer.TrackWork(() =>
+            SimpleTracer.TrackWork("Do Biology Homework", () =>
             {
-                Console.WriteLine("DoBiologyHomework");
-                SimpleTracer.CurrentSpan(s => s.WithAttribute("Method", "DoBiologyHomework"));
                 Thread.Sleep(forHowLong);
             });
         }
