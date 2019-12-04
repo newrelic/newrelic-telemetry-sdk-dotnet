@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using NewRelic.Telemetry;
 using NewRelic.Telemetry.Spans;
 
-namespace SampleConsoleApplication
+namespace ConsoleApplicationWithTracer
 {
     /// <summary>
     /// Establishes a simple tracer utility that provides a wrapper that tracks the execution of code 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace SampleConsoleApplication
+namespace ConsoleApplicationWithTracer
 {
     /// <summary>
     /// Sample program demonstrating the Telemetry SDK for Tracing.  It invokes the following methods, recording the work

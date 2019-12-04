@@ -29,7 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{F028
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleAspNetCoreApp", "OpenTelemetry.Exporter.NewRelic.Samples\SampleAspNetCoreApp\SampleAspNetCoreApp.csproj", "{F2E815B3-5902-4DD5-9D37-CFB514D6B4DE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleConsoleApplication", "NewRelic.Telemetry.Samples\SampleConsoleApplication\SampleConsoleApplication.csproj", "{4E42C57E-2374-431B-A39A-019B9DAC7793}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApplicationWithTracer", "NewRelic.Telemetry.Samples\SampleConsoleApplication\ConsoleApplicationWithTracer.csproj", "{4E42C57E-2374-431B-A39A-019B9DAC7793}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
