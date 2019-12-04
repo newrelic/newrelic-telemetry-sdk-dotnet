@@ -174,8 +174,9 @@ namespace ConsoleApplicationWithTracer
                     var sb = spanBatch.Build();
 
                     Console.WriteLine($"{"SIMPLE TRACER: Trace Completed",-30}: {sb.CommonProperties.TraceId}");
-                    
-                    _dataSender.SendDataAsync(sb).Wait();
+
+                    var result = _dataSender.SendDataAsync(sb).Result;
+
                 }
                 else
                 {

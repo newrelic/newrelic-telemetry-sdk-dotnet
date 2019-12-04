@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
+using NewRelic.Telemetry;
 using NewRelic.Telemetry.Spans;
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BasicConsoleApplication
@@ -12,6 +14,8 @@ namespace BasicConsoleApplication
 
 		static void Main(string[] args)
 		{
+            Console.ReadLine();
+
             Configuration();
             
             Console.WriteLine("Example_SpanBatchForSingleTrace");
@@ -38,13 +42,17 @@ namespace BasicConsoleApplication
                 .AddJsonFile("appsettings.json")
                 .Build();
 
+            var telemetryConfiguration = new TelemetryConfiguration(config);
+            
+            Console.WriteLine($"{telemetryConfiguration.TraceUrl}");
+
             // The SpanDataSender handles all communication with the New Relic end point
-            _dataSvc = new SpanDataSender(config);
+            _dataSvc = new SpanDataSender(telemetryConfiguration);
         }
 
         /// <summary>
         /// In this example, all of the spans are for the same trace.  Accordingly, the
-        /// TraceId is set in the SpanBatchBuilder 
+        /// TraceId is set in the SpanBatchBuilder.
         /// </summary>
         private static async Task Example_SpanBatchForSingleTrace()
         {
@@ -59,7 +67,7 @@ namespace BasicConsoleApplication
             spanBatchBuilder.WithTraceId(traceId);
 
             // Perform 10 units of work as part of this trace/spanBatch
-            for (var spanIdx = 0; spanIdx < 10; spanIdx++)
+            for (var spanIdx = 0; spanIdx < 5; spanIdx++)
             {
                 // The SpanBuilder is used to crate a new span.
                 // Create a new SpanBuilder assigning it a random guid as the spanId
@@ -102,7 +110,7 @@ namespace BasicConsoleApplication
             var spanBatch = spanBatchBuilder.Build();
 
             // Send the SpanBatch to the New Relic endpoint.
-            await _dataSvc.SendDataAsync(spanBatch);
+            await SendDataToNewRelic(spanBatch);
         }
 
 
@@ -115,17 +123,17 @@ namespace BasicConsoleApplication
         {
             var spanBatchBuilder = SpanBatchBuilder.Create();
 
-            for (var traceIdx = 0; traceIdx < 5; traceIdx++)
+            for (var traceIdx = 0; traceIdx < 3; traceIdx++)
             {
                 var traceId = Guid.NewGuid().ToString();
 
-                for (var spanIdx = 0; spanIdx < 10; spanIdx++)
+                for (var spanIdx = 0; spanIdx < 5; spanIdx++)
                 {
-                    //Add a name to the span to better understand it in the New Relic UI.
-
-
+                    
                     var spanBuilder = SpanBuilder.Create(Guid.NewGuid().ToString());
 
+                    // Since multiple traces will be reported in the same SpanBatch,
+                    // the TraceID needs to be attached to the individual spans.
                     spanBuilder.WithTraceId(traceId)
                                .WithName($"{traceId} - {spanIdx}");
 
@@ -166,13 +174,27 @@ namespace BasicConsoleApplication
             var spanBatch = spanBatchBuilder.Build();
 
             // Send the SpanBatch to the New Relic endpoint.
-            await _dataSvc.SendDataAsync(spanBatch);
+            await SendDataToNewRelic(spanBatch);
         }
 
 
+        /// <summary>
+        /// Sends the data to New Relic endpoint.
+        /// </summary>
+        /// <param name="spanBatch"></param>
+        /// <returns></returns>
+        private static async Task SendDataToNewRelic(SpanBatch spanBatch)
+        {
+            var result = await _dataSvc.SendDataAsync(spanBatch);
+            Console.WriteLine("Send Data to New Relic");
+            Console.WriteLine($"{"Result",-20}: {result.ResponseStatus}");
+            Console.WriteLine($"{"Http Status",-20}: {result.HttpStatusCode}");
+            Console.WriteLine($"{"Message",-20}: {result.Message}");
+        }
 
         private static void DoWork(string value)
         {
+            Thread.Sleep(TimeSpan.FromMilliseconds(200));
             Console.WriteLine(value);
         }
 
