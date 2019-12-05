@@ -183,9 +183,9 @@ namespace NewRelic.Telemetry.Tests
 
         /// <summary>
         /// With a valid New Relic Config Section and Product Specific config Sections, 
-        /// test Configuration the configuration for a specific product.  Testing to make sure that 
+        /// test Configuration for a specific product.  Testing to make sure that 
         /// when a config value for a product exists that it is used before the overall New Relic value
-        /// and lastly the Default Value (in the class)
+        /// and lastly the Default Value (in the class).
         /// </summary>
         [Test]
         public void ProductSpecificConfig()
@@ -218,7 +218,7 @@ namespace NewRelic.Telemetry.Tests
         /// With a valid New Relic Config Section and Product specific config Sections, 
         /// tests configuration scenario for a specific product where specific product section does not exist
         /// but there is a New Relic Section.  In this case, the values from New Relic section should
-        /// override default values (as defined the in TelemetryConfiguration class)
+        /// override default values (as defined the in TelemetryConfiguration class).
         /// </summary>
         [Test]
         public void MissingProductConfig()
@@ -233,7 +233,7 @@ namespace NewRelic.Telemetry.Tests
 
         /// <summary>
         /// With a configuration that does NOT contain a New Relic section, 
-        /// tests to ensure that only default values should be used (as defined the in TelemetryConfiguration class)
+        /// tests to ensure that only default values should be used (as defined the in TelemetryConfiguration class).
         /// </summary>
         [Test]
         public void MissingNewRelicConfig()
