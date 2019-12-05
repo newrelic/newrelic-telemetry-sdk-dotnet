@@ -35,7 +35,6 @@ namespace ConsoleApplicationWithTracer
             SimpleTracer.WithConfiguration(config);
             SimpleTracer.EnableTracing();
 
-
             DoHomework();
 
             SimpleTracer.DisableTracing();
