@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NewRelic.Telemetry;
@@ -175,7 +176,7 @@ namespace ConsoleApplicationWithTracer
 
                     Console.WriteLine($"{"SIMPLE TRACER: Trace Completed",-30}: {sb.CommonProperties.TraceId}");
 
-                    var result = _dataSender.SendDataAsync(sb).Result;
+                    SendDataToNewRelic(sb).Wait();
 
                 }
                 else
@@ -183,6 +184,19 @@ namespace ConsoleApplicationWithTracer
                     _currentSpan.Value = parentSpan;
                 }
             }
+        }
+        /// <summary>
+        /// Sends the data to New Relic endpoint.
+        /// </summary>
+        /// <param name="spanBatch"></param>
+        /// <returns></returns>
+        private static async Task SendDataToNewRelic(SpanBatch spanBatch)
+        {
+            var result = await _dataSender.SendDataAsync(spanBatch);
+            Console.WriteLine("Send Data to New Relic");
+            Console.WriteLine($"{"Result",-20}: {result.ResponseStatus}");
+            Console.WriteLine($"{"Http Status",-20}: {result.HttpStatusCode}");
+            Console.WriteLine($"{"Message",-20}: {result.Message}");
         }
 
         /// <summary>
@@ -202,5 +216,7 @@ namespace ConsoleApplicationWithTracer
 
             action.Invoke(_currentSpan.Value);
         }
+
+
     }
 }

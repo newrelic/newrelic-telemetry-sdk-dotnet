@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
+using System.IO;
 using System.Threading;
 
 namespace ConsoleApplicationWithTracer
@@ -22,11 +24,17 @@ namespace ConsoleApplicationWithTracer
 
         public static void Main(string[] args)
         {
-            SimpleTracer.WithDefaultConfiguration("Your API Key Here");
-            SimpleTracer.EnableTracing();
-
             Console.WriteLine("Welcome to the Telemetry SDK sample Application.");
             Console.WriteLine(new String('-', 100));
+
+            var config = new ConfigurationBuilder()
+               .SetBasePath(Directory.GetCurrentDirectory())
+               .AddJsonFile("appsettings.json")
+               .Build();
+
+            SimpleTracer.WithConfiguration(config);
+            SimpleTracer.EnableTracing();
+
 
             DoHomework();
 
