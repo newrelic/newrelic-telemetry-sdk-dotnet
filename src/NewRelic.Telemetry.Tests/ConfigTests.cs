@@ -6,6 +6,12 @@ using System.Text.Json;
 
 namespace NewRelic.Telemetry.Tests
 {
+    /// <summary>
+    /// TelemetryConfiguration is a hierarchical cofiguration.  Discovering the value for a 
+    /// configuration setting occurs at 3-levels.  If a configuration section exists for a 
+    /// specific product, those values will be used.  Else, if a NewRelic configuration section 
+    /// exists, those values will be used.  Else, hard-coded default values will be used.
+    /// </summary>
     public class ConfigTests
     {
         const string NRConfigSection = "NewRelic";
@@ -37,11 +43,11 @@ namespace NewRelic.Telemetry.Tests
             
         }
 
-
         /// <summary>
-        /// Produces a JSON configuration that does NOT contain a New Relic Config Section.
-        /// Although the attribute values, such as ApiKey, match the New Relic Config spec,
-        /// they should be ignored because they are not part of a New Relic Config section.
+        /// Uses a dictionary to produce an example appsettings.json configuration.  This 
+        /// scenraio does NOT contain a New Relic Config Section.  Although the attribute values, 
+        /// such as ApiKey, match the New Relic Config spec, they should be ignored because they
+        //  are not part of a New Relic Config section.
         /// </summary>
         public IConfiguration ConfigExample_NewRelicConfigMissing
         {
@@ -57,7 +63,6 @@ namespace NewRelic.Telemetry.Tests
             //          }
             //      }
             //  }
-
             get
             {
                 #region Build JSON
@@ -101,10 +106,11 @@ namespace NewRelic.Telemetry.Tests
         }
 
         /// <summary>
-        /// Produces a JSON configuration that does contains a New Relic Config Section and
-        /// the config sections for two example products, TestProduct and Different Product.
-        /// Tests will Test the config for Just New Relic and for a specific product within
-        /// new relic.
+        /// Uses a dictionary to produce an example appsettings.json configuration.  This 
+        /// scenraio contains a New Relic Config Section and the config sections for two 
+        //  example products, "TestProduct" and "DifferentProduct".  Various assertions
+        /// will be made testing for a product specific configuration and/or a general New
+        /// Relic configuration.
         /// </summary>
         public IConfiguration ConfigExample_NewRelicConfig
         {
@@ -176,7 +182,8 @@ namespace NewRelic.Telemetry.Tests
         }
 
         /// <summary>
-        /// Test Configuration the configuration for a specific product.  Testing to make sure that 
+        /// With a valid New Relic Config Section and Product Specific config Sections, 
+        /// test Configuration the configuration for a specific product.  Testing to make sure that 
         /// when a config value for a product exists that it is used before the overall New Relic value
         /// and lastly the Default Value (in the class)
         /// </summary>
@@ -191,7 +198,8 @@ namespace NewRelic.Telemetry.Tests
         }
 
         /// <summary>
-        /// Tests general Configuration without a specific product.  Testing to make sure that 
+        /// With a valid New Relic Config Section and Product specific config Sections, 
+        /// tests general Configuration without a specific product.  Testing to make sure that 
         /// the product configuration values are not used and that New Relic Values only override default values.
         /// </summary>
         [Test]
@@ -207,7 +215,8 @@ namespace NewRelic.Telemetry.Tests
 
 
         /// <summary>
-        /// Tests configuration scenario for a specific product where specific product section does not exist
+        /// With a valid New Relic Config Section and Product specific config Sections, 
+        /// tests configuration scenario for a specific product where specific product section does not exist
         /// but there is a New Relic Section.  In this case, the values from New Relic section should
         /// override default values (as defined the in TelemetryConfiguration class)
         /// </summary>
@@ -223,8 +232,8 @@ namespace NewRelic.Telemetry.Tests
         }
 
         /// <summary>
-        /// Tests configuration scenario where the New Relic section does not exist in the config file.
-        /// In this case, all Default values should be used (as defined the in TelemetryConfiguration class)
+        /// With a configuration that does NOT contain a New Relic section, 
+        /// tests to ensure that only default values should be used (as defined the in TelemetryConfiguration class)
         /// </summary>
         [Test]
         public void MissingNewRelicConfig()
