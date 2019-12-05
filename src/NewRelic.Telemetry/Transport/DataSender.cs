@@ -14,7 +14,7 @@ namespace NewRelic.Telemetry.Transport
     public abstract class DataSender<TData> where TData : ITelemetryDataType
     {
         private const string _userAgent = "NewRelic-Dotnet-TelemetrySDK";
-        private const string _implementationVersion = "/1.0.0";
+        private const string _implementationVersion = "/1.0.0-beta";
 
         protected readonly TelemetryConfiguration _config;
         protected readonly TelemetryLogging _logger;
