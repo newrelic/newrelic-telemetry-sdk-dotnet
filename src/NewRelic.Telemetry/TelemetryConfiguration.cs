@@ -78,7 +78,7 @@ namespace NewRelic.Telemetry
         }
 
         /// <summary>
-        /// Constructs a new configuration object using a configuration provider. Allows for and overall
+        /// Constructs a new configuration object using a configuration provider. Allows for an overall
         /// New Relic Value
         /// by <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration</see>.
         /// </summary>
@@ -88,7 +88,7 @@ namespace NewRelic.Telemetry
         }
 
         /// <summary>
-        /// Constructs a new configuration object using a configuration provider. Allows for and overall
+        /// Constructs a new configuration object using a configuration provider. Allows for an overall
         /// New Relic Value and can be overriden with a Product Specific Value.
         /// by <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration</see>.
         /// </summary>
