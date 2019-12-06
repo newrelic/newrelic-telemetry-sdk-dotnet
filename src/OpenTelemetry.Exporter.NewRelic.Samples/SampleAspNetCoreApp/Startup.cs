@@ -36,11 +36,10 @@ namespace SampleAspNetCoreApp
 
             services.AddOpenTelemetry(() =>
             {
-                var config = new TelemetryConfiguration().WithAPIKey("yourKey").WithServiceName("SampleAspNetCoreApp");
-                var tracerFactory = TracerFactory.Create(b => b.UseNewRelic(config)
-                                                 .SetSampler(Samplers.AlwaysSample)
-                    );
 
+                // Adds the New Relic Exporter loading settings from the appsettings.json
+                var tracerFactory = TracerFactory.Create(b => b.UseNewRelic(Configuration)
+                                                 .SetSampler(Samplers.AlwaysSample));
 
                 var dependenciesCollector = new DependenciesCollector(new HttpClientCollectorOptions(), tracerFactory);
                 var aspNetCoreCollector = new AspNetCoreCollector(tracerFactory.GetTracer(null));

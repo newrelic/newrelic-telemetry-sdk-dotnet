@@ -135,6 +135,7 @@ namespace NewRelic.Telemetry.Tests
             get
             {
                 #region build JSON
+
                 var productConfigSection = new Dictionary<string, object>()
                 {
                     { "ApiKey", ApiKey_ProdValue },
@@ -163,6 +164,7 @@ namespace NewRelic.Telemetry.Tests
                     { NRConfigSection, nrConfigSection }
                 };
                 #endregion
+
                 var configJson = JsonSerializer.Serialize(configObj);
 
                 using (var stream = new MemoryStream())
@@ -212,7 +214,6 @@ namespace NewRelic.Telemetry.Tests
             Assert.AreEqual(ServiceName_NewRelicValue, telemetryConfig.ServiceName);
             Assert.AreEqual(BackoffMaxSeconds_DefaultValue, telemetryConfig.BackoffMaxSeconds);
         }
-
 
         /// <summary>
         /// With a valid New Relic Config Section and Product specific config Sections, 
