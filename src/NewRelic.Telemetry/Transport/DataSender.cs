@@ -125,8 +125,7 @@ namespace NewRelic.Telemetry.Transport
 
         private async Task<Response> RetryWithServerDelay(TData dataToSend, int retryNum, HttpResponseMessage httpResponse)
         {
-            retryNum++;
-            if (retryNum > _config.MaxRetryAttempts)
+            if (retryNum >= _config.MaxRetryAttempts)
             {
                 _logger.Error($@"Send Data failed after {_config.MaxRetryAttempts} attempts.");
                 return Response.Failure(HttpStatusCode.RequestTimeout, $"Send Data failed after {_config.MaxRetryAttempts} attempts");
@@ -140,12 +139,18 @@ namespace NewRelic.Telemetry.Transport
                 retryAfterDelay = retryAtSpecificDate - DateTimeOffset.UtcNow;
             }
 
+            //If the retryAfterDelay is still null, just do a standard retry
+            if(!retryAfterDelay.HasValue)
+            {
+                return await RetryWithDelay(dataToSend, retryNum);
+            }
+
             var delayMs = (int)retryAfterDelay.Value.TotalMilliseconds;
 
             //Perform the delay using the waiter delegate
             await _delayerImpl(delayMs);
 
-            return await SendDataAsync(dataToSend, retryNum);
+            return await SendDataAsync(dataToSend, retryNum + 1);
         }
 
         /// <summary>
