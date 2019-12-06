@@ -44,8 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\LICENSE" Pack="true" PackagePath="" />
-    <None Include="..\..\avatar-newrelic.png" Pack="true" PackagePath="" />    
+    <None Include="..\..\LICENSE" Pack="true" PackagePath="" />    
   </ItemGroup>
 
   <ItemGroup>
