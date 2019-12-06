@@ -61,7 +61,6 @@ namespace NewRelic.Telemetry
         /// </summary>
         public string ServiceName { get; private set; }
 
-
         /// <summary>
         /// A list of the New Relic endpoints where information is sent.  This collection may be used
         /// to filter out communications with New Relic endpoints during analysis.
@@ -79,75 +78,72 @@ namespace NewRelic.Telemetry
         }
 
         /// <summary>
-        /// Creates the Configuration object using a configuration provider as defined
+        /// Constructs a new configuration object using a configuration provider. Allows for an overall
+        /// New Relic Value
         /// by <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration</see>.
         /// </summary>
         /// <param name="configProvider"></param>
-        public TelemetryConfiguration(IConfiguration configProvider)
+        public TelemetryConfiguration(IConfiguration configProvider) : this(configProvider, null)
+        { 
+        }
+
+        /// <summary>
+        /// Constructs a new configuration object using a configuration provider. Allows for an overall
+        /// New Relic Value and can be overriden with a Product Specific Value.
+        /// by <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration</see>.
+        /// </summary>
+        /// <param name="configProvider"></param>
+        public TelemetryConfiguration(IConfiguration configProvider, string productSpecificConfig)
         {
-            string overrideUrl;
-            if (!string.IsNullOrEmpty(overrideUrl = configProvider["Newrelic.Telemetry.OverrideTraceUrl"]))
+            var newRelicConfigSection = configProvider
+                .GetSection("NewRelic");
+
+            if(newRelicConfigSection == null)
             {
-                TraceUrl = overrideUrl;
+                return;
             }
 
-            string apiKey;
-            if (!string.IsNullOrEmpty(apiKey = configProvider["Newrelic.Telemetry.ApiKey"]))
+            IConfigurationSection productConfigSection = null;
+            if (!string.IsNullOrWhiteSpace(productSpecificConfig))
             {
-                ApiKey = apiKey;
+                productConfigSection = newRelicConfigSection.GetSection(productSpecificConfig);
             }
 
-            string auditLoggingEnabledStr;
-            if (!string.IsNullOrEmpty(auditLoggingEnabledStr = configProvider["Newrelic.Telemetry.AuditLoggingEnabled"]))
+            ApiKey = GetValue("ApiKey", productConfigSection, newRelicConfigSection, ApiKey);
+            ServiceName = GetValue("ServiceName", productConfigSection, newRelicConfigSection, ServiceName);
+            TraceUrl = GetValue("TraceUrlOverride", productConfigSection, newRelicConfigSection, TraceUrl);
+            AuditLoggingEnabled = GetValue("AuditLoggingEnabled", productConfigSection, newRelicConfigSection, AuditLoggingEnabled);
+            SendTimeout = GetValue("SendTimeoutSeconds", productConfigSection, newRelicConfigSection, SendTimeout);
+            MaxRetryAttempts = GetValue("MaxRetryAttempts", productConfigSection, newRelicConfigSection, MaxRetryAttempts);
+            BackoffMaxSeconds = GetValue("BackoffMaxSeconds", productConfigSection, newRelicConfigSection, BackoffMaxSeconds);
+            BackoffDelayFactorSeconds = GetValue("BackoffDelayFactorSeconds", productConfigSection, newRelicConfigSection, BackoffDelayFactorSeconds);
+        }
+
+        private string GetValue(string key, IConfigurationSection productConfigSection, IConfigurationSection newRelicConfigSection, string defaultValue)
+        {
+            return productConfigSection?[key] ?? newRelicConfigSection[key] ?? defaultValue;
+        }
+
+        private bool GetValue(string key, IConfigurationSection productConfigSection, IConfigurationSection newRelicConfigSection, bool defaultValue)
+        {
+            string valStr = productConfigSection?[key] ?? newRelicConfigSection[key];
+            if (!string.IsNullOrEmpty(valStr) && bool.TryParse(valStr, out var valBool))
             {
-                if (bool.TryParse(auditLoggingEnabledStr, out var auditLoggingEnabled))
-                {
-                    AuditLoggingEnabled = auditLoggingEnabled;
-                }
+                return valBool;
             }
 
-            string sendTimeoutStr;
-            if (!string.IsNullOrEmpty(sendTimeoutStr = configProvider["Newrelic.Telemetry.SendTimeoutSeconds"]))
+            return defaultValue;
+        }
+
+        private int GetValue(string key, IConfigurationSection productConfigSection, IConfigurationSection newRelicConfigSection, int defaultValue)
+        {
+            string valStr = productConfigSection?[key] ?? newRelicConfigSection[key];
+            if (!string.IsNullOrEmpty(valStr) && int.TryParse(valStr, out var valInt))
             {
-                if (int.TryParse(sendTimeoutStr, out var sendTimeoutEnabled))
-                {
-                    SendTimeout = sendTimeoutEnabled;
-                }
+                return valInt;
             }
 
-            string maxRetryAttemptsStr;
-            if (!string.IsNullOrEmpty(maxRetryAttemptsStr = configProvider["Newrelic.Telemetry.MaxRetryAttempts"]))
-            {
-                if (int.TryParse(maxRetryAttemptsStr, out var maxRetryAttempts))
-                {
-                    MaxRetryAttempts = maxRetryAttempts;
-                }
-            }
-
-
-            string backoffMaxSecondsStr;
-            if (!string.IsNullOrEmpty(backoffMaxSecondsStr = configProvider["Newrelic.Telemetry.BackoffMaxSeconds"]))
-            {
-                if (int.TryParse(backoffMaxSecondsStr, out var backoffMaxSeconds))
-                {
-                    BackoffMaxSeconds = backoffMaxSeconds;
-                }
-            }
-
-            string backoffDelayFactorSecondsStr;
-            if (!string.IsNullOrEmpty(backoffDelayFactorSecondsStr = configProvider["Newrelic.Telemetry.BackoffDelayFactorSeconds"]))
-            {
-                if (int.TryParse(backoffDelayFactorSecondsStr, out var backoffDelayFactorSeconds))
-                {
-                    BackoffDelayFactorSeconds = backoffDelayFactorSeconds;
-                }
-            }
-
-            string serviceName;
-            if (!string.IsNullOrEmpty(serviceName = configProvider["Newrelic.Telemetry.ServiceName"]))
-            {
-                ServiceName = serviceName;
-            }
+            return defaultValue;
         }
 
         /// <summary>

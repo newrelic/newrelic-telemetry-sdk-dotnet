@@ -3,12 +3,7 @@
 This documentation describes how to use the Telemetry SDK to track information about units of work and to send them to the New Relic endpoint.
 
 
-
-### Examples
-
-
-
-### Configuring the SpanDataSender
+## Configuring the SpanDataSender
 The ```SpanDataSender``` manages the communication with New Relic Endpoints.  In order to send trace information to New Relic, a ```SpanDataSender``` must be instantiated.
 <br/>
 
@@ -96,7 +91,7 @@ public class WeatherForecastController : ApiController
 ```
 <br/>
 
-### Traces, Spans, and Span Batches
+## Traces, Spans, and Span Batches
 
 <dl>
 	<dt>Traces</dt>
@@ -110,7 +105,7 @@ public class WeatherForecastController : ApiController
 <br/>
 
 
-### The `SpanBuilder`
+## The SpanBuilder
 The `SpanBuilder` is a tool to help build new Spans.  In this exaxmple, a `SpanBuilder` is instantiated with a `SpanId` and it is associated to a trace with a `TraceId`.  The SpanId is required and must be unique.
 
 ```CSharp
@@ -148,8 +143,8 @@ The SpanBuilder also supports adding custom attributes to the span.  In the exam
 spanBuilder.WithAttribute("RelativeURL", "/Weather/Forecast");
 ```
 
-* Attribute Names are limited to _______ bytes.
-* Attribute Values are limited to _______ bytes.
+* Attribute Names are limited to 255-bytes.
+* Attribute Values are limited to 4096-bytes.
 
 **Errors** <br>
 A span may be marked as having an error.  In this example, if the work being measured by the span encounters an exception, the span will be marked as having an error and the exception added as a custom attribute.
@@ -215,14 +210,13 @@ var spanBuilder = SpanBuilder.Create(parentSpanId)
 var span = spanBuilder.Build();
 ```
 
-### The `SpanBatch` Builder
+## The SpanBatchBuilder
 The `SpanBatchBuilder` is a tool that manages a collection of spans to be sent to the New Relic endpoint.
 
 
 This example is a single trace with two spans that are related.  Since all of the spans on the SpanBatch belong to the same Trace, the TraceId is set on the SpanBatch, as opposed to on the individual spans.
 
 ```CSharp
-
 var traceId = Guid.NewGuid().ToString();
 
 // Create the parent Span
@@ -260,7 +254,7 @@ var spanBatch = spanBatchBuilder.Build();
 ```
 <br/>
 
-### Communicating with the New Relic Trace endpoint
+## Sending Data to the New Relic Trace endpoint
 A SpanBatch is sent to New Relic by calling the `SendDataAsync` method on the `SpanDataSender`.
 
 ```CSharp
@@ -315,3 +309,5 @@ The outcome of the Http communication with the New Relic endpoint, if available.
 Any additional information that is available to describe the outcome.
 <br/>
 
+## Next Steps
+* Review these [Sample Applications](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/tree/master/src/NewRelic.Telemetry.Samples) for guidance on configuration and usage of the New Relic Telemetry SDK for Tracing.
