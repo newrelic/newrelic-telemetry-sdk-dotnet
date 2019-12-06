@@ -22,8 +22,14 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleAspNetCoreApp", "..\sample\SampleAspNetCoreApp\SampleAspNetCoreApp.csproj", "{583642EE-8AC9-4E87-AD51-6FECF8F255DC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Telemetry SDK", "Telemetry SDK", "{D095AF96-3B3A-46D6-99FE-1DC845FA4BCE}"
+	ProjectSection(SolutionItems) = preProject
+		NewRelic.Telemetry\README.md = NewRelic.Telemetry\README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Open Telemetry", "Open Telemetry", "{82DD26D6-9333-4B4B-999B-E32E7359D7BE}"
+	ProjectSection(SolutionItems) = preProject
+		OpenTelemetry.Exporter.NewRelic\README.md = OpenTelemetry.Exporter.NewRelic\README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{FECC3BEB-820C-4B94-BB0E-98228ADE6237}"
 EndProject

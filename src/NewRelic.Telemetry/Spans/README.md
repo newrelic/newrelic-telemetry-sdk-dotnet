@@ -1,5 +1,11 @@
 
 # Using the Telemetry SDK for Tracing
+This documentation describes how to use the Telemetry SDK to track information about units of work and to send them to the New Relic endpoint.
+
+
+
+### Examples
+
 
 
 ### Configuring the SpanDataSender
@@ -105,7 +111,7 @@ public class WeatherForecastController : ApiController
 
 
 ### The `SpanBuilder`
-The `SpanBuilder` is a tool to help build new Spans.  In this exaxmple, a `SpanBuilder` is instantiated with a `SpanId` and it is associated to a trace with a `TraceId`.  The SpanIdis required and must be unique.
+The `SpanBuilder` is a tool to help build new Spans.  In this exaxmple, a `SpanBuilder` is instantiated with a `SpanId` and it is associated to a trace with a `TraceId`.  The SpanId is required and must be unique.
 
 ```CSharp
 var traceId = Guid.NewGuid().ToString();
@@ -162,7 +168,7 @@ try
 }
 catch (Exception ex)
 {
-	spanBuilder.HadError(true);
+	spanBuilder.HasError(true);
 	spanBuilder.WithAttribute("Exception", ex);
 	throw;
 }
