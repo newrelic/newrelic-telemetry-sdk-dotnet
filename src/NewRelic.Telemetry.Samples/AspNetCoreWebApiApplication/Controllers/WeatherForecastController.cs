@@ -6,22 +6,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NewRelic.Telemetry.Spans;
+using NewRelic.Telemetry.Transport;
 
 namespace AspNetCoreWebApiApplication.Controllers
 {
-	[ApiController]
-	[Route("[controller]")]
-	public class WeatherForecastController : ControllerBase
-	{
-		private static readonly string[] Summaries = new[]
-		{
-			"Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-		};
+    [ApiController]
+    [Route("[controller]")]
+    public class WeatherForecastController : ControllerBase
+    {
+        private static readonly string[] Summaries = new[]
+        {
+            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+        };
 
 
-		private readonly ILogger<WeatherForecastController> _logger;
-        
-        
+        private readonly ILogger<WeatherForecastController> _logger;
+
         private readonly SpanDataSender _spanDataSender;
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace AspNetCoreWebApiApplication.Controllers
         /// the Configuration Provider.
         /// </summary>
 		public WeatherForecastController(ILoggerFactory loggerFactory, IConfiguration configProvider)
-		{
+        {
             // Make logging available to the methods in the controller
             _logger = loggerFactory.CreateLogger<WeatherForecastController>();
 
@@ -37,48 +37,76 @@ namespace AspNetCoreWebApiApplication.Controllers
             // Instantiate the SpanDataSender which manages the communication with New
             // Relic endpoints
             _spanDataSender = new SpanDataSender(configProvider, loggerFactory);
-		}
+        }
 
-		[HttpGet]
-		public async Task<IEnumerable<WeatherForecast>> Get()
-		{
-            var spanBuilder = SpanBuilder.Create(Guid.NewGuid().ToString())
-                .WithTimestamp(DateTimeOffset.UtcNow)
+        [HttpGet]
+        public async Task<IEnumerable<WeatherForecast>> Get()
+        {
+
+            // The SpanBuilder is a tool to help Build spans.  Each span must have 
+            // a unique identifier.  In this example, we are using a Guid.
+            var spanId = Guid.NewGuid().ToString();
+
+            var spanBuilder = SpanBuilder.Create(spanId);
+
+            // We can add additional attribution to a span using helper functions.
+            // In this case a timestamp and the controller action name are recorded
+            spanBuilder.WithTimestamp(DateTimeOffset.UtcNow)
                 .WithName("WeatherForecase/Get");
 
+            // Wrapping the unit of work inside a try/catch is helpful to ensure that
+            // spans are always reported to the endpoint, even if they have exceptions.
             try
             {
+                // This is the unit of work being tracked by the span.
                 var rng = new Random();
                 var result = Enumerable.Range(1, 5)
                     .Select(index => new WeatherForecast()
-                                {
-                                    Date = DateTime.Now.AddDays(index),
-                                    TemperatureC = rng.Next(-20, 55),
-                                    Summary = Summaries[rng.Next(Summaries.Length)]
-                                })
+                    {
+                        Date = DateTime.Now.AddDays(index),
+                        TemperatureC = rng.Next(-20, 55),
+                        Summary = Summaries[rng.Next(Summaries.Length)]
+                    })
                     .ToArray();
 
                 return result;
             }
-            catch(Exception ex)
+            // If an unhandled exception occurs, it can be denoted on the span.
+            catch (Exception ex)
             {
+                // In the event of an exception
                 spanBuilder.HasError(true);
                 spanBuilder.WithAttribute("Exception", ex);
+
+                //This ensures that tracking of spans doesn't interfere with the normal execution flow
                 throw;
             }
+            // In all cases, the span is sent up to the New Relic endpoint.
             finally
             {
+                // Obtain the span from the SpanBuilder.
                 var span = spanBuilder.Build();
 
+                // The SpanBatchBuilder is a tool to help create SpanBatches
+                // Create a new SpanBatchBuilder and associate the span to it.
                 var spanBatchBuilder = SpanBatchBuilder.Create()
-                    .WithTraceId(Guid.NewGuid().ToString());
+                    .WithSpan(span);
 
-                spanBatchBuilder.WithSpan(span);
+                // Since this SpanBatch represents a single trace, identify
+                // the TraceId for the entire batch.
+                spanBatchBuilder.WithTraceId(Guid.NewGuid().ToString());
 
+                // Obtain the spanBatch from the builder
                 var spanBatch = spanBatchBuilder.Build();
 
-                await _spanDataSender.SendDataAsync(spanBatch);
+                // Send it to the New Relic endpoint.
+                var newRelicResult = await _spanDataSender.SendDataAsync(spanBatch);
+
+                if (newRelicResult.ResponseStatus == NewRelicResponseStatus.Failure)
+                {
+                    _logger.LogWarning("There was a problem sending the SpanBatch to New Relic endpoint");
+                }
             }
-		}
-	}
+        }
+    }
 }
