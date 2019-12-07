@@ -36,7 +36,6 @@ namespace SampleAspNetCoreApp
 
             services.AddOpenTelemetry(() =>
             {
-
                 // Adds the New Relic Exporter loading settings from the appsettings.json
                 var tracerFactory = TracerFactory.Create(b => b.UseNewRelic(Configuration)
                                                  .SetSampler(Samplers.AlwaysSample));
