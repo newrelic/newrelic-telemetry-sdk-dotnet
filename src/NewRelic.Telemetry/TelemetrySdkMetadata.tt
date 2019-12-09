@@ -1,0 +1,35 @@
+﻿<#@ template language="C#" hostspecific="True"#>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Xml" #>
+<#@ import namespace="System.Xml" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.IO" #>
+
+<# 
+	var path = this.Host.ResolvePath("NewRelic.Telemetry.csproj");
+	string GetPackageVersion()
+	{
+			List<string> result = new List<string>(); 
+			XmlDocument doc = new XmlDocument();
+
+			doc.Load(path);
+			
+			var major= doc.SelectSingleNode("//Project/PropertyGroup/Major").InnerText;
+			var minor= doc.SelectSingleNode("//Project/PropertyGroup/Minor").InnerText;
+			var build= doc.SelectSingleNode("//Project/PropertyGroup/Build").InnerText;
+
+			var packageVersion= doc.SelectSingleNode("//Project/PropertyGroup/PackageVersion").InnerText;
+			packageVersion = packageVersion.Replace("$(Major)", major).Replace("$(Minor)", minor).Replace("$(Build)", build);
+
+			return packageVersion;
+	}
+#>
+
+
+namespace NewRelic.Telemetry
+{
+    internal static class TelemetrySdkMetadata
+    {
+		public static string PackageVersion => "<#= GetPackageVersion() #>";
+    }
+}
