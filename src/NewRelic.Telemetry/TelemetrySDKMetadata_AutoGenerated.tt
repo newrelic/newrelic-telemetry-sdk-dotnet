@@ -1,9 +1,6 @@
 ﻿<#@ template language="C#" hostspecific="True"#>
-<#@ assembly name="System.Core" #>
 <#@ assembly name="System.Xml" #>
 <#@ import namespace="System.Xml" #>
-<#@ import namespace="System.Collections.Generic" #>
-<#@ import namespace="System.IO" #>
 <# 
     var path = this.Host.ResolvePath("NewRelic.Telemetry.csproj");
     string GetPackageVersion()
