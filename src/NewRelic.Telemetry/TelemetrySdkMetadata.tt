@@ -4,7 +4,6 @@
 <#@ import namespace="System.Xml" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System.IO" #>
-
 <# 
 	var path = this.Host.ResolvePath("NewRelic.Telemetry.csproj");
 	string GetPackageVersion()
@@ -24,8 +23,6 @@
 			return packageVersion;
 	}
 #>
-
-
 namespace NewRelic.Telemetry
 {
     internal static class TelemetrySdkMetadata
