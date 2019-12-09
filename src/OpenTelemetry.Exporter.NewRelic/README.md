@@ -72,15 +72,13 @@ public class Startup
     }
 
 ```
-
-
+<br/>
+<br/>
 
 **Example: ASP .NET Framework Application** <br/>
 In this example, an ASP.NET Framework application is configured.
 
-In the `appSettings` section of the `web.config` file, the New Relic API Key is provided.
-
-in Your ______GLOBAL.ASAX?______
+In the `appSettings` section of the `web.config` file, the New Relic API Key is provided.  In the Global.asax, the data exporter is configured and a tracer is instantiated.  The controller action creates the span and handles any exceptions that may occur.
 
 
 web.config 
@@ -93,30 +91,85 @@ web.config
   </appSettings>
   ...
 </configuration>
-
 ```
 
+Global.asax
 ```CSharp
-IS THIS MY GLOBAL ASAX
+public class WebApiApplication : System.Web.HttpApplication
+{
+	// Static handle to the OpenTelemetry Tracer
+	public static ITracer OTTracer;
+
+	protected void Application_Start()
+	{
+		GlobalConfiguration.Configure(WebApiConfig.Register);
+
+		// Obtain the API Key from the Web.Config file
+		var apiKey = ConfigurationManager.AppSettings["NewRelic.Telemetry.ApiKey"];
+
+		// Create the tracer factory registering New Relic as the Data Exporter
+		var tracerFactory = TracerFactory.Create((b) =>
+		{
+			b.UseNewRelic(apiKey)
+			.AddDependencyCollector()
+			.SetSampler(Samplers.AlwaysSample);
+		});
+
+		var dependenciesCollector = new DependenciesCollector(new HttpClientCollectorOptions(), tracerFactory);
+
+		// Make the tracer available to the application
+		OTTracer = tracerFactory.GetTracer("SampleAspNetFrameworkApp");
+	}
+}
 ```
 
+WeatherForecastController
+```CSharp
+public class WeatherForecastController : ApiController
+{ 
+	private static readonly string[] Summaries = new[]
+	{
+		"Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+	};
 
+	[HttpGet]
+	public async Task<IEnumerable<WeatherForecast>> Get()
+	{
+		var span = WebApiApplication.OTTracer.StartRootSpan("/WeatherForecastController/Get");
 
+		// Wrapping the unit of work inside a try/catch is helpful to ensure that
+		// spans are always reported to the endpoint, even if they have exceptions.
+		try
+		{
+			// This is the unit of work being tracked by the span.
+			var rng = new Random();
+			var result = Enumerable.Range(1, 5)
+				.Select(index => new WeatherForecast()
+				{
+					Date = DateTime.Now.AddDays(index),
+					TemperatureC = rng.Next(-20, 55),
+					Summary = Summaries[rng.Next(Summaries.Length)]
+				})
+				.ToArray();
 
+			return result;
+		}
+		// If an unhandled exception occurs, it can be denoted on the span.
+		catch (Exception ex)
+		{
+			span.Status = Status.Internal;
+			throw;
+		}
+		// In all cases, the span is sent up to the New Relic endpoint.
+		finally
+		{
+			span.End();
+		}
+	}
+}
+```
+<br/>
+<br/>
 
-
-## Limitations
-The New Relic Telemetry APIs are rate limited. Please reference the documentation for New Relic Metrics API and New Relic Trace API Requirements and Limits on the specifics of the rate limits.
-
-## Contributing
-Full details are available in our CONTRIBUTING.md file. We'd love to get your contributions to improve the Telemetry SDK for .NET! Keep in mind when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. You only have to sign the CLA one time per project. To execute our corporate CLA, which is required if your contribution is on behalf of a company, or if you have any questions, please drop us an email at open-source@newrelic.com.
-
-
-## Open Source License
-This project is distributed under the [Apache 2 license](LICENSE).
-
-
-## Support
-New Relic has open-sourced this project. This project is provided AS-IS WITHOUT WARRANTY OR DEDICATED SUPPORT. Issues and contributions should be reported to the project here on GitHub.
-
-We encourage you to bring your experiences and questions to the [Explorers Hub](https://discuss.newrelic.com) where our community members collaborate on solutions and new ideas.
+## Next Steps
+* Review these [Sample Applications](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/tree/master/src/OpenTelemetry.Exporter.NewRelic.Samples) for guidance on configuration and usage of the OpenTelemetry Exporter for New Relic.

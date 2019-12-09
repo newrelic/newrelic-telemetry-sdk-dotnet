@@ -92,6 +92,9 @@
     <Reference Include="OpenTelemetry.Api, Version=0.0.0.0, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
       <HintPath>..\..\packages\OpenTelemetry.Api.0.2.0-alpha.100\lib\net45\OpenTelemetry.Api.dll</HintPath>
     </Reference>
+    <Reference Include="OpenTelemetry.Collector.Dependencies, Version=0.0.0.0, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\OpenTelemetry.Collector.Dependencies.0.2.0-alpha.100\lib\netstandard2.0\OpenTelemetry.Collector.Dependencies.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTelemetry.Hosting, Version=0.0.0.0, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
       <HintPath>..\..\packages\OpenTelemetry.Hosting.0.2.0-alpha.100\lib\netstandard2.0\OpenTelemetry.Hosting.dll</HintPath>
     </Reference>
@@ -155,9 +158,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\WeatherForecastController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\WeatherForecast.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -171,10 +176,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Controllers\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\NewRelic.Telemetry\NewRelic.Telemetry.csproj">
+      <Project>{62CE6D9B-449B-4956-94FC-0FBBA235145F}</Project>
+      <Name>NewRelic.Telemetry</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\OpenTelemetry.Exporter.NewRelic\OpenTelemetry.Exporter.NewRelic.csproj">
       <Project>{2477cd19-50d2-44e3-bc83-bcfe027b60b8}</Project>
       <Name>OpenTelemetry.Exporter.NewRelic</Name>
