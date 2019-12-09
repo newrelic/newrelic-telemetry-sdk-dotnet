@@ -14,7 +14,7 @@ namespace NewRelic.Telemetry.Transport
     public abstract class DataSender<TData> where TData : ITelemetryDataType
     {
         private const string _userAgent = "NewRelic-Dotnet-TelemetrySDK";
-        private const string _implementationVersion = "/1.0.0";
+        private string _implementationVersion = TelemetrySDKMetadata.PackageVersion;
 
         protected readonly TelemetryConfiguration _config;
         protected readonly TelemetryLogging _logger;
@@ -239,7 +239,7 @@ namespace NewRelic.Telemetry.Transport
 
                 var requestMessage = new HttpRequestMessage(HttpMethod.Post, EndpointUrl);
                 requestMessage.Content = streamContent;
-                requestMessage.Headers.Add("User-Agent", _userAgent + _implementationVersion);
+                requestMessage.Headers.Add("User-Agent", _userAgent + "/" + _implementationVersion);
                 requestMessage.Headers.Add("Api-Key", _config.ApiKey);
                 requestMessage.Method = HttpMethod.Post;
 
