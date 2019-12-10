@@ -156,7 +156,7 @@ var spanBuilder = SpanBuilder.Create(spanId)
 ```
 
 **Intrinsic Attribution** <br>
-Use the SpanBuilder methods to add additional information about the span.  In this example, start-time, duration, and a name are added as additional attribution to the span.
+Use the SpanBuilder methods to add additional information about the span.  Intrinsic attributes are common, shared acorss different span-types.  In this example, start-time, duration, and a name are added as additional attribution to the span.
 ```CSharp
 spanBuilder.WithTimestamp(DateTime.UtcNow)
 	.WithDurationMs(3192)
