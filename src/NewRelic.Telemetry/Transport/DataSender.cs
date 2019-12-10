@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,7 +15,7 @@ namespace NewRelic.Telemetry.Transport
     public abstract class DataSender<TData> where TData : ITelemetryDataType
     {
         private const string _userAgent = "NewRelic-Dotnet-TelemetrySDK";
-        private readonly string _implementationVersion = TelemetrySDKMetadata.PackageVersion;
+        private readonly string _implementationVersion;
 
         protected readonly TelemetryConfiguration _config;
         protected readonly TelemetryLogging _logger;
@@ -56,8 +57,10 @@ namespace NewRelic.Telemetry.Transport
             sp.ConnectionLeaseTimeout = 60000;  // 1 minute
 
             _httpHandlerImpl = SendDataAsync;
+
+            _implementationVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
         }
-        
+
         internal DataSender<TData> WithDelayFunction(Func<int, Task> delayerImpl)
         {
             _delayerImpl = delayerImpl;

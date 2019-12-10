@@ -1,9 +1,0 @@
-﻿<#@ template language="C#" hostspecific="true"#>
-
-namespace NewRelic.Telemetry
-{
-    internal static class TelemetrySDKMetadata
-    {
-        public static string PackageVersion => "<#= this.Host.ResolveParameterValue(".", ".", "PackageVersion") #>";
-    }
-}
