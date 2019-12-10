@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace NewRelic.Telemetry.Transport
     {
         private const string _userAgent = "NewRelic-Dotnet-TelemetrySDK";
         private const string _implementationVersion = "/1.0.0";
+        private string _callingAgent;
 
         protected readonly TelemetryConfiguration _config;
         protected readonly TelemetryLogging _logger;
@@ -153,22 +155,6 @@ namespace NewRelic.Telemetry.Transport
             return await SendDataAsync(dataToSend, retryNum + 1);
         }
 
-        /// <summary>
-        /// Method used to send a data to New Relic endpoint.  Handles the communication with the New Relic endpoints.
-        /// </summary>
-        /// <param name="dataToSend">The data to send to New Relic</param>
-        /// <returns>New Relic response indicating the outcome and additional information about the interaction with the New Relic endpoint.</returns>
-        public async Task<Response> SendDataAsync(TData dataToSend)
-        {
-            if(string.IsNullOrWhiteSpace(_config.ApiKey))
-            {
-                _logger.Exception(new ArgumentNullException("Configuration requires API key"));
-                return Response.Failure("API Key was not available");
-            }
-
-            return await SendDataAsync(dataToSend, 0);
-        }
-
         private async Task<Response> SendDataAsync(TData dataToSend, int retryNum)
         {
 
@@ -239,7 +225,8 @@ namespace NewRelic.Telemetry.Transport
 
                 var requestMessage = new HttpRequestMessage(HttpMethod.Post, EndpointUrl);
                 requestMessage.Content = streamContent;
-                requestMessage.Headers.Add("User-Agent", _userAgent + _implementationVersion);
+                // TODO: once packageVersion work is merged, consider more efficient string usage here
+                requestMessage.Headers.Add("User-Agent", _userAgent + _implementationVersion + _callingAgent);
                 requestMessage.Headers.Add("Api-Key", _config.ApiKey);
                 requestMessage.Method = HttpMethod.Post;
 
@@ -251,6 +238,35 @@ namespace NewRelic.Telemetry.Transport
                 }
 
                 return response;
+            }
+        }
+
+        /// <summary>
+        /// Method used to send a data to New Relic endpoint.  Handles the communication with the New Relic endpoints.
+        /// </summary>
+        /// <param name="dataToSend">The data to send to New Relic</param>
+        /// <returns>New Relic response indicating the outcome and additional information about the interaction with the New Relic endpoint.</returns>
+        public async Task<Response> SendDataAsync(TData dataToSend)
+        {
+            if (string.IsNullOrWhiteSpace(_config.ApiKey))
+            {
+                _logger.Exception(new ArgumentNullException("Configuration requires API key"));
+                return Response.Failure("API Key was not available");
+            }
+
+            return await SendDataAsync(dataToSend, 0);
+        }
+
+        /// <summary>
+        /// Method used to add calling Product Name/Version to the User-Agent HTTP header.
+        /// </summary>
+        /// <param name="callingAgent">Name and version of the caller of the TelemetrySDK (e.g. "OpenTelemetry.Exporter.NewRelic/1.0.0").</param>
+        /// <returns></returns>
+        public virtual void AddVersionInfo(string callingAgent)
+        {
+            if (!string.IsNullOrWhiteSpace(callingAgent))
+            {
+                _callingAgent = " " + callingAgent;
             }
         }
     }
