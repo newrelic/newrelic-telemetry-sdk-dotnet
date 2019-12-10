@@ -9,7 +9,7 @@ This repo contains the New Relic Telemetry SDK and an Open Telemetry Provider fo
 
 
 
-### [New Relic Open Telemetry SDK](./src/NewRelic.Telemetry/README.md)
+### [New Relic Telemetry SDK](./src/NewRelic.Telemetry/README.md)
 The [New Relic Telemetry SDK](./src/NewRelic.Telemetry/README.md) allows you track information about the execution of your application and to send it to the New Relic back-end.  New Relic tools allow you to visualize this information, making it insightful, and actionable.
 
 

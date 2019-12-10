@@ -145,7 +145,7 @@ public class WeatherForecastController : ApiController
 
 
 ## The SpanBuilder
-The `SpanBuilder` is a tool to help build new Spans.  In this exaxmple, a `SpanBuilder` is instantiated with a `SpanId` and it is associated to a trace with a `TraceId`.  The SpanId is required and must be unique.
+The `SpanBuilder` is a tool to help build new Spans.  In this example, a `SpanBuilder` is instantiated with a `SpanId` and it is associated to a trace with a `TraceId`.  The SpanId is required and must be unique.
 
 ```CSharp
 var traceId = Guid.NewGuid().ToString();
