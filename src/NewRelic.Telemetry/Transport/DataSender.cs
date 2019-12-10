@@ -7,6 +7,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,7 +16,7 @@ namespace NewRelic.Telemetry.Transport
     public abstract class DataSender<TData> where TData : ITelemetryDataType
     {
         private const string _userAgent = "NewRelic-Dotnet-TelemetrySDK";
-        private const string _implementationVersion = "/1.0.0";
+        private static readonly string _implementationVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
         private string _callingAgent;
 
         protected readonly TelemetryConfiguration _config;
@@ -59,7 +60,7 @@ namespace NewRelic.Telemetry.Transport
 
             _httpHandlerImpl = SendDataAsync;
         }
-        
+
         internal DataSender<TData> WithDelayFunction(Func<int, Task> delayerImpl)
         {
             _delayerImpl = delayerImpl;
@@ -225,8 +226,10 @@ namespace NewRelic.Telemetry.Transport
 
                 var requestMessage = new HttpRequestMessage(HttpMethod.Post, EndpointUrl);
                 requestMessage.Content = streamContent;
+
                 // TODO: once packageVersion work is merged, consider more efficient string usage here
-                requestMessage.Headers.Add("User-Agent", _userAgent + _implementationVersion + _callingAgent);
+                requestMessage.Headers.Add("User-Agent", _userAgent + "/" + _implementationVersion + _callingAgent);
+
                 requestMessage.Headers.Add("Api-Key", _config.ApiKey);
                 requestMessage.Method = HttpMethod.Post;
 
