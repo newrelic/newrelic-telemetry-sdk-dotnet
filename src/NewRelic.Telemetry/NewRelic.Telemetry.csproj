@@ -42,6 +42,21 @@
     <TransformOutOfDateOnly>false</TransformOutOfDateOnly>
   </PropertyGroup>
 
+  <Target Name="TestMessage" AfterTargets="Build" >
+
+    <Message Text="$(MSBuildProgramFiles32)" Importance="high"/>
+
+    <Message Text="$(MSBuildExtensionsPath32)" Importance="high"/>
+
+    <Message Text="$(MSBuildToolsPath)" Importance="high"/>
+
+    <Message Text="$(VisualStudioVersion)" Importance="high"/>
+
+    <Message Text="$(VSToolsPath)" Importance="high"/>
+
+  </Target>
+  
+
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(VSToolsPath)\TextTemplating\Microsoft.TextTemplating.targets" />
 
