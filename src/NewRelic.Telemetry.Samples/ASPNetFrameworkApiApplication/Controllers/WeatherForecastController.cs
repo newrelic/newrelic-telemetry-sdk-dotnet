@@ -52,6 +52,7 @@ namespace ASPNetFrameworkApiApplication.Controllers
         };
 
         [HttpGet]
+        [Route("api/WeatherForecast/Get")]
         public async Task<IEnumerable<WeatherForecast>> Get()
         {
 
@@ -64,7 +65,7 @@ namespace ASPNetFrameworkApiApplication.Controllers
             // We can add additional attribution to a span using helper functions.
             // In this case a timestamp and the controller action name are recorded
             spanBuilder.WithTimestamp(DateTimeOffset.UtcNow)
-                .WithName("WeatherForecase/Get");
+                .WithName("WeatherForecast/Get");
 
             // Wrapping the unit of work inside a try/catch is helpful to ensure that
             // spans are always reported to the endpoint, even if they have exceptions.
