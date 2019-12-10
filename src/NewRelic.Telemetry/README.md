@@ -15,7 +15,7 @@ The New Relic Telemetry SDK for .NET allows the capture of information about the
 
 
 ### Limitations
-The New Relic Telemetry APIs are rate limited. Please reference the documentation for the [New Relic Trace API](https://docs.newrelic.com/docs/data-ingest-apis/get-data-new-relic/metric-api/metric-api-limits-restricted-attributes) for the specifcs  rate limits.
+The New Relic Telemetry APIs are rate limited. Please reference the documentation for the [New Relic Trace API](https://docs.newrelic.com/docs/understand-dependencies/distributed-tracing/trace-api/trace-api-general-requirements-limits) for the specifcs  rate limits.
 
 
 
