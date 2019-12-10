@@ -1,6 +1,6 @@
 # New Relic OpenTelemetry Trace Exporter for .NET
 
-The New Relic Data Exporter is a OpenTelemetry Provider that sends data to New Relic.
+The New Relic OpenTelemetry Trace Exporter is a OpenTelemetry Provider that sends data from .NET applications to New Relic.
 
 
 
@@ -16,11 +16,11 @@ The New Relic Data Exporter is a OpenTelemetry Provider that sends data to New R
 
 
 **Example: ASP .NET Core  Application** <br/>
-In this example, an ASP.NET Core application is configured.
+In this example, an ASP.NET Core application is configured to use the New Relic OpenTelemetry Trace Exporter.
 
 In the `NewRelic` section of the `appsettings.json` file, the New Relic API Key and Service Name are provided. 
 
-During startup, OpenTelemetry is added as a Service which is configured to use the New Relic Data Exporter for Traces.  Additionally, the `AspNetCoreCollector` is configured to collect telemetry information from the ASP.NET pipeline.
+During startup, OpenTelemetry is added as a Service which is configured to use the New Relic OpenTelemetry Trace Exporter.  Additionally, the OpenTelemetry `AspNetCoreCollector` is configured to collect telemetry information from the ASP.NET pipeline.
 
 appsettings.json 
 ```JSON
@@ -98,7 +98,7 @@ public class Startup
 <br/>
 
 **Example: ASP .NET Framework Application** <br/>
-In this example, an ASP.NET Framework application is configured.
+In this example, an ASP.NET Framework application is configured to use the New Relic OpenTelemetry Trace Exporter.
 
 In the `appSettings` section of the `web.config` file, the New Relic API Key is provided.  In the Global.asax, the data exporter is configured and a tracer is instantiated.  The controller action creates the span and handles any exceptions that may occur.
 

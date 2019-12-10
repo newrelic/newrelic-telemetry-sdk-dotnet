@@ -8,7 +8,7 @@ The ```SpanDataSender``` manages the communication with New Relic Endpoints.  In
 <br/>
 
 **Example: ASP.Net Core Web API application with Settings Based Configuration** <br/>
-The following ASP.Net Core example, configuration and logging providers are dependency-injected into the ```WeatherForecastController``` controller's constructor.  The constructor instantiates a ```SpanDataSender``` adding the configurtion and log providers.
+In the following ASP.Net Core example, configuration and logging providers are dependency-injected into the ```WeatherForecastController``` controller's constructor.  The constructor instantiates a ```SpanDataSender``` adding the configuration and log providers.
 
 appsettings.json
 ```JSON
@@ -136,7 +136,7 @@ public class WeatherForecastController : ApiController
 	<dt>Traces</dt>
 	<dd>Traces describe operations to be tracked.  For example, a trace may describe the processing of an endpoint within a WebAPI application</dd>
 	<dt>Spans</dt>
-	<dd>Operations are often broken down into smaller units of work.  Spans describe the units of work that comprise an operation.  For example, within the processing of a the controller action, various database calls may occur.  Each of these database calls may be tracked as a span that is part of the same trace.</dd>
+	<dd>Operations are often broken down into smaller units of work.  Spans describe the units of work that comprise an operation.  For example, within the processing of a controller action, various database calls may occur.  Each of these database calls may be tracked as a span that is part of the same trace.</dd>
 	<dt>Span Batches</dt>
 	<dd>When sending trace information to New Relic, spans are bundled into Span Batches and sent to the endpoint.  The spans within a Span Batch may, or may not be a part of the same trace.
 </dd>
@@ -156,7 +156,7 @@ var spanBuilder = SpanBuilder.Create(spanId)
 ```
 
 **Intrinsic Attribution** <br>
-Use the SpanBuilder methods to add additional information about the span.  Intrinsic attributes are common, shared acorss different span-types.  In this example, start-time, duration, and a name are added as additional attribution to the span.
+Use the SpanBuilder methods to add additional information about the span.  Intrinsic attributes are common, shared across different span-types.  In this example, start-time, duration, and a name are added as additional attribution to the span.
 ```CSharp
 spanBuilder.WithTimestamp(DateTime.UtcNow)
 	.WithDurationMs(3192)
@@ -167,11 +167,11 @@ The following methods support adding intrinsic attributes to a span.
 
 | Method						| Attribute							|Description																														|
 | -----------					| -----------						|-------																															|
-| ```WithTraceId			```	| trace.id							|Associates the span to a specific trace.  If the span batch is contains spans from multiple traces, this field is required.		|
-| ```WithTimeStamp			```	| timestamp							|The start time (unix timestamp with milliseconds)																					|
+| ```WithTraceId			```	| trace.id							|Associates the span to a specific trace.  If the span batch contains spans from multiple traces, this field is required.		|
+| ```WithTimeStamp			```	| timestamp							|The start time (unix timestamp in milliseconds)																					|
 | ```WithDurationMs		```	| duration							|The duration (in ms) for the span's execution (including sub/child spans)															|
-| ```WithExecutionTimeInfo```	| timestamp and Duration			|Given and StartTime and and EndTime, calculates the duration and records the timestamp												|
-| ```WithName				```	| name								|Identifies the span with a meaninful name.  This value should describe the operation, but is not a unique identifier				|
+| ```WithExecutionTimeInfo```	| timestamp and Duration			|Given StartTime and and EndTime, calculates the duration and records the timestamp												|
+| ```WithName				```	| name								|Identifies the span with a meaningful name.  This value should describe the operation, but is not a unique identifier				|
 | ```WithServiceName		```	| serviceName						|Identifies the service for which the span is being recorded																		|
 
 
@@ -215,7 +215,7 @@ finally
 We recommend the use of `try/catch/finally` blocks so that if an exception occurs, the span information can still be sent to the New Relic Back End.
 
 **Parent Spans** <br/>
-When a span describes a sub-unit of work, it may linked to its parent unit via the ParentId attribute.  In this example a child span is associated to a parent span.  Both spans are part of the same trace.
+When a span describes a sub-unit of work, it may be linked to its parent unit via the ParentId attribute.  In this example a child span is associated to a parent span.  Both spans are part of the same trace.
 
 ```CSharp
 var traceId = Guid.NewGuid().ToString();
@@ -252,7 +252,6 @@ var span = spanBuilder.Build();
 ## The SpanBatchBuilder
 The `SpanBatchBuilder` is a tool that manages a collection of spans to be sent to the New Relic endpoint.
 
-
 This example is a single trace with two spans that are related.  Since all of the spans on the SpanBatch belong to the same Trace, the TraceId is set on the SpanBatch, as opposed to on the individual spans.
 
 ```CSharp
@@ -272,14 +271,14 @@ var childSpan = SpanBuilder.Create(childSpanId)
 	.Build();
 
 // Bundle the two spans into a span batch
-var spanBatchBuilder = SpanBatchBuilder.Create();
+var spanBatchBuilder = SpanBatchBuilder.Create().
 	.WithTraceId(traceId)
 	.WithSpan(parentSpan)
 	.WithSpan(childSpan);
 
 ````
 
-**Obtaining the SpanBatch from the SpanbatchBuilder** <br/>
+**Obtaining the SpanBatch from the SpanBatchBuilder** <br/>
 When the building of a `SpanBatch` is complete, invoke the `Build()` method on the `SpanBatchBuilder` to obtain the `SpanBatch` object.
 
 
@@ -313,10 +312,11 @@ var childSpan = SpanBuilder.Create(childSpanId)
 	.WithName("Consult The Weather Oracle")
 	.WithParentId(parentSpanId).Build();
 
-var spanBatch = SpanBatchBuilder.Create();
+var spanBatch = SpanBatchBuilder.Create().
 	.WithTraceId(traceId)
 	.WithSpan(parentSpan)
-	.WithSpan(childSpan).Build();
+	.WithSpan(childSpan)
+	.Build();
 
 // Send the spans to the New Relic Trace Endpoint
 var newRelicResult = await _spanDataSender.SendDataAsync(spanBatch);
@@ -332,11 +332,11 @@ Indicates the outcome of the communication with the New Relic endpoint.
 
 <dl>
 	<dt>Success</dt>
-	<dd>SpanBath was sent to the New Relic endpoint.  Further validation will occur on the backend.</dd>
+	<dd>SpanBatch was sent to the New Relic endpoint.  Further validation will occur on the backend.</dd>
 	<dt>DidNotSend_NoData</dt>
-	<dd>A request was made to send a SpanBatch that did not have any Spans.  Not an error condition, but may indicate an unanticipated code path.</dd>
+	<dd>A request was made to send a SpanBatch that did not have any Spans. Not an error condition, but may indicate an unanticipated code path.</dd>
 	<dt>Failure</dt>
-	<dd>There was a failure during the communication with the endpoint.  The other properties will indicate possible reasons for this failure.</dd>
+	<dd>There was a failure during the communication with the endpoint. The other `Response` properties may indicate reasons for this failure.</dd>
 </dl>
 <br/>
 
