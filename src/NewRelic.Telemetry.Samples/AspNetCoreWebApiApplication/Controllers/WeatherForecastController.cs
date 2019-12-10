@@ -28,15 +28,10 @@ namespace AspNetCoreWebApiApplication.Controllers
         /// Use dependency injection in the constructor to pass in the Logger Factory and
         /// the Configuration Provider.
         /// </summary>
-		public WeatherForecastController(ILoggerFactory loggerFactory, IConfiguration configProvider)
+		public WeatherForecastController(ILoggerFactory loggerFactory, SpanDataSender spanDataSender)
         {
-            // Make logging available to the methods in the controller
+            _spanDataSender = spanDataSender;
             _logger = loggerFactory.CreateLogger<WeatherForecastController>();
-
-
-            // Instantiate the SpanDataSender which manages the communication with New
-            // Relic endpoints
-            _spanDataSender = new SpanDataSender(configProvider, loggerFactory);
         }
 
         [HttpGet]

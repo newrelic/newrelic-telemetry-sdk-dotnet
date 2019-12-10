@@ -34,16 +34,18 @@ namespace SampleAspNetCoreApp
         {
             services.AddControllers();
 
-            services.AddOpenTelemetry(() =>
+            services.AddOpenTelemetry((svcProvider, tracerBuilder) =>
             {
+                // Make the logger factory available to the dependency injection
+                // container so that it may be injected into the OpenTelemetry Tracer.
+                var loggerFactory = svcProvider.GetRequiredService<ILoggerFactory>();
+
                 // Adds the New Relic Exporter loading settings from the appsettings.json
-                var tracerFactory = TracerFactory.Create(b => b.UseNewRelic(Configuration)
+                var tracerFactory = TracerFactory.Create(b => b.UseNewRelic(Configuration, loggerFactory)
                                                  .SetSampler(Samplers.AlwaysSample));
 
                 var dependenciesCollector = new DependenciesCollector(new HttpClientCollectorOptions(), tracerFactory);
                 var aspNetCoreCollector = new AspNetCoreCollector(tracerFactory.GetTracer(null));
-
-                return tracerFactory;
             });
         }
 

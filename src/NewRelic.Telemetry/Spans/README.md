@@ -27,20 +27,59 @@ appsettings.json
 }
 ```
 
-WeatherForecastController
+startup.cs
 ```CSharp
-/// <summary>
-/// Use dependency injection in the constructor to pass in the Logger Factory and
-/// the Configuration Provider.
-/// </summary>
-public WeatherForecastController(ILoggerFactory loggerFactory, IConfiguration configProvider)
+public class Startup
 {
-    // Make logging available to the methods in the controller
-    _logger = loggerFactory.CreateLogger<WeatherForecastController>();
- 
-    // Instantiate the SpanDataSender which manages the communication with New
-    // Relic endpoints
-    _spanDataSender = new SpanDataSender(configProvider, loggerFactory);
+	public Startup(IConfiguration configuration)
+	{
+		Configuration = configuration;
+	}
+
+	public IConfiguration Configuration { get; }
+
+	// This method gets called by the runtime. Use this method to add services to the container.
+	public void ConfigureServices(IServiceCollection services)
+	{
+		services.AddControllers();
+
+		// Create the SpanDataSender in support of the TelemetrySDK.
+		// Use the Service Provider to resolve the LoggerFactory so that it can
+		// be injected into the Telemetry Provider
+		services.AddSingleton<SpanDataSender>((svcProvider) =>
+		{
+			var loggerFactory = svcProvider.GetRequiredService<ILoggerFactory>();
+
+			return new SpanDataSender(Configuration, loggerFactory);
+		});
+	}
+
+	// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+	public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+	{
+		if (env.IsDevelopment())
+		{
+			app.UseDeveloperExceptionPage();
+		}
+
+		app.UseRouting();
+
+		app.UseAuthorization();
+
+		app.UseEndpoints(endpoints =>
+		{
+			endpoints.MapControllers();
+		});
+	}
+}
+```
+
+Weather Forecast Controller
+```CSharp
+public WeatherForecastController(ILoggerFactory loggerFactory, SpanDataSender spanDataSender)
+{
+	_spanDataSender = spanDataSender;
+	_logger = loggerFactory.CreateLogger<WeatherForecastController>();
 }
 ```
 <br/>

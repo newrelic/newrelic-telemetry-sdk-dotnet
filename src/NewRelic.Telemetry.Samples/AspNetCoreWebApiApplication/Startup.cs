@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NewRelic.Telemetry.Spans;
 
 namespace AspNetCoreWebApiApplication
 {
@@ -25,6 +26,16 @@ namespace AspNetCoreWebApiApplication
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddControllers();
+            
+            // Create the SpanDataSender in support of the TelemetrySDK.
+            // Use the Service Provider to resolve the LoggerFactory so that it can
+            // be injected into the Telemetry Provider
+            services.AddSingleton<SpanDataSender>((svcProvider) =>
+            {
+                var loggerFactory = svcProvider.GetRequiredService<ILoggerFactory>();
+
+                return new SpanDataSender(Configuration, loggerFactory);
+            });
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

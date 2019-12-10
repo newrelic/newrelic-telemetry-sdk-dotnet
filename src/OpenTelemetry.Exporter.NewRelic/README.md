@@ -46,31 +46,53 @@ Startup.cs <br/>
 ```CSharp
 public class Startup
 {
-    public Startup(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
+	public Startup(IConfiguration configuration)
+	{
+		Configuration = configuration;
+	}
 
-    public IConfiguration Configuration { get; }
+	public IConfiguration Configuration { get; }
 
-    // This method gets called by the runtime. Use this method to add services to the container.
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.AddControllers();
+	// This method gets called by the runtime. Use this method to add services to the container.
+	public void ConfigureServices(IServiceCollection services)
+	{
+		services.AddControllers();
 
-        services.AddOpenTelemetry(() =>
-        {
-            // Adds the New Relic Exporter loading settings from the appsettings.json
-            var tracerFactory = TracerFactory.Create(b => b.UseNewRelic(Configuration)
-                                                .SetSampler(Samplers.AlwaysSample));
+		services.AddOpenTelemetry((svcProvider, tracerBuilder) =>
+		{
+			// Make the logger factory available to the dependency injection
+			// container so that it may be injected into the OpenTelemetry Tracer.
+			var loggerFactory = svcProvider.GetRequiredService<ILoggerFactory>();
 
-            var dependenciesCollector = new DependenciesCollector(new HttpClientCollectorOptions(), tracerFactory);
-            var aspNetCoreCollector = new AspNetCoreCollector(tracerFactory.GetTracer(null));
+			// Adds the New Relic Exporter loading settings from the appsettings.json
+			var tracerFactory = TracerFactory.Create(b => b.UseNewRelic(Configuration, loggerFactory)
+												.SetSampler(Samplers.AlwaysSample));
 
-            return tracerFactory;
-        });
-    }
+			var dependenciesCollector = new DependenciesCollector(new HttpClientCollectorOptions(), tracerFactory);
+			var aspNetCoreCollector = new AspNetCoreCollector(tracerFactory.GetTracer(null));
+		});
+	}
 
+	// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+	public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+	{
+		if (env.IsDevelopment())
+		{
+			app.UseDeveloperExceptionPage();
+		}
+
+		app.UseHttpsRedirection();
+
+		app.UseRouting();
+
+		app.UseAuthorization();
+
+		app.UseEndpoints(endpoints =>
+		{
+			endpoints.MapControllers();
+		});
+	}
+}
 ```
 <br/>
 <br/>
