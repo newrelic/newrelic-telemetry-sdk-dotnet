@@ -261,9 +261,8 @@ namespace NewRelic.Telemetry.Transport
         /// <summary>
         /// Method used to add product information including product name and version to the User-Agent HTTP header.
         /// </summary>
-        /// <param name="productName">Name of the product uses the TelemetrySDK (e.g. "OpenTelemetry.Exporter.NewRelic").</param>
-        /// <param name="productVersion">Version of the product uses the TelemetrySDK (e.g. "1.0.0").</param>
-
+        /// <param name="productName">Name of the product uses the TelemetrySDK (e.g. "OpenTelemetry.Exporter.NewRelic"). This should not be null or empty.</param>
+        /// <param name="productVersion">Version of the product uses the TelemetrySDK (e.g. "1.0.0"). This should not be null or empty.</param>
         /// <returns></returns>
         public void AddVersionInfo(string productName, string productVersion)
         {
