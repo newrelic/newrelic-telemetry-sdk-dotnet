@@ -226,7 +226,6 @@ namespace NewRelic.Telemetry.Transport
                 var requestMessage = new HttpRequestMessage(HttpMethod.Post, EndpointUrl);
                 requestMessage.Content = streamContent;
 
-                // TODO: once packageVersion work is merged, consider more efficient string usage here
                 requestMessage.Headers.Add("User-Agent", _userAgent);
 
                 requestMessage.Headers.Add("Api-Key", _config.ApiKey);
@@ -260,11 +259,13 @@ namespace NewRelic.Telemetry.Transport
         }
 
         /// <summary>
-        /// Method used to add calling Product Name/Version to the User-Agent HTTP header.
+        /// Method used to add product information including product name and version to the User-Agent HTTP header.
         /// </summary>
-        /// <param name="callingAgent">Name and version of the caller of the TelemetrySDK (e.g. "OpenTelemetry.Exporter.NewRelic/1.0.0").</param>
+        /// <param name="productName">Name of the product uses the TelemetrySDK (e.g. "OpenTelemetry.Exporter.NewRelic").</param>
+        /// <param name="productVersion">Version of the product uses the TelemetrySDK (e.g. "1.0.0").</param>
+
         /// <returns></returns>
-        public virtual void AddVersionInfo(string productName, string productVersion)
+        public void AddVersionInfo(string productName, string productVersion)
         {
             var productIdentifier = string.Join("/", productName, productVersion);
             if (!string.IsNullOrEmpty(productIdentifier))
