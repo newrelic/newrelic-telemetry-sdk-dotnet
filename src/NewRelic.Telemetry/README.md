@@ -7,7 +7,7 @@ The New Relic Telemetry SDK for .NET allows the capture of information about the
 * A valid New Relic <a target="_blank" href="https://docs.newrelic.com/docs/insights/insights-data-sources/custom-data/introduction-event-api#register">Insights Insert API Key</a>.
 * A .NET Core 2.0+ or .NET Framework 4.5+ Application
 ## Getting Started
-* Incorporate the [NewRelic.Telemetry](https://www.nuget.org/packages/NewRelic.Telemetry) NuGet Packge into your project.
+* Incorporate the [NewRelic.Telemetry](https://www.nuget.org/packages/NewRelic.Telemetry) NuGet Package into your project.
 
 ## Next Steps
 * Using the [Telemetry SDK for Tracing](./Spans/README.md)
@@ -15,7 +15,7 @@ The New Relic Telemetry SDK for .NET allows the capture of information about the
 
 
 ### Limitations
-The New Relic Telemetry APIs are rate limited. Please reference the documentation for the [New Relic Trace API](https://docs.newrelic.com/docs/understand-dependencies/distributed-tracing/trace-api/trace-api-general-requirements-limits) for the specifcs  rate limits.
+The New Relic Telemetry APIs are rate limited. Please reference the documentation for the [New Relic Trace API](https://docs.newrelic.com/docs/understand-dependencies/distributed-tracing/trace-api/trace-api-general-requirements-limits) for the specific rate limits.
 
 
 
