@@ -1,21 +1,197 @@
-# .NET Open Telemetry Provider for New Relic 
+# New Relic OpenTelemetry Trace Exporter for .NET
 
-The New Relic Data Exporter is a Open Telemetry Provider that sends data to New Relic.
-
-### Limitations
-The New Relic Telemetry APIs are rate limited. Please reference the documentation for New Relic Metrics API and New Relic Trace API Requirements and Limits on the specifics of the rate limits.
+The New Relic OpenTelemetry Trace Exporter is a OpenTelemetry Provider that sends data from .NET applications to New Relic.
 
 
 
-### Contributing
-Full details are available in our CONTRIBUTING.md file. We'd love to get your contributions to improve the Telemetry SDK for .NET! Keep in mind when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. You only have to sign the CLA one time per project. To execute our corporate CLA, which is required if your contribution is on behalf of a company, or if you have any questions, please drop us an email at open-source@newrelic.com.
+## Prerequisites
+* A valid New Relic <a target="_blank" href="https://docs.newrelic.com/docs/insights/insights-data-sources/custom-data/introduction-event-api#register">Insights Insert API Key</a>.
+* A .NET Core 2.0+ or .NET Framework 4.6+ Application
+
+## Getting Started
+* Incorporate the [OpenTelemetry.Exporter.NewRelic](https://www.nuget.org/packages/OpenTelemetry.Exporter.NewRelic) NuGet Packge into your project.
+
+## Configuration
 
 
-### Open Source License
-This project is distributed under the [Apache 2 license](LICENSE).
+
+**Example: ASP .NET Core  Application** <br/>
+In this example, an ASP.NET Core application is configured to use the New Relic OpenTelemetry Trace Exporter.
+
+In the `NewRelic` section of the `appsettings.json` file, the New Relic API Key and Service Name are provided. 
+
+During startup, OpenTelemetry is added as a Service which is configured to use the New Relic OpenTelemetry Trace Exporter.  Additionally, the OpenTelemetry `AspNetCoreCollector` is configured to collect telemetry information from the ASP.NET pipeline.
+
+appsettings.json 
+```JSON
+{
+	"Logging": {
+		"LogLevel": {
+			"Default": "Information",
+			"Microsoft": "Warning",
+			"Microsoft.Hosting.Lifetime": "Information"
+		}
+	},
+
+	"AllowedHosts": "*",
+
+	"NewRelic": {
+		"ApiKey": "YOUR KEY GOES HERE",
+		"ServiceName": "SampleAspNetCoreApp"
+	}
+}
+```
+
+Startup.cs <br/>
+```CSharp
+public class Startup
+{
+	public Startup(IConfiguration configuration)
+	{
+		Configuration = configuration;
+	}
+
+	public IConfiguration Configuration { get; }
+
+	// This method gets called by the runtime. Use this method to add services to the container.
+	public void ConfigureServices(IServiceCollection services)
+	{
+		services.AddControllers();
+
+		services.AddOpenTelemetry((svcProvider, tracerBuilder) =>
+		{
+			// Make the logger factory available to the dependency injection
+			// container so that it may be injected into the OpenTelemetry Tracer.
+			var loggerFactory = svcProvider.GetRequiredService<ILoggerFactory>();
+
+			// Adds the New Relic Exporter loading settings from the appsettings.json
+			var tracerFactory = TracerFactory.Create(b => b.UseNewRelic(Configuration, loggerFactory)
+												.SetSampler(Samplers.AlwaysSample));
+
+			var dependenciesCollector = new DependenciesCollector(new HttpClientCollectorOptions(), tracerFactory);
+			var aspNetCoreCollector = new AspNetCoreCollector(tracerFactory.GetTracer(null));
+		});
+	}
+
+	// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+	public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+	{
+		if (env.IsDevelopment())
+		{
+			app.UseDeveloperExceptionPage();
+		}
+
+		app.UseHttpsRedirection();
+
+		app.UseRouting();
+
+		app.UseAuthorization();
+
+		app.UseEndpoints(endpoints =>
+		{
+			endpoints.MapControllers();
+		});
+	}
+}
+```
+<br/>
+<br/>
+
+**Example: ASP .NET Framework Application** <br/>
+In this example, an ASP.NET Framework application is configured to use the New Relic OpenTelemetry Trace Exporter.
+
+In the `appSettings` section of the `web.config` file, the New Relic API Key is provided.  In the Global.asax, the data exporter is configured and a tracer is instantiated.  The controller action creates the span and handles any exceptions that may occur.
 
 
-### Support
-New Relic has open-sourced this project. This project is provided AS-IS WITHOUT WARRANTY OR DEDICATED SUPPORT. Issues and contributions should be reported to the project here on GitHub.
+web.config 
+```XML
+<configuration>
+  <appSettings>
+    <add key="NewRelic.Telemetry.ApiKey" value="YOUR KEY GOES HERE" />
+    <add key="serilog:using:File" value="Serilog.Sinks.File" />
+    <add key="serilog:write-to:File.path" value="C:\logs\SerilogExample.log.json" />
+  </appSettings>
+  ...
+</configuration>
+```
 
-We encourage you to bring your experiences and questions to the [Explorers Hub](https://discuss.newrelic.com) where our community members collaborate on solutions and new ideas.
+Global.asax
+```CSharp
+public class WebApiApplication : System.Web.HttpApplication
+{
+	// Static handle to the OpenTelemetry Tracer
+	public static ITracer OTTracer;
+
+	protected void Application_Start()
+	{
+		GlobalConfiguration.Configure(WebApiConfig.Register);
+
+		// Obtain the API Key from the Web.Config file
+		var apiKey = ConfigurationManager.AppSettings["NewRelic.Telemetry.ApiKey"];
+
+		// Create the tracer factory registering New Relic as the Data Exporter
+		var tracerFactory = TracerFactory.Create((b) =>
+		{
+			b.UseNewRelic(apiKey)
+			.AddDependencyCollector()
+			.SetSampler(Samplers.AlwaysSample);
+		});
+
+		var dependenciesCollector = new DependenciesCollector(new HttpClientCollectorOptions(), tracerFactory);
+
+		// Make the tracer available to the application
+		OTTracer = tracerFactory.GetTracer("SampleAspNetFrameworkApp");
+	}
+}
+```
+
+WeatherForecastController
+```CSharp
+public class WeatherForecastController : ApiController
+{ 
+	private static readonly string[] Summaries = new[]
+	{
+		"Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+	};
+
+	[HttpGet]
+	public async Task<IEnumerable<WeatherForecast>> Get()
+	{
+		var span = WebApiApplication.OTTracer.StartRootSpan("/WeatherForecastController/Get");
+
+		// Wrapping the unit of work inside a try/catch is helpful to ensure that
+		// spans are always reported to the endpoint, even if they have exceptions.
+		try
+		{
+			// This is the unit of work being tracked by the span.
+			var rng = new Random();
+			var result = Enumerable.Range(1, 5)
+				.Select(index => new WeatherForecast()
+				{
+					Date = DateTime.Now.AddDays(index),
+					TemperatureC = rng.Next(-20, 55),
+					Summary = Summaries[rng.Next(Summaries.Length)]
+				})
+				.ToArray();
+
+			return result;
+		}
+		// If an unhandled exception occurs, it can be denoted on the span.
+		catch (Exception ex)
+		{
+			span.Status = Status.Internal;
+			throw;
+		}
+		// In all cases, the span is sent up to the New Relic endpoint.
+		finally
+		{
+			span.End();
+		}
+	}
+}
+```
+<br/>
+<br/>
+
+## Next Steps
+* Review these [Sample Applications](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/tree/master/src/OpenTelemetry.Exporter.NewRelic.Samples) for guidance on configuration and usage of the OpenTelemetry Exporter for New Relic.

@@ -1,15 +1,26 @@
 # New Relic Telemetry SDK for .NET
 
-The New Relic Telemetry SDK for .NET sends Telemetry Data to New Relic.
+The New Relic Telemetry SDK for .NET allows the capture of information about the execution of your application and provides a mechanism to send this information to New Relic.
+
+
+## Prerequisites
+* A valid New Relic <a target="_blank" href="https://docs.newrelic.com/docs/insights/insights-data-sources/custom-data/introduction-event-api#register">Insights Insert API Key</a>.
+* A .NET Core 2.0+ or .NET Framework 4.5+ Application
+## Getting Started
+* Incorporate the [NewRelic.Telemetry](https://www.nuget.org/packages/NewRelic.Telemetry) NuGet Package into your project.
+
+## Next Steps
+* Using the [Telemetry SDK for Tracing](./Spans/README.md)
+
 
 
 ### Limitations
-The New Relic Telemetry APIs are rate limited. Please reference the documentation for New Relic Metrics API and New Relic Trace API Requirements and Limits on the specifics of the rate limits.
+The New Relic Telemetry APIs are rate limited. Please reference the documentation for the [New Relic Trace API](https://docs.newrelic.com/docs/understand-dependencies/distributed-tracing/trace-api/trace-api-general-requirements-limits) for the specific rate limits.
 
 
 
 ### Contributing
-Full details are available in our CONTRIBUTING.md file. We'd love to get your contributions to improve the Telemetry SDK for .NET! Keep in mind when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. You only have to sign the CLA one time per project. To execute our corporate CLA, which is required if your contribution is on behalf of a company, or if you have any questions, please drop us an email at open-source@newrelic.com.
+Full details are available in our [CONTRIBUTING.md](../../CONTRIBUTING.md) file. We'd love to get your contributions to improve the Telemetry SDK for .NET! Keep in mind when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. You only have to sign the CLA one time per project. To execute our corporate CLA, which is required if your contribution is on behalf of a company, or if you have any questions, please drop us an email at open-source@newrelic.com.
 
 
 ### Open Source License

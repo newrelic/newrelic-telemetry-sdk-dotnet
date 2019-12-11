@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 
 namespace BasicConsoleApplication
 {
-	class Program
-	{
+    class Program
+    {
         private static SpanDataSender _dataSvc;
 
-		static void Main(string[] args)
-		{
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Enter to begin...");
             Console.ReadLine();
 
             Configuration();
@@ -198,5 +199,5 @@ namespace BasicConsoleApplication
             Console.WriteLine(value);
         }
 
-	}
+    }
 }
