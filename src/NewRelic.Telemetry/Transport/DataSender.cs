@@ -15,8 +15,8 @@ namespace NewRelic.Telemetry.Transport
 {
     public abstract class DataSender<TData> where TData : ITelemetryDataType
     {
-        private static readonly string _telemetrySdkVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
-        private string _userAgent = "NewRelic-Dotnet-TelemetrySDK/" + _telemetrySdkVersion;
+        protected static readonly string _telemetrySdkVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
+        protected string _userAgent = "NewRelic-Dotnet-TelemetrySDK/" + _telemetrySdkVersion;
 
         protected readonly TelemetryConfiguration _config;
         protected readonly TelemetryLogging _logger;
@@ -267,9 +267,9 @@ namespace NewRelic.Telemetry.Transport
         /// <returns></returns>
         public void AddVersionInfo(string productName, string productVersion)
         {
-            var productIdentifier = string.Join("/", productName, productVersion);
-            if (!string.IsNullOrEmpty(productIdentifier))
+            if (!string.IsNullOrEmpty(productName) && !string.IsNullOrEmpty(productVersion))
             {
+                var productIdentifier = string.Join("/", productName, productVersion);
                 _userAgent = string.Join(" ", _userAgent, productIdentifier);
             }
         }

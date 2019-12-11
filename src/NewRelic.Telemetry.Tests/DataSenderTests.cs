@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 
 namespace NewRelic.Telemetry.Tests
 {
@@ -550,6 +551,33 @@ namespace NewRelic.Telemetry.Tests
 
             Assert.AreEqual(expectedNumSendBatchAsyncCall, actualCountCallsSendData, "Unexpected Number of SendDataAsync calls");
             Assert.AreEqual(expectedNumHttpHandlerCall, actualCallsHttpHandler, "Unexpected Number of Http Handler calls");
+        }
+
+        [TestCase(null, "1.0.0")]
+        [TestCase("productName", null)]
+        [TestCase("", "")]
+        [TestCase(null, null)]
+        [TestCase("", null)]
+        [TestCase(null, "")]
+        [TestCase("productName", "1.0.0")]
+        public void AddVersionInfo(string productName, string productVersion)
+        {
+            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithAPIKey("123456"));
+            var fieldInfo = dataSender.GetType().GetField("_userAgent", BindingFlags.NonPublic | BindingFlags.Instance);
+            var userAgentValueBefore = fieldInfo.GetValue(dataSender);
+
+            var expectedUserAgentValue = userAgentValueBefore?.ToString();
+
+            if(!string.IsNullOrEmpty(productName) && !string.IsNullOrEmpty(productVersion)) 
+            {
+                expectedUserAgentValue = userAgentValueBefore + " " + $@"{productName}/{productVersion}";
+            }
+
+            dataSender.AddVersionInfo(productName, productVersion);
+
+            var userAgentValueAfter = fieldInfo.GetValue(dataSender);
+
+            Assert.AreEqual(expectedUserAgentValue, userAgentValueAfter);
         }
     }
 }
