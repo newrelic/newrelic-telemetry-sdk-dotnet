@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NewRelic.Telemetry
+namespace OpenTelemetry.Exporter.NewRelic
 {
     [AttributeUsage(AttributeTargets.Assembly)]
     public class PackageVersionAttribute : Attribute
