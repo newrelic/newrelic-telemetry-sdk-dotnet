@@ -15,9 +15,8 @@ namespace NewRelic.Telemetry.Transport
 {
     public abstract class DataSender<TData> where TData : ITelemetryDataType
     {
-        private const string _userAgent = "NewRelic-Dotnet-TelemetrySDK";
-        private static readonly string _implementationVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
-        private string _callingAgent;
+        private static readonly string _telemetrySdkVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
+        private string _userAgent = "NewRelic-Dotnet-TelemetrySDK/" + _telemetrySdkVersion;
 
         protected readonly TelemetryConfiguration _config;
         protected readonly TelemetryLogging _logger;
@@ -228,7 +227,7 @@ namespace NewRelic.Telemetry.Transport
                 requestMessage.Content = streamContent;
 
                 // TODO: once packageVersion work is merged, consider more efficient string usage here
-                requestMessage.Headers.Add("User-Agent", _userAgent + "/" + _implementationVersion + _callingAgent);
+                requestMessage.Headers.Add("User-Agent", _userAgent);
 
                 requestMessage.Headers.Add("Api-Key", _config.ApiKey);
                 requestMessage.Method = HttpMethod.Post;
@@ -265,11 +264,12 @@ namespace NewRelic.Telemetry.Transport
         /// </summary>
         /// <param name="callingAgent">Name and version of the caller of the TelemetrySDK (e.g. "OpenTelemetry.Exporter.NewRelic/1.0.0").</param>
         /// <returns></returns>
-        public virtual void AddVersionInfo(string callingAgent)
+        public virtual void AddVersionInfo(string productName, string productVersion)
         {
-            if (!string.IsNullOrWhiteSpace(callingAgent))
+            var productIdentifier = string.Join("/", productName, productVersion);
+            if (!string.IsNullOrEmpty(productIdentifier))
             {
-                _callingAgent = " " + callingAgent;
+                _userAgent = string.Join(" ", _userAgent, productIdentifier);
             }
         }
     }
