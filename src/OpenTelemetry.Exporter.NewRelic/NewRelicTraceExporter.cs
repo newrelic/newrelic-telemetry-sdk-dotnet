@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using System.Linq;
 using OpenTelemetry.Trace.Export;
 using OpenTelemetry.Trace;
+using System.Reflection;
 
 namespace OpenTelemetry.Exporter.NewRelic
 {
@@ -19,6 +20,8 @@ namespace OpenTelemetry.Exporter.NewRelic
     public class NewRelicTraceExporter : SpanExporter
     {
         private readonly NRSpans.SpanDataSender _spanDataSender;
+        private const string _productName = "OpenTelemetry.Exporter.NewRelic";
+        private static readonly string _productVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
 
         private const string _attribName_url = "http.url";
 
@@ -65,6 +68,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         internal NewRelicTraceExporter(NRSpans.SpanDataSender spanDataSender, TelemetryConfiguration config, ILoggerFactory loggerFactory)
         {
             _spanDataSender = spanDataSender;
+            spanDataSender.AddVersionInfo(_productName, _productVersion);
 
             _config = config;
 

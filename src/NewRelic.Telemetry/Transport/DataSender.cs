@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -14,8 +15,8 @@ namespace NewRelic.Telemetry.Transport
 {
     public abstract class DataSender<TData> where TData : ITelemetryDataType
     {
-        private const string _userAgent = "NewRelic-Dotnet-TelemetrySDK";
-        private static readonly string _implementationVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
+        protected static readonly string _telemetrySdkVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
+        protected string _userAgent = "NewRelic-Dotnet-TelemetrySDK/" + _telemetrySdkVersion;
 
         protected readonly TelemetryConfiguration _config;
         protected readonly TelemetryLogging _logger;
@@ -154,22 +155,6 @@ namespace NewRelic.Telemetry.Transport
             return await SendDataAsync(dataToSend, retryNum + 1);
         }
 
-        /// <summary>
-        /// Method used to send a data to New Relic endpoint.  Handles the communication with the New Relic endpoints.
-        /// </summary>
-        /// <param name="dataToSend">The data to send to New Relic</param>
-        /// <returns>New Relic response indicating the outcome and additional information about the interaction with the New Relic endpoint.</returns>
-        public async Task<Response> SendDataAsync(TData dataToSend)
-        {
-            if(string.IsNullOrWhiteSpace(_config.ApiKey))
-            {
-                _logger.Exception(new ArgumentNullException("Configuration requires API key"));
-                return Response.Failure("API Key was not available");
-            }
-
-            return await SendDataAsync(dataToSend, 0);
-        }
-
         private async Task<Response> SendDataAsync(TData dataToSend, int retryNum)
         {
 
@@ -240,7 +225,9 @@ namespace NewRelic.Telemetry.Transport
 
                 var requestMessage = new HttpRequestMessage(HttpMethod.Post, EndpointUrl);
                 requestMessage.Content = streamContent;
-                requestMessage.Headers.Add("User-Agent", _userAgent + "/" + _implementationVersion);
+
+                requestMessage.Headers.Add("User-Agent", _userAgent);
+
                 requestMessage.Headers.Add("Api-Key", _config.ApiKey);
                 requestMessage.Method = HttpMethod.Post;
 
@@ -252,6 +239,37 @@ namespace NewRelic.Telemetry.Transport
                 }
 
                 return response;
+            }
+        }
+
+        /// <summary>
+        /// Method used to send a data to New Relic endpoint.  Handles the communication with the New Relic endpoints.
+        /// </summary>
+        /// <param name="dataToSend">The data to send to New Relic</param>
+        /// <returns>New Relic response indicating the outcome and additional information about the interaction with the New Relic endpoint.</returns>
+        public async Task<Response> SendDataAsync(TData dataToSend)
+        {
+            if (string.IsNullOrWhiteSpace(_config.ApiKey))
+            {
+                _logger.Exception(new ArgumentNullException("Configuration requires API key"));
+                return Response.Failure("API Key was not available");
+            }
+
+            return await SendDataAsync(dataToSend, 0);
+        }
+
+        /// <summary>
+        /// Method used to add product information including product name and version to the User-Agent HTTP header.
+        /// </summary>
+        /// <param name="productName">Name of the product uses the TelemetrySDK (e.g. "OpenTelemetry.Exporter.NewRelic"). This should not be null or empty.</param>
+        /// <param name="productVersion">Version of the product uses the TelemetrySDK (e.g. "1.0.0"). This should not be null or empty.</param>
+        /// <returns></returns>
+        public void AddVersionInfo(string productName, string productVersion)
+        {
+            if (!string.IsNullOrEmpty(productName) && !string.IsNullOrEmpty(productVersion))
+            {
+                var productIdentifier = string.Join("/", productName, productVersion);
+                _userAgent = string.Join(" ", _userAgent, productIdentifier);
             }
         }
     }
