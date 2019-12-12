@@ -8,7 +8,7 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- script: dotnet build src/NewRelic.Telemetry.sln --configuration $(buildConfiguration)
+- script: msbuild /p:Configuration=$(buildConfiguration) src/NewRelic.Telemetry.sln 
   displayName: 'Build (configuration=$(buildConfiguration))'
 
 - script: dotnet test src/NewRelic.Telemetry.Tests --no-build --no-restore --configuration $(buildConfiguration) --logger trx
