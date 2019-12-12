@@ -8,9 +8,15 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- script: msbuild /p:Configuration=$(buildConfiguration) src/NewRelic.Telemetry.sln 
-  
-# Build with MSBuild
+- task: NuGetToolInstaller@0
+  inputs:
+    versionSpec: '>=4.3.0' 
+ 
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: 'src/NewRelic.Telemetry.sln' 
+
 - task: MSBuild@1
   displayName: 'Build (configuration=$(buildConfiguration))'
   inputs:
