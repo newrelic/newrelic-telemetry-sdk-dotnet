@@ -8,8 +8,20 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- script: dotnet build src/NewRelic.Telemetry.sln --configuration $(buildConfiguration)
+- task: NuGetToolInstaller@0
+  inputs:
+    versionSpec: '>=4.3.0' 
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: 'src/NewRelic.Telemetry.sln' 
+
+- task: MSBuild@1
   displayName: 'Build (configuration=$(buildConfiguration))'
+  inputs:
+    solution: 'src/NewRelic.Telemetry.sln'
+    configuration: $(buildConfiguration) 
 
 - script: dotnet test src/NewRelic.Telemetry.Tests --no-build --no-restore --configuration $(buildConfiguration) --logger trx
   displayName: 'Run tests - TelemetrySDK'
