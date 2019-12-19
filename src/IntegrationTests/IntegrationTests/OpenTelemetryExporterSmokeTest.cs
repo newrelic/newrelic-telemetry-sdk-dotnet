@@ -37,6 +37,9 @@ namespace IntegrationTests
             });
 
             _fixture.Initialize();
+
+            //Wait 10s for the data to show up on New Relic backend.
+            Thread.Sleep(10000);
         }
 
         [Fact]
