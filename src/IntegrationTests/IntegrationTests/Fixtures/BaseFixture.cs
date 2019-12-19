@@ -26,7 +26,7 @@ namespace IntegrationTests.Fixtures
         {
             Application.TestLogger = TestLogger;
 
-            Application.InstallAgent();
+            Application.InstallNugetPackages();
 
             Application.Build();
 
@@ -39,8 +39,7 @@ namespace IntegrationTests.Fixtures
 
             Exercise.Invoke();
 
-            TestLogger?.WriteLine($@"[{DateTime.Now}] ... Tesing done");
-
+            TestLogger?.WriteLine($@"[{DateTime.Now}] ... Testing done");
         }
 
         public void Dispose()

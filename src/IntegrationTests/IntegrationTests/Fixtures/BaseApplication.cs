@@ -34,7 +34,7 @@ namespace IntegrationTests.Fixtures
             "https://api.nuget.org/v3/index.json"
         };
 
-        public Process InvokeAnExecutable(string executablePath, string arguments, string workingDirectory, bool waitForExit, Dictionary<string, string> environmentVaribales)
+        public Process InvokeAnExecutable(string executablePath, string arguments, string workingDirectory, bool waitForExit, Dictionary<string, string> environmentVariables)
         {
             var startInfo = new ProcessStartInfo
             {
@@ -46,7 +46,7 @@ namespace IntegrationTests.Fixtures
                 RedirectStandardError = true
             };
 
-            foreach(var env in environmentVaribales) 
+            foreach(var env in environmentVariables)
             {
                 startInfo.EnvironmentVariables.Add(env.Key, env.Value);
             }
@@ -88,7 +88,7 @@ namespace IntegrationTests.Fixtures
             }
         }
 
-        public abstract void InstallAgent();
+        public abstract void InstallNugetPackages();
         public abstract void Build();
         public abstract void StopApplication();
     }

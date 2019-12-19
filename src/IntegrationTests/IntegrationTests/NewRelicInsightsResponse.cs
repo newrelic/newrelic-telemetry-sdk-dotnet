@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace IntegrationTests
 {
     [JsonObject]
-    public class NewRelicResponse
+    public class NewRelicInsightsResponse
     {
         [JsonProperty("results")]
         public List<Result> Results { get; set; }

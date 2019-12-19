@@ -34,7 +34,7 @@ namespace IntegrationTests.Fixtures
             ApplicationOutputPath = Path.Combine(TestSampleApplicationDirectory, $@"bin\{SolutionConfiguration}\netcoreapp3.0");
         }
 
-        public override void InstallAgent()
+        public override void InstallNugetPackages()
         {
             var version = GetNugetPackageVersion(TestPackagesDirectoryPath);
 

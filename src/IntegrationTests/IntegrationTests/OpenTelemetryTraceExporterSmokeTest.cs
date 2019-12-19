@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace IntegrationTests
 {
-    public class OpenTelemetryExporterSmokeTest : IClassFixture<OpenTelemetryUsageApplicationFixture>
+    public class OpenTelemetryTraceExporterSmokeTest : IClassFixture<OpenTelemetryUsageApplicationFixture>
     {
         private readonly OpenTelemetryUsageApplicationFixture _fixture;
 
@@ -19,9 +19,11 @@ namespace IntegrationTests
 
         private const string _insightQueryApiEndpoint = "https://insights-api.newrelic.com";
 
+        private const string _traceEndPointUrl = "https://trace-api.newrelic.com/trace/v1";
+
         private const string _accountNumber = "{YOUR_ACCOUNT_NUMBER}";
 
-        public OpenTelemetryExporterSmokeTest(OpenTelemetryUsageApplicationFixture fixture, ITestOutputHelper output)
+        public OpenTelemetryTraceExporterSmokeTest(OpenTelemetryUsageApplicationFixture fixture, ITestOutputHelper output)
         {
             _fixture = fixture;
             _fixture.TestLogger = output;
@@ -33,7 +35,8 @@ namespace IntegrationTests
 
             _fixture.SetEnvironmentVariables(new Dictionary<string, string>()
             {
-                {"NewRelic:ApiKey", _traceApiKey}
+                {"NewRelic:ApiKey", _traceApiKey},
+                {"NewRelic:TraceUrlOverride", _traceEndPointUrl}
             });
 
             _fixture.Initialize();
@@ -42,7 +45,7 @@ namespace IntegrationTests
             Thread.Sleep(10000);
         }
 
-        [Fact]
+        [Fact(Skip = "Temporarily skipping this test so that the build pipeline won't fail. This is because this test requires setting Api keys manually.")]
         public async void Test()
         {
             using var httpClient = new HttpClient();
@@ -56,7 +59,7 @@ namespace IntegrationTests
             var result = await httpClient.SendAsync(request);
             var body = await result.Content.ReadAsStringAsync();
 
-            var response = JsonConvert.DeserializeObject<NewRelicResponse>(body);
+            var response = JsonConvert.DeserializeObject<NewRelicInsightsResponse>(body);
 
             Assert.NotNull(response);
             Assert.Single(response.Results);
