@@ -46,6 +46,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASPNetFrameworkApiApplication", "NewRelic.Telemetry.Samples\ASPNetFrameworkApiApplication\ASPNetFrameworkApiApplication.csproj", "{2002CE3F-509D-4992-88AF-A4D5B306E16F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration Tests", "Integration Tests", "{CD92E0B7-C24F-4B8C-9E86-C5CD30390618}"
+	ProjectSection(SolutionItems) = preProject
+		IntegrationTests\README.md = IntegrationTests\README.md
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "IntegrationTests\IntegrationTests\IntegrationTests.csproj", "{14C5D71D-A011-46A0-9D40-CF40C3954821}"
 EndProject
