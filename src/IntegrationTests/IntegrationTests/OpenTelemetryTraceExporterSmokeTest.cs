@@ -15,9 +15,9 @@ namespace IntegrationTests
 
         private const string _traceApiKey = "{YOUR_TRACE_API_KEY}";
 
-        private const string _insightQueryApiKey = "{YOUR_INSIGHT_QUERY_API_KEY}";
+        private const string _insightsQueryApiKey = "{YOUR_INSIGHT_QUERY_API_KEY}";
 
-        private const string _insightQueryApiEndpoint = "https://insights-api.newrelic.com";
+        private const string _insightsQueryApiEndpoint = "https://insights-api.newrelic.com";
 
         private const string _traceEndPointUrl = "https://trace-api.newrelic.com/trace/v1";
 
@@ -52,9 +52,9 @@ namespace IntegrationTests
 
             // SELECT * FROM Span WHERE service.name = 'SampleAspNetCoreApp' SINCE 2 minutes ago
             var insightQuery = "SELECT%20*%20FROM%20Span%20WHERE%20service.name%20%3D%20%27SampleAspNetCoreApp%27%20SINCE%202%20minutes%20ago";
-            var request = new HttpRequestMessage(HttpMethod.Get, @$"{_insightQueryApiEndpoint}/v1/accounts/{_accountNumber}/query?nrql={insightQuery}");
+            var request = new HttpRequestMessage(HttpMethod.Get, @$"{_insightsQueryApiEndpoint}/v1/accounts/{_accountNumber}/query?nrql={insightQuery}");
             request.Headers.Add("Accept", "application/json");
-            request.Headers.Add("X-Query-Key", _insightQueryApiKey);
+            request.Headers.Add("X-Query-Key", _insightsQueryApiKey);
 
             var result = await httpClient.SendAsync(request);
             var body = await result.Content.ReadAsStringAsync();
