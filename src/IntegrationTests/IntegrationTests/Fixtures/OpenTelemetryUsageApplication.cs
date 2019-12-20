@@ -8,10 +8,13 @@ namespace IntegrationTests.Fixtures
 {
     public class OpenTelemetryUsageApplication : BaseApplication
     {
-
         private const string TestPackageName = "OpenTelemetry.Exporter.NewRelic";
 
-        private readonly string TestPackagesDirectoryPath;
+        private readonly string TestPackageVersion;
+
+        private readonly string ExporterNugetPackageOutputPath;
+
+        private readonly string TelemetrySdkNugetPackageOutputPath;
 
         public string TestSampleApplicationDirectory { get; }
 
@@ -21,30 +24,33 @@ namespace IntegrationTests.Fixtures
 
         public OpenTelemetryUsageApplication(string applicationName, string[] serviceNames) : base(applicationName, serviceNames)
         {
-            TestPackagesDirectoryPath = Path.GetFullPath(Path.Combine(IntegrationTestsStartingDirectoryPath, $@"TestNugetPackages"));
- 
-            NugetSources.Add(TestPackagesDirectoryPath);
- 
-            TestSampleApplicationDirectory = Path.GetFullPath(Path.Combine(IntegrationTestsStartingDirectoryPath, $@"Applications\{ApplicationName}"));
-
             SolutionConfiguration = "Release";
 #if DEBUG
             SolutionConfiguration = "Debug";
 #endif
+
+            ExporterNugetPackageOutputPath = Path.GetFullPath(Path.Combine(SrcDirectoryPath, $@"NewRelic.Telemetry\bin\{SolutionConfiguration}"));
+            TelemetrySdkNugetPackageOutputPath = Path.GetFullPath(Path.Combine(SrcDirectoryPath, $@"OpenTelemetry.Exporter.NewRelic\bin\{SolutionConfiguration}"));
+            
+            NugetSources.Add(ExporterNugetPackageOutputPath);
+            NugetSources.Add(TelemetrySdkNugetPackageOutputPath);
+
+            TestPackageVersion = GetNugetPackageVersion(ExporterNugetPackageOutputPath);
+
+            TestSampleApplicationDirectory = Path.GetFullPath(Path.Combine(IntegrationTestsStartingDirectoryPath, $@"Applications\{ApplicationName}"));
+
             ApplicationOutputPath = Path.Combine(TestSampleApplicationDirectory, $@"bin\{SolutionConfiguration}\netcoreapp3.0");
         }
 
         public override void InstallNugetPackages()
         {
-            var version = GetNugetPackageVersion(TestPackagesDirectoryPath);
+            TestLogger?.WriteLine($@"[{DateTime.Now}] Installing {TestPackageName} version {TestPackageVersion} .");
 
-            TestLogger?.WriteLine($@"[{DateTime.Now}] Installing {TestPackageName} version {version} .");
-
-            UpdatePackageReference(TestPackageName, version, NugetSources);
+            UpdatePackageReference(TestPackageName, TestPackageVersion, NugetSources);
 
             RestoreNuGetPackage(NugetSources);
 
-            TestLogger?.WriteLine($@"[{DateTime.Now}] {TestPackageName} version {version} installed.");
+            TestLogger?.WriteLine($@"[{DateTime.Now}] {TestPackageName} version {TestPackageVersion} installed.");
         }
 
         public override void Build()

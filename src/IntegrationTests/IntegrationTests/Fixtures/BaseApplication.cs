@@ -25,7 +25,9 @@ namespace IntegrationTests.Fixtures
             ServiceNames = serviceNames;
         }
 
-        public static string IntegrationTestsStartingDirectoryPath { get; } = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\");
+        public string IntegrationTestsStartingDirectoryPath { get; } = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\..\IntegrationTests"));
+
+        public string SrcDirectoryPath { get; } = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\..");
 
         public abstract void Run();
 
@@ -48,7 +50,10 @@ namespace IntegrationTests.Fixtures
 
             foreach(var env in environmentVariables)
             {
-                startInfo.EnvironmentVariables.Add(env.Key, env.Value);
+                if (!startInfo.EnvironmentVariables.ContainsKey(env.Key))
+                {
+                    startInfo.EnvironmentVariables.Add(env.Key, env.Value);
+                }
             }
 
 
