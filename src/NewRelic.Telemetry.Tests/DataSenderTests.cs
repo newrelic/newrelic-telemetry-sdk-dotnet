@@ -19,7 +19,7 @@ namespace NewRelic.Telemetry.Tests
             var traceId = "123";
             var retryDuration = TimeSpan.FromSeconds(10);
             var retryDurationMs = retryDuration.TotalMilliseconds;
-            var errorMargin = TimeSpan.FromMilliseconds(50).TotalMilliseconds;
+            var errorMargin = TimeSpan.FromMilliseconds(150).TotalMilliseconds;
 
             var spanBatch = SpanBatchBuilder.Create()
                 .WithTraceId(traceId)
