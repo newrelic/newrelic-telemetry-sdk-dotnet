@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Linq;
 using System;
+using NewRelic.Telemetry.Metrics;
 
 namespace NewRelic.Telemetry.Tests
 {
@@ -101,6 +102,13 @@ namespace NewRelic.Telemetry.Tests
             if (testValue is double || testValue is float)
             {
                 Assert.IsTrue((double)testValue == realVal.GetDouble(), $"Attribute {attribName}, expected {testValue}, actual {realVal}");
+                return;
+            }
+
+
+            if (testValue is MetricSummaryValue)
+            {
+                // TODO: Deserialize MetricSummaryValue
                 return;
             }
 
