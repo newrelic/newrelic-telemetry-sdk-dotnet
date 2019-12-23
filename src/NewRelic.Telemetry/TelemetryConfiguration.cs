@@ -22,7 +22,7 @@ namespace NewRelic.Telemetry
         /// <summary>
         /// The New Relic endpoint where Metric information is sent.
         /// </summary>
-        public string MetricUrl { get; private set; } = "https://metric-api.newrelic.com/trace/v1";
+        public string MetricUrl { get; private set; } = "https://metric-api.newrelic.com/metric/v1";
 
         /// Logs messages sent-to and received-by the New Relic endpoints.  This setting
         /// is useful for troubleshooting, but is not recommended in production environments.
