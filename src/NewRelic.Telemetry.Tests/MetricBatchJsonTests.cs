@@ -41,11 +41,11 @@ namespace NewRelic.Telemetry.Tests
             var metricBatch = MetricBatchBuilder.Create()
                 .WithIntervalMs(interval)
                 .WithTimestamp(timestamp)
-                .WithMetric(MetricBuilder.Create("metric1", "count")
+                .WithMetric(MetricBuilder.CreateCountMetric("metric1")
                     .WithValue(countValue)
                     .WithAttributes(CustomAttributes)
                     .Build())
-                .WithMetric(MetricBuilder.Create("metric2", "summary")
+                .WithMetric(MetricBuilder.CreateSummaryMetric("metric2")
                     .WithValue(summaryValue)
                     .Build())
 

@@ -18,7 +18,7 @@ namespace NewRelic.Telemetry.Tests
             var attributes = new Dictionary<string, object> 
             { { "attrKey", "attrValue" } };
 
-            var metricBuilder = MetricBuilder.Create("metricname", "count")
+            var metricBuilder = MetricBuilder.CreateCountMetric("metricname")
                 .WithValue(value)
                 .WithTimestamp(timestamp)
                 .WithIntervalMs(interval)
@@ -29,7 +29,7 @@ namespace NewRelic.Telemetry.Tests
 
             Assert.AreEqual("metricname", metric.Name);
             Assert.AreEqual("count", metric.Type);
-            Assert.AreEqual(value, ((CountMetric)metric).Value);
+            Assert.AreEqual(value, metric.MetricValue);
             Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(timestamp), metric.Timestamp);
             Assert.AreEqual(interval, metric.IntervalMs);
             Assert.AreEqual("attrValue", metric.Attributes["attrKey"]);
@@ -92,7 +92,7 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         public void ThrowExceptionIfNullName()
         {
-            Assert.Throws<NullReferenceException>(new TestDelegate(() => MetricBuilder.Create(null, null)));
+            Assert.Throws<ArgumentNullException>(new TestDelegate(() => MetricBuilder.CreateCountMetric(null)));
         }
     }
 }

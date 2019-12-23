@@ -14,13 +14,11 @@ namespace NewRelic.Telemetry.Metrics
         /// Properties that are common to all metrics being submitted as part of this MetricBatch.
         /// </summary>
         [DataMember(Name = "common")]
-//        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public MetricBatchCommonProperties CommonProperties { get; internal set; }
 
         /// <summary>
         /// TODO
         /// </summary>
-        [DataMember(Name = "metrics")]
         public List<Metric> Metrics { get; internal set; }
 
         internal MetricBatch()
@@ -45,7 +43,8 @@ namespace NewRelic.Telemetry.Metrics
             // but cannot be deserialized with System.Text.Json, used in TestHelper.
 
             //return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-            return Utf8Json.JsonSerializer.ToJsonString(new[] { this }, StandardResolver.ExcludeNullCamelCase);
+            return Utf8Json.JsonSerializer.ToJsonString(new[] { this }, 
+                StandardResolver.ExcludeNullCamelCase);
         }
     }
 }

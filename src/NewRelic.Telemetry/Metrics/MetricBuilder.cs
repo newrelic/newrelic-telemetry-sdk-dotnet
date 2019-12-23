@@ -4,11 +4,31 @@ using NewRelic.Telemetry.Extensions;
 
 namespace NewRelic.Telemetry.Metrics
 {
+    public class MetricBuilder
+    {
+        public static MetricBuilder<CountMetric, double> CreateCountMetric(string name)
+        {
+            return new MetricBuilder<CountMetric, double>(name);
+        }
+
+        public static MetricBuilder<GaugeMetric, double> CreateGaugeMetric(string name)
+        {
+            return new MetricBuilder<GaugeMetric, double>(name);
+        }
+
+        public static MetricBuilder<SummaryMetric, MetricSummaryValue> CreateSummaryMetric(string name)
+        {
+            return new MetricBuilder<SummaryMetric, MetricSummaryValue>(name);
+        }
+    }
+
+
     /// <summary>
     /// Helper class that is used to create new metrics.
     /// </summary>
     /// 
-    public class MetricBuilder
+    public class MetricBuilder<TMetric, TValue>  : MetricBuilder
+        where TMetric:Metric<TValue>, new()
     {
         // TODO: intrinsic attrs for Metric
         //internal const string attribName_ServiceName = "service.name";
@@ -20,88 +40,42 @@ namespace NewRelic.Telemetry.Metrics
         /// <summary>
         /// TODO
         /// </summary>
-        public static MetricBuilder Create(string name, string type)
+        
+
+        private readonly TMetric _metric;
+
+        private Dictionary<string, object> _attributes => _metric.Attributes ?? (_metric.Attributes = new Dictionary<string, object>());
+
+        internal MetricBuilder(string name)
         {
-            return new MetricBuilder(name, type);
-        }
-
-        private readonly Metric _Metric;
-
-        private Dictionary<string, object> _attributes => _Metric.Attributes ?? (_Metric.Attributes = new Dictionary<string, object>());
-
-        private MetricBuilder(string name, string type)
-        {
-            if (string.IsNullOrEmpty(name))
+            if(string.IsNullOrWhiteSpace(name))
             {
-                throw new NullReferenceException("Metric name is not set.");
+                throw new ArgumentNullException(nameof(name));
             }
 
-            switch (type)
+            _metric = new TMetric
             {
-                case "count":
-                    _Metric = new CountMetric();
-                    _Metric.Type = type;
-                    break;
-
-                case "summary":
-                    _Metric = new SummaryMetric();
-                    _Metric.Type = type;
-                    break;
-
-                default:
-                    _Metric = new GaugeMetric();
-                    _Metric.Type = "gauge";
-                    break;
-            }
-
-            _Metric.Name = name;
+                Name = name
+            };
         }
 
         /// <summary>
         /// TODO
         /// </summary>
         /// <param name="timestamp"></param>
-        public MetricBuilder WithTimestamp(DateTime timestamp)
+        public MetricBuilder<TMetric, TValue> WithTimestamp(DateTime timestamp)
         {
-            _Metric.Timestamp = DateTimeExtensions.ToUnixTimeMilliseconds(timestamp);
+            _metric.Timestamp = DateTimeExtensions.ToUnixTimeMilliseconds(timestamp);
             return this;
         }
 
         /// <summary>
         /// TODO
         /// </summary>
-        public MetricBuilder WithValue(double value)
+        public MetricBuilder<TMetric, TValue> WithValue(TValue value)
         {
-            //if (_Metric is CountMetric || _Metric is GaugeMetric)
-            //{
-            //    _Metric.Value = value;
-            //}
-            if (_Metric is CountMetric)
-            {
-                ((CountMetric)_Metric).Value = value;
-            }
-            if (_Metric is GaugeMetric)
-            {
-                ((GaugeMetric)_Metric).Value = value;
-            }
-            else
-            {
-                // TODO: log an error
-            }
 
-            return this;
-        }
-
-        public MetricBuilder WithValue(MetricSummaryValue value)
-        {
-            if (_Metric is SummaryMetric)
-            {
-                ((SummaryMetric)_Metric).Value = value;
-            }
-            else
-            {
-                // TODO: log an error
-            }
+            _metric.Value = value;
 
             return this;
         }
@@ -111,28 +85,18 @@ namespace NewRelic.Telemetry.Metrics
         /// </summary>
         /// <param name="intervalMs">TODO</param>
         /// <returns></returns>
-        public MetricBuilder WithIntervalMs(long intervalMs)
+        public MetricBuilder<TMetric, TValue> WithIntervalMs(long intervalMs)
         {
-            _Metric.IntervalMs = intervalMs;
+            _metric.IntervalMs = intervalMs;
             return this;
         }
-
-        ///// <summary>
-        ///// TODO: not sure if this is needed;
-        ///// </summary>
-        ///// <param name="serviceName"></param>
-        //public MetricBuilder WithServiceName(string serviceName)
-        //{
-        //    WithAttribute(attribName_ServiceName, serviceName);
-        //    return this;
-        //}
 
         /// <summary>
         /// Allows custom attribution of the Metric to provide additional contextual
         /// information for later analysis.  
         /// </summary>
         /// <param name="attributes">Key/Value pairs representing the custom attributes.  In the event of a duplicate key, the last value will be used.</param>
-        public MetricBuilder WithAttributes<T>(IEnumerable<KeyValuePair<string,T>> attributes)
+        public MetricBuilder<TMetric, TValue> WithAttributes<T>(IEnumerable<KeyValuePair<string,T>> attributes)
         {
             if (attributes == null)
             {
@@ -153,7 +117,7 @@ namespace NewRelic.Telemetry.Metrics
         /// </summary>
         /// <param name="attribName">Name of the attribute.  If an attribute with this name already exists, the previous value will be overwritten.</param>
         /// <param name="attribVal">Value of the attribute.</param>
-        public MetricBuilder WithAttribute<T>(string attribName, T attribVal)
+        public MetricBuilder<TMetric, TValue> WithAttribute<T>(string attribName, T attribVal)
         {
             if (string.IsNullOrWhiteSpace(attribName))
             {
@@ -167,9 +131,9 @@ namespace NewRelic.Telemetry.Metrics
         /// <summary>
         /// Returns the built Metric.
         /// </summary>
-        public Metric Build()
+        public TMetric Build()
         {
-            return _Metric;
+            return _metric;
         }
     }
 }

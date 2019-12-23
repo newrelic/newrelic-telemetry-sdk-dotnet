@@ -7,53 +7,32 @@ namespace NewRelic.Telemetry.Metrics
     [DataContract]
     public class MetricSummaryValue
     {
-        [DataMember(Name = "count")]
-        public double Count;
-        [DataMember(Name = "sum")]
-        public double Sum;
-        [DataMember(Name = "min")]
-        public double Min;
-        [DataMember(Name = "max")]
-        public double Max;
+        //TODO:  Figure out how a caller instantiates one of these
+
+        public double Count { get; set; }
+        public double Sum { get; set; }
+        public double Min { get; set; }
+        public double Max { get; set; }
     }
 
-    [DataContract]
     public abstract class Metric
     {
-        public const string MetricTypeCount = "count";
-        public const string MetricTypeGauge = "gauge";
-        public const string MetricTypeSummary = "summary";
-
         /// <summary>
         /// TODO
         /// </summary>
-        [DataMember(Name = "name")]
         public string Name { get; set; }
 
         /// <summary>
         /// TODO
         /// Type is not required. Defaults to 'gauge' in NR backend.
         /// </summary>
-        [DataMember(Name = "type")]
-        public string Type { get; set; }
-
-        // Utf8Json does not serialize the derived Metric classes, 
-        // so Value is required in the Metric base class as type object since it
-        // has different type depending on Metric type, type checking done in 
-        // MetricBuilder.WithValue()
-        // Newtonsoft does serialize derived classes,
-        // So will allow strong type for Value in derived classes,
-        // but cannot be deserialized with System.Text.Json, used in TestHelper.
-        [DataMember(Name = "value")]
-        public abstract object Value { get; set; }
+        public abstract string Type { get; }
 
         /// <summary>
         /// TODO
         /// </summary>
         /// 
         // TODO: should this required field be nullable?
-        [DataMember(Name = "timestamp")]
-//        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public long? Timestamp { get; set; }
 
         /// <summary>
@@ -63,71 +42,59 @@ namespace NewRelic.Telemetry.Metrics
         /// <returns></returns>
         /// 
         // not needed for Gauge, can be Common field or in the Metric
-        [DataMember(Name = "interval.ms")]
-//        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public long? IntervalMs { get; set; }
 
+        [DataMember(Name = "value")]
+        public abstract object MetricValue { get; }
+
         /// <summary>
         /// TODO
         /// </summary>
-        [DataMember(Name = "attributes")]
-//        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Dictionary<string, object> Attributes { get; set; }
 
-        internal Metric()
+        protected Metric()
         {
-            // Type defaults to Gauge
         }
     }
 
-
-    [DataContract]
-    public class CountMetric : Metric
+    public abstract class Metric<T> : Metric
     {
-        /// <summary>
-        /// TODO
-        /// </summary>
-        public override object Value { get; set; }
+        // Utf8Json does not serialize the derived Metric classes, 
+        // so Value is required in the Metric base class as type object since it
+        // has different type depending on Metric type, type checking done in 
+        // MetricBuilder.WithValue()
+        // Newtonsoft does serialize derived classes,
+        // So will allow strong type for Value in derived classes,
+        // but cannot be deserialized with System.Text.Json, used in TestHelper.
+        internal T Value { get; set; }
 
-        // for Newtonsoft
-        //[DataMember]
-        //public double Value { get; set; }
-
-        internal CountMetric()
-        {
-        }
+        public override object MetricValue => Value;
     }
 
-    [DataContract]
-    public class GaugeMetric : Metric
+    public class CountMetric : Metric<double>
     {
-        /// <summary>
-        /// TODO
-        /// </summary>
-        public override object Value { get; set; }
+        public override string Type => "count";
 
-        // for Newtonsoft
-        //[DataMember]
-        //public double Value { get; set; }
-
-        internal GaugeMetric()
+        public CountMetric()
         {
         }
-
     }
 
-    [DataContract]
-    public class SummaryMetric : Metric
+    public class GaugeMetric : Metric<double>
     {
-        public override object Value { get; set; }
+        public override string Type => "gauge";
 
-        // for Newtonsoft
-        //[DataMember]
-        //public MetricSummaryValue Value { get; set; }
-
-        internal SummaryMetric()
+        public GaugeMetric()
         {
         }
     }
 
+    public class SummaryMetric : Metric<MetricSummaryValue>
+    {
+        public override string Type => "summary";
+
+        public SummaryMetric()
+        {
+        }
+    }
 }

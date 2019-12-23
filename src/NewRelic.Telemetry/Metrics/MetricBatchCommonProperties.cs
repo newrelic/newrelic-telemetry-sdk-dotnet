@@ -14,8 +14,6 @@ namespace NewRelic.Telemetry.Metrics
         /// Optional:  
         /// TODO
         /// </summary>
-        [DataMember(Name = "timestamp")]
-//        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public long? Timestamp { get; internal set; }
 
         /// <summary>
@@ -23,7 +21,6 @@ namespace NewRelic.Telemetry.Metrics
         /// TODO
         /// </summary>
         [DataMember(Name = "interval.ms")]
-//        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public long? IntervalMs { get; internal set; }
 
         /// <summary>
@@ -31,7 +28,6 @@ namespace NewRelic.Telemetry.Metrics
         /// Spans being reported in this SpanBatch.
         /// </summary>
         [DataMember(Name = "attributes")]
- //       [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Dictionary<string,object> Attributes { get; internal set; }
 
         internal MetricBatchCommonProperties()
