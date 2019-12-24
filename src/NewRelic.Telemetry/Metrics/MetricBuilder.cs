@@ -30,18 +30,6 @@ namespace NewRelic.Telemetry.Metrics
     public class MetricBuilder<TMetric, TValue>  : MetricBuilder
         where TMetric:Metric<TValue>, new()
     {
-        // TODO: intrinsic attrs for Metric
-        //internal const string attribName_ServiceName = "service.name";
-        //internal const string attribName_DurationMs = "duration.ms";
-        //internal const string attribName_Name = "name";
-        //internal const string attribName_ParentID = "parent.id";
-        //internal const string attribName_Error = "error";
-
-        /// <summary>
-        /// TODO
-        /// </summary>
-        
-
         private readonly TMetric _metric;
 
         private Dictionary<string, object> _attributes => _metric.Attributes ?? (_metric.Attributes = new Dictionary<string, object>());

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
-//using Newtonsoft.Json;
 
 namespace NewRelic.Telemetry.Metrics
 {
@@ -40,8 +39,6 @@ namespace NewRelic.Telemetry.Metrics
         /// </summary>
         /// <param name="intervalMs">TODO</param>
         /// <returns></returns>
-        /// 
-        // not needed for Gauge, can be Common field or in the Metric
         public long? IntervalMs { get; set; }
 
         [DataMember(Name = "value")]
@@ -59,13 +56,6 @@ namespace NewRelic.Telemetry.Metrics
 
     public abstract class Metric<T> : Metric
     {
-        // Utf8Json does not serialize the derived Metric classes, 
-        // so Value is required in the Metric base class as type object since it
-        // has different type depending on Metric type, type checking done in 
-        // MetricBuilder.WithValue()
-        // Newtonsoft does serialize derived classes,
-        // So will allow strong type for Value in derived classes,
-        // but cannot be deserialized with System.Text.Json, used in TestHelper.
         internal T Value { get; set; }
 
         public override object MetricValue => Value;
