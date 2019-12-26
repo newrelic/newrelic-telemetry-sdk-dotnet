@@ -152,7 +152,7 @@ namespace NewRelic.Telemetry
         /// have been instructed to do so by New Relic Technical Support.
         /// </summary>
         /// <param name="url"></param>
-        public TelemetryConfiguration WithOverrideEndpointUrl_Trace(string url)
+        public TelemetryConfiguration WithOverrideEndpointUrlTrace(string url)
         {
             TraceUrl = url;
             return this;
@@ -164,7 +164,7 @@ namespace NewRelic.Telemetry
         /// </summary>
         /// <param name="apiKey"></param>
         /// <see cref="https://docs.newrelic.com/docs/insights/insights-data-sources/custom-data/introduction-event-api#register">for more information</see>
-        public TelemetryConfiguration WithAPIKey(string apiKey)
+        public TelemetryConfiguration WithApiKey(string apiKey)
         {
             ApiKey = apiKey;
             return this;

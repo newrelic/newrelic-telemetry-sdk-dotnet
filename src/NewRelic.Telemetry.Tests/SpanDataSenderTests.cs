@@ -16,7 +16,7 @@ namespace NewRelic.Telemetry.Tests
                 .WithTraceId(traceId)
                 .Build();
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithAPIKey("123456"));
+            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
 
             dataSender.WithHttpHandlerImpl((serializedJson) =>
             {
@@ -39,7 +39,7 @@ namespace NewRelic.Telemetry.Tests
                 .WithSpan(SpanBuilder.Create("TestSpan").Build())
                 .Build();
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithAPIKey("123456"));
+            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
 
             dataSender.WithHttpHandlerImpl((serializedJson) =>
             {

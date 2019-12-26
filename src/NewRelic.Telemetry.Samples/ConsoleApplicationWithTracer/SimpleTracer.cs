@@ -47,7 +47,7 @@ namespace ConsoleApplicationWithTracer
         /// <param name="apiKey">Required: API Key to communicate with New Relic endpoint</param>
         public static void WithDefaultConfiguration(string apiKey)
         {
-            _currentConfig = new TelemetryConfiguration().WithAPIKey(apiKey);
+            _currentConfig = new TelemetryConfiguration().WithApiKey(apiKey);
         }
 
         /// <summary>
