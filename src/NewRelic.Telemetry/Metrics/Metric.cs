@@ -10,8 +10,8 @@ namespace NewRelic.Telemetry.Metrics
 
         public double Count { get; set; }
         public double Sum { get; set; }
-        public double Min { get; set; }
-        public double Max { get; set; }
+        public double? Min { get; set; }
+        public double? Max { get; set; }
     }
 
     public abstract class Metric
@@ -23,7 +23,6 @@ namespace NewRelic.Telemetry.Metrics
 
         /// <summary>
         /// TODO
-        /// Type is not required. Defaults to 'gauge' in NR backend.
         /// </summary>
         public abstract string Type { get; }
 
@@ -31,7 +30,6 @@ namespace NewRelic.Telemetry.Metrics
         /// TODO
         /// </summary>
         /// 
-        // TODO: should this required field be nullable?
         public long? Timestamp { get; set; }
 
         /// <summary>
@@ -64,27 +62,15 @@ namespace NewRelic.Telemetry.Metrics
     public class CountMetric : Metric<double>
     {
         public override string Type => "count";
-
-        public CountMetric()
-        {
-        }
     }
 
     public class GaugeMetric : Metric<double>
     {
         public override string Type => "gauge";
-
-        public GaugeMetric()
-        {
-        }
     }
 
     public class SummaryMetric : Metric<MetricSummaryValue>
     {
         public override string Type => "summary";
-
-        public SummaryMetric()
-        {
-        }
     }
 }

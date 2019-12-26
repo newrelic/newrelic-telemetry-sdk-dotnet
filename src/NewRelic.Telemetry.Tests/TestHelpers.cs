@@ -112,7 +112,7 @@ namespace NewRelic.Telemetry.Tests
                 foreach (var actualValProp in actualValJson.EnumerateObject())
                 {
                     var actualPropValue = actualValProp.Value.GetDouble();
-                    double expectedPropValue = 0;
+                    double? expectedPropValue = 0;
 
                     switch (actualValProp.Name)
                     {

@@ -91,7 +91,5 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribValue(summaryMetric, "type", "summary");
             TestHelpers.AssertForAttribValue(summaryMetric, "value", summaryValue);
         }
-
-        // TODO: more tests, required fields, wrong value types
     }
 }

@@ -22,7 +22,6 @@ namespace NewRelic.Telemetry.Metrics
         }
     }
 
-
     /// <summary>
     /// Helper class that is used to create new metrics.
     /// </summary>
@@ -62,14 +61,12 @@ namespace NewRelic.Telemetry.Metrics
         /// </summary>
         public MetricBuilder<TMetric, TValue> WithValue(TValue value)
         {
-
             _metric.Value = value;
-
             return this;
         }
 
         /// <summary>
-        /// Optional:  TODO
+        /// TODO
         /// </summary>
         /// <param name="intervalMs">TODO</param>
         /// <returns></returns>
@@ -97,7 +94,6 @@ namespace NewRelic.Telemetry.Metrics
             }
 
             return this;
-
         }
 
         /// <summary>
