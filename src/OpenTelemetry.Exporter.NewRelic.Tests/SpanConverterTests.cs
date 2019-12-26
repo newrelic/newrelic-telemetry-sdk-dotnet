@@ -24,7 +24,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         [SetUp]
 		public void Setup()
 		{
-            var config = new TelemetryConfiguration().WithAPIKey("123456").WithServiceName(testServiceName);
+            var config = new TelemetryConfiguration().WithApiKey("123456").WithServiceName(testServiceName);
             var mockDataSender = new NRSpans.SpanDataSender(config);
 
             //Capture the spans that were requested to be sent to New Relic.
