@@ -92,6 +92,34 @@ namespace NewRelic.Telemetry.Tests
         }
 
         [Test]
+        public void BuildSummaryMetricWithNullMinMax()
+        {
+            var timestamp = DateTime.UtcNow;
+            var interval = 33L;
+            var value = new MetricSummaryValue() { Count = 10d, Sum = 64};
+
+            var attributes = new Dictionary<string, object>
+            { { "attrKey", "attrValue" } };
+
+            var metricBuilder = MetricBuilder.CreateSummaryMetric("metricname")
+                .WithValue(value)
+                .WithTimestamp(timestamp)
+                .WithIntervalMs(interval)
+                .WithAttribute("adsfasdf", 12)
+                .WithAttributes(attributes);
+
+            var metric = metricBuilder.Build();
+
+            Assert.AreEqual("metricname", metric.Name);
+            Assert.AreEqual("summary", metric.Type);
+            Assert.AreEqual(value, metric.Value);
+            Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(timestamp), metric.Timestamp);
+            Assert.AreEqual(interval, metric.IntervalMs);
+            Assert.AreEqual(12, metric.Attributes["adsfasdf"]);
+            Assert.AreEqual("attrValue", metric.Attributes["attrKey"]);
+        }
+
+        [Test]
         public void ThrowExceptionIfNullName()
         {
             Assert.Throws<ArgumentNullException>(new TestDelegate(() => MetricBuilder.CreateCountMetric(null)));

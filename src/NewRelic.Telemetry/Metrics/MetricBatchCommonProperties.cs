@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace NewRelic.Telemetry.Metrics
 {
     /// <summary>
-    /// Properties that are common all of the Metrics that are part of the MetricBatch.
+    /// Properties that are common on all of the Metrics that are part of the MetricBatch.
     /// </summary>
     [DataContract]
     public class MetricBatchCommonProperties

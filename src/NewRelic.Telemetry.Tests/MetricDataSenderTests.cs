@@ -9,7 +9,7 @@ namespace NewRelic.Telemetry.Tests
     public class MetricDataSenderTests
     {
         [Test]
-        public void SendAnEmptyjMetricBatch()
+        public void SendAnEmptyMetricBatch()
         {
             var spanBatch = MetricBatchBuilder.Create()
                 .Build();

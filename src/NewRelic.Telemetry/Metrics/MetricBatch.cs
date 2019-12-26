@@ -30,7 +30,6 @@ namespace NewRelic.Telemetry.Metrics
             Metrics = metrics.ToList();
         }
 
-
         public string ToJson()
         {
             return Utf8Json.JsonSerializer.ToJsonString(new[] { this }, 
