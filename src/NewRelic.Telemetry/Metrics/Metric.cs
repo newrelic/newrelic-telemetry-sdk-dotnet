@@ -19,7 +19,7 @@ namespace NewRelic.Telemetry.Metrics
         /// <summary>
         /// TODO
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; internal set; }
 
         /// <summary>
         /// TODO
@@ -30,14 +30,14 @@ namespace NewRelic.Telemetry.Metrics
         /// TODO
         /// </summary>
         /// 
-        public long? Timestamp { get; set; }
+        public long? Timestamp { get; internal set; }
 
         /// <summary>
         /// Optional:  TODO
         /// </summary>
         /// <param name="intervalMs">TODO</param>
         /// <returns></returns>
-        public long? IntervalMs { get; set; }
+        public long? IntervalMs { get; internal set; }
 
         [DataMember(Name = "value")]
         public abstract object MetricValue { get; }
@@ -45,11 +45,7 @@ namespace NewRelic.Telemetry.Metrics
         /// <summary>
         /// TODO
         /// </summary>
-        public Dictionary<string, object> Attributes { get; set; }
-
-        protected Metric()
-        {
-        }
+        public Dictionary<string, object> Attributes { get; internal set; }
     }
 
     public abstract class Metric<T> : Metric
