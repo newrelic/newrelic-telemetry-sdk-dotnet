@@ -13,7 +13,7 @@ namespace NewRelic.Telemetry.Tests
         private long timestampL = DateTimeExtensions.ToUnixTimeMilliseconds(timestamp);
         private long interval = 250L;
         private long countValue = 67;
-        private MetricSummaryValue summaryValue = new MetricSummaryValue() {  Count = 10d, Sum = 64, Min = 3, Max = 15 };
+        private MetricSummaryValue summaryValue = MetricSummaryValue.Create(10, 64, 3, 15);
         private Dictionary<string, object> CustomAttributes = new Dictionary<string, object>() { { "attr1Key", "attr1Value" } };
 
         [Test]

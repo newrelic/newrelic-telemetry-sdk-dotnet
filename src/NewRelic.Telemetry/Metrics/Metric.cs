@@ -6,12 +6,33 @@ namespace NewRelic.Telemetry.Metrics
     [DataContract]
     public class MetricSummaryValue
     {
-        //TODO:  Figure out how a caller instantiates one of these
+        public double Count { get; private set; }
+        public double Sum { get; private set; }
+        public double? Min { get; private set; }
+        public double? Max { get; private set; }
 
-        public double Count { get; set; }
-        public double Sum { get; set; }
-        public double? Min { get; set; }
-        public double? Max { get; set; }
+        private MetricSummaryValue()
+        {
+        }
+
+        public static MetricSummaryValue Create(double count, double sum, double min, double max)
+        {
+            var result = Create(count, sum);
+
+            result.Min = min;
+            result.Max = max;
+
+            return result;
+        }
+
+        public static MetricSummaryValue Create(double count, double sum)
+        {
+            return new MetricSummaryValue()
+            {
+                Count = count,
+                Sum = sum,
+            };
+        }
     }
 
     public abstract class Metric
@@ -50,7 +71,8 @@ namespace NewRelic.Telemetry.Metrics
 
     public abstract class Metric<T> : Metric
     {
-        internal T Value { get; set; }
+        [IgnoreDataMember]
+        public T Value { get; internal set; }
 
         public override object MetricValue => Value;
     }
