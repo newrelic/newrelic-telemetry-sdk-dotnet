@@ -48,7 +48,7 @@ namespace NewRelic.Telemetry.Tests
             // Arrange
             var successfulSpanBatches = new List<SpanBatch>();
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithAPIKey("123456"));
+            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
 
             var okJsons = new List<string>();
 
@@ -139,7 +139,7 @@ namespace NewRelic.Telemetry.Tests
             var actualCountCallsSendData = 0;
             var successfulSpans = new List<Span>();
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithAPIKey("123456"));
+            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
 
             var shouldSplitJsons = new List<string>();
 
@@ -205,7 +205,8 @@ namespace NewRelic.Telemetry.Tests
             var actualBackoffSequenceFromTestRun = new List<uint>();
             var actualCountCallsSendData = 0;
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithAPIKey("123456"));
+
+            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
             dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
             {
                 actualBackoffSequenceFromTestRun.Add(milliSecondsDelay);
@@ -248,8 +249,9 @@ namespace NewRelic.Telemetry.Tests
 
             var actualBackoffSequenceFromTestRun = new List<uint>();
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithAPIKey("123456"));
+            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
             dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
+
             {
                 actualBackoffSequenceFromTestRun.Add(milliSecondsDelay);
                 await Task.Delay(0);
@@ -304,8 +306,9 @@ namespace NewRelic.Telemetry.Tests
 
             var actualBackoffSequenceFromTestRun = new List<uint>();
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithAPIKey("123456"));
+            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
             dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
+
             {
                 actualBackoffSequenceFromTestRun.Add(milliSecondsDelay);
                 await Task.Delay(0);
@@ -349,7 +352,7 @@ namespace NewRelic.Telemetry.Tests
 
             var actualBackoffSequenceFromTestRun = new List<uint>();
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithAPIKey("123456"));
+            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
 
             dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
             {
@@ -398,7 +401,7 @@ namespace NewRelic.Telemetry.Tests
 
             uint actualDelayFromTestRun = 0;
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithAPIKey("123456").WithMaxRetryAttempts(1));
+            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456").WithMaxRetryAttempts(1));
 
             dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
             {
@@ -430,7 +433,7 @@ namespace NewRelic.Telemetry.Tests
         {
             const int expectedNumSendBatchAsyncCall = 1;
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithAPIKey("123456"));
+            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
 
             dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
             {
@@ -468,7 +471,7 @@ namespace NewRelic.Telemetry.Tests
             const int expectedNumSendBatchAsyncCall = 1;
             const int expectedNumHttpHandlerCall = 0;
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithAPIKey("123456"));
+            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
 
             dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
             {
@@ -514,7 +517,7 @@ namespace NewRelic.Telemetry.Tests
         [TestCase("productName", "1.0.0")]
         public void AddVersionInfo(string productName, string productVersion)
         {
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithAPIKey("123456"));
+            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
             var fieldInfo = dataSender.GetType().GetField("_userAgent", BindingFlags.NonPublic | BindingFlags.Instance);
             var userAgentValueBefore = fieldInfo.GetValue(dataSender);
 

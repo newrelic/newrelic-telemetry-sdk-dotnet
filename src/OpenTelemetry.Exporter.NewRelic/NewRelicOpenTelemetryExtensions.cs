@@ -82,7 +82,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// <returns></returns>
         public static TracerBuilder UseNewRelic(this TracerBuilder builder, string apiKey, ILoggerFactory loggerFactory)
         {
-            return UseNewRelic(builder, new TelemetryConfiguration().WithAPIKey(apiKey), loggerFactory);
+            return UseNewRelic(builder, new TelemetryConfiguration().WithApiKey(apiKey), loggerFactory);
         }
     }
 }
