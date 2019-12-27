@@ -20,7 +20,7 @@ namespace OpenTelemetry.Exporter.NewRelic
     public class NewRelicTraceExporter : SpanExporter
     {
         private readonly NRSpans.SpanDataSender _spanDataSender;
-        private const string _productName = "OpenTelemetry.Exporter.NewRelic";
+        private const string _productName = "NewRelic-Dotnet-OpenTelemetry";
         private static readonly string _productVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
 
         private const string _attribName_url = "http.url";
