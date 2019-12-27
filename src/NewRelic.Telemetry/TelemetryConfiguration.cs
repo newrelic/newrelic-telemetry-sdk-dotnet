@@ -20,6 +20,10 @@ namespace NewRelic.Telemetry
         public string TraceUrl { get; private set; } = "https://trace-api.newrelic.com/trace/v1";
 
         /// <summary>
+        /// The New Relic endpoint where Metric information is sent.
+        /// </summary>
+        public string MetricUrl { get; private set; } = "https://metric-api.newrelic.com/metric/v1";
+
         /// Logs messages sent-to and received-by the New Relic endpoints.  This setting
         /// is useful for troubleshooting, but is not recommended in production environments.
         /// </summary>
@@ -155,6 +159,18 @@ namespace NewRelic.Telemetry
         public TelemetryConfiguration WithOverrideEndpointUrlTrace(string url)
         {
             TraceUrl = url;
+            return this;
+        }
+
+        /// <summary>
+        /// Allows overriding the endpoint to which metric information is sent.
+        /// This value should NOT be changed from the default unless you are in a test scenario or
+        /// have been instructed to do so by New Relic Technical Support.
+        /// </summary>
+        /// <param name="url"></param>
+        public TelemetryConfiguration WithOverrideEndpointUrlMetric(string url)
+        {
+            MetricUrl = url;
             return this;
         }
 

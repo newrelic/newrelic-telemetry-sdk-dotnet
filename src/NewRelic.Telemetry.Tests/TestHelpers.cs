@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Linq;
 using System;
+using NewRelic.Telemetry.Metrics;
 
 namespace NewRelic.Telemetry.Tests
 {
@@ -60,47 +61,80 @@ namespace NewRelic.Telemetry.Tests
             }
         }
 
-        public static void AssertForAttribValue(Dictionary<string, JsonElement> dic, string attribName, object testValue)
+        public static void AssertForAttribValue(Dictionary<string, JsonElement> dic, string attribName, object expectedValueObj)
         {
             if (!dic.ContainsKey(attribName))
             {
-                if (testValue == null)
+                if (expectedValueObj == null)
                 {
                     return;     //This is OK
                 }
 
-                Assert.Fail($"Attribute {attribName}, expected {testValue}, actual NULL/missing");
+                Assert.Fail($"Attribute {attribName}, expected {expectedValueObj}, actual NULL/missing");
             }
 
-            var realVal = dic[attribName];
+            var actualValJson = dic[attribName];
 
-            if (testValue is string)
+            if (expectedValueObj is string)
             {
-                Assert.IsTrue((string)testValue == realVal.GetString(), $"Attribute {attribName}, expected {testValue}, actual {realVal}");
+                Assert.IsTrue((string)expectedValueObj == actualValJson.GetString(), $"Attribute {attribName}, expected {expectedValueObj}, actual {actualValJson}");
                 return;
             }
 
-            if (testValue is int || testValue is long || testValue is short)
+            if (expectedValueObj is int || expectedValueObj is long || expectedValueObj is short)
             {
-                Assert.IsTrue(Convert.ToInt64(testValue) == realVal.GetInt64(), $"Attribute {attribName}, expected {testValue}, actual {realVal}");
+                Assert.IsTrue(Convert.ToInt64(expectedValueObj) == actualValJson.GetInt64(), $"Attribute {attribName}, expected {expectedValueObj}, actual {actualValJson}");
                 return;
             }
 
-            if (testValue is bool)
+            if (expectedValueObj is bool)
             {
-                Assert.IsTrue((bool)testValue == realVal.GetBoolean(), $"Attribute {attribName}, expected {testValue}, actual {realVal}");
+                Assert.IsTrue((bool)expectedValueObj == actualValJson.GetBoolean(), $"Attribute {attribName}, expected {expectedValueObj}, actual {actualValJson}");
                 return;
             }
 
-            if (testValue is decimal)
+            if (expectedValueObj is decimal)
             {
-                Assert.IsTrue((decimal)testValue == realVal.GetDecimal(), $"Attribute {attribName}, expected {testValue}, actual {realVal}");
+                Assert.IsTrue((decimal)expectedValueObj == actualValJson.GetDecimal(), $"Attribute {attribName}, expected {expectedValueObj}, actual {actualValJson}");
                 return;
             }
 
-            if (testValue is double || testValue is float)
+            if (expectedValueObj is double || expectedValueObj is float)
             {
-                Assert.IsTrue((double)testValue == realVal.GetDouble(), $"Attribute {attribName}, expected {testValue}, actual {realVal}");
+                Assert.IsTrue((double)expectedValueObj == actualValJson.GetDouble(), $"Attribute {attribName}, expected {expectedValueObj}, actual {actualValJson}");
+                return;
+            }
+
+            if (expectedValueObj is MetricSummaryValue)
+            {
+                var expectedVal = expectedValueObj as MetricSummaryValue;
+
+                foreach (var actualValProp in actualValJson.EnumerateObject())
+                {
+                    var actualPropValue = actualValProp.Value.GetDouble();
+                    double? expectedPropValue = 0;
+
+                    switch (actualValProp.Name)
+                    {
+                        case "count":
+                            expectedPropValue = expectedVal.Count;
+                            break;
+                        case "sum":
+                            expectedPropValue = expectedVal.Sum;
+                            break;
+                        case "min":
+                            expectedPropValue = expectedVal.Min;
+                            break;
+                        case "max":
+                            expectedPropValue = expectedVal.Max;
+                            break;
+                        default:
+                            throw new Exception($"Unexpected property {actualValProp.Name}.");
+                    }
+
+                    Assert.AreEqual(expectedPropValue, actualPropValue, $"Mismatch on {actualValProp.Name} property: Expected: {expectedPropValue}, Actual: {actualPropValue}");
+                }
+                
                 return;
             }
 
