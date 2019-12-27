@@ -205,8 +205,8 @@ namespace NewRelic.Telemetry.Tests
             var actualBackoffSequenceFromTestRun = new List<uint>();
             var actualCountCallsSendData = 0;
 
-
             var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
+
             dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
             {
                 actualBackoffSequenceFromTestRun.Add(milliSecondsDelay);
@@ -251,7 +251,6 @@ namespace NewRelic.Telemetry.Tests
 
             var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
             dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
-
             {
                 actualBackoffSequenceFromTestRun.Add(milliSecondsDelay);
                 await Task.Delay(0);
@@ -308,7 +307,6 @@ namespace NewRelic.Telemetry.Tests
 
             var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
             dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
-
             {
                 actualBackoffSequenceFromTestRun.Add(milliSecondsDelay);
                 await Task.Delay(0);
