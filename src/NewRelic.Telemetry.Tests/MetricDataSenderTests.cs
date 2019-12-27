@@ -1,22 +1,20 @@
 ﻿using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
-using NewRelic.Telemetry.Spans;
+using NewRelic.Telemetry.Metrics;
 using NewRelic.Telemetry.Transport;
 
 namespace NewRelic.Telemetry.Tests
 {
-    public class SpanDataSenderTests
+    public class MetricDataSenderTests
     {
         [Test]
-        public void SendAnEmptySpanBatch()
+        public void SendAnEmptyMetricBatch()
         {
-            var traceId = "123";
-            var spanBatch = SpanBatchBuilder.Create()
-                .WithTraceId(traceId)
+            var spanBatch = MetricBatchBuilder.Create()
                 .Build();
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
+            var dataSender = new MetricDataSender(new TelemetryConfiguration().WithApiKey("123456"));
 
             dataSender.WithHttpHandlerImpl((serializedJson) =>
             {
@@ -30,16 +28,14 @@ namespace NewRelic.Telemetry.Tests
         }
 
         [Test]
-        public void SendANonEmptySpanBatch()
+        public void SendANonEmptyMetricBatch()
         {
-            var traceId = "123";
 
-            var spanBatch = SpanBatchBuilder.Create()
-                .WithTraceId(traceId)
-                .WithSpan(SpanBuilder.Create("TestSpan").Build())
+            var metricBatch = MetricBatchBuilder.Create()
+                .WithMetric(MetricBuilder.CreateGaugeMetric("TestMetric").Build())
                 .Build();
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
+            var dataSender = new MetricDataSender(new TelemetryConfiguration().WithApiKey("123456"));
 
             dataSender.WithHttpHandlerImpl((serializedJson) =>
             {
@@ -47,7 +43,7 @@ namespace NewRelic.Telemetry.Tests
                 return Task.FromResult(response);
             });
 
-            var response = dataSender.SendDataAsync(spanBatch).Result;
+            var response = dataSender.SendDataAsync(metricBatch).Result;
 
             Assert.AreEqual(NewRelicResponseStatus.Success, response.ResponseStatus);
         }

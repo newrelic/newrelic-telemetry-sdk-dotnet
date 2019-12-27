@@ -24,7 +24,7 @@ namespace NewRelic.Telemetry.Transport
 
         //Delegate functions in support of unit testing
         private Func<string, Task<HttpResponseMessage>> _httpHandlerImpl;
-        private Func<int, Task> _delayerImpl = new Func<int, Task>(async (int milliseconds) => await Task.Delay(milliseconds));
+        private Func<uint, Task> _delayerImpl = new Func<uint, Task>(async (uint milliseconds) => await Task.Delay((int)milliseconds));
         private Action<TData, int> _captureSendDataAsyncCallDelegate = null;
 
         protected abstract string EndpointUrl { get; }
@@ -60,7 +60,7 @@ namespace NewRelic.Telemetry.Transport
             _httpHandlerImpl = SendDataAsync;
         }
 
-        internal DataSender<TData> WithDelayFunction(Func<int, Task> delayerImpl)
+        internal DataSender<TData> WithDelayFunction(Func<uint, Task> delayerImpl)
         {
             _delayerImpl = delayerImpl;
             return this;
@@ -105,7 +105,7 @@ namespace NewRelic.Telemetry.Transport
             return Response.Failure(HttpStatusCode.Ambiguous, $"{responses.Count(x=>x.ResponseStatus != NewRelicResponseStatus.Success)} of {responses.Length} requests were NOT successful.");
         }
  
-        private async Task<Response> RetryWithDelay(TData data, int retryNum, int? waitTimeInSeconds = null)
+        private async Task<Response> RetryWithDelay(TData data, int retryNum, uint? waitTimeInSeconds = null)
         {
             retryNum++;
             if (retryNum > _config.MaxRetryAttempts)
@@ -114,7 +114,7 @@ namespace NewRelic.Telemetry.Transport
                 return Response.Failure(HttpStatusCode.RequestTimeout, $"Send Data failed after {_config.MaxRetryAttempts} attempts");
             }
 
-            waitTimeInSeconds = waitTimeInSeconds ?? (int)Math.Min(_config.BackoffMaxSeconds, _config.BackoffDelayFactorSeconds * Math.Pow(2, retryNum - 1));
+            waitTimeInSeconds = waitTimeInSeconds ?? (uint)Math.Min(_config.BackoffMaxSeconds, _config.BackoffDelayFactorSeconds * Math.Pow(2, retryNum - 1));
 
             _logger.Warning($@"Attempting retry({retryNum}) after {waitTimeInSeconds} seconds.");
 
@@ -147,7 +147,7 @@ namespace NewRelic.Telemetry.Transport
                 return await RetryWithDelay(dataToSend, retryNum);
             }
 
-            var delayMs = (int)retryAfterDelay.Value.TotalMilliseconds;
+            var delayMs = (uint)retryAfterDelay.Value.TotalMilliseconds;
 
             //Perform the delay using the waiter delegate
             await _delayerImpl(delayMs);
