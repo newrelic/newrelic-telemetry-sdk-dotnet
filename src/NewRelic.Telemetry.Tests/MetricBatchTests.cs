@@ -87,7 +87,7 @@ namespace NewRelic.Telemetry.Tests
             var timestamp = DateTime.UtcNow;
             var interval = 125L;
             var gaugeValue = 213d;
-            var summaryValue = new MetricSummaryValue() { Count = 10d, Sum = 64, Min = 3, Max = 15 };
+            var summaryValue = MetricSummaryValue.Create(10d, 64, 3, 15);
 
             var metricBatch = MetricBatchBuilder.Create()
                 .WithMetric(MetricBuilder.CreateSummaryMetric("SummaryMetric")

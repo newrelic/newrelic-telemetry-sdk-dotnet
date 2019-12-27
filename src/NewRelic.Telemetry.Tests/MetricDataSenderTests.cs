@@ -14,7 +14,7 @@ namespace NewRelic.Telemetry.Tests
             var spanBatch = MetricBatchBuilder.Create()
                 .Build();
 
-            var dataSender = new MetricDataSender(new TelemetryConfiguration().WithAPIKey("123456"));
+            var dataSender = new MetricDataSender(new TelemetryConfiguration().WithApiKey("123456"));
 
             dataSender.WithHttpHandlerImpl((serializedJson) =>
             {
@@ -35,7 +35,7 @@ namespace NewRelic.Telemetry.Tests
                 .WithMetric(MetricBuilder.CreateGaugeMetric("TestMetric").Build())
                 .Build();
 
-            var dataSender = new MetricDataSender(new TelemetryConfiguration().WithAPIKey("123456"));
+            var dataSender = new MetricDataSender(new TelemetryConfiguration().WithApiKey("123456"));
 
             dataSender.WithHttpHandlerImpl((serializedJson) =>
             {
