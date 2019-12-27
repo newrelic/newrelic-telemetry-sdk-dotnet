@@ -13,91 +13,6 @@ namespace NewRelic.Telemetry.Tests
 {
     public class DataSenderTests
     {
-        [Test]
-        public void DateSpecificRetry_CorrectDelayDuration()
-        {
-            var traceId = "123";
-            var retryDuration = TimeSpan.FromSeconds(10);
-            var retryDurationMs = retryDuration.TotalMilliseconds;
-            var errorMargin = TimeSpan.FromMilliseconds(50).TotalMilliseconds;
-
-            var spanBatch = SpanBatchBuilder.Create()
-                .WithTraceId(traceId)
-                .WithSpan(SpanBuilder.Create("TestSpan").Build())
-                .Build();
-
-            var config = new TelemetryConfiguration().WithApiKey("12345");
-
-            var dataSender = new SpanDataSender(config);
-
-            //Mock out the communication layer
-            dataSender.WithHttpHandlerImpl((serializedJson) =>
-            {
-                var response = new HttpResponseMessage((System.Net.HttpStatusCode)429);
-                var retryOnSpecificTime = DateTimeOffset.Now + retryDuration;
-                response.Headers.RetryAfter = new System.Net.Http.Headers.RetryConditionHeaderValue(retryOnSpecificTime);
-                return Task.FromResult(response);
-
-            });
-
-            var capturedDelays = new List<int>();
-            dataSender.WithDelayFunction((delay) =>
-            {
-                capturedDelays.Add(delay);
-                return Task.Delay(0);
-            });
-
-            var response = dataSender.SendDataAsync(spanBatch).Result;
-
-            Assert.AreEqual(NewRelicResponseStatus.Failure, response.ResponseStatus);
-            Assert.AreEqual(config.MaxRetryAttempts, capturedDelays.Count);
-            Assert.AreEqual(System.Net.HttpStatusCode.RequestTimeout, response.HttpStatusCode);
-            Assert.IsTrue(capturedDelays.All(x => x >= retryDurationMs - errorMargin && x <= retryDurationMs + errorMargin),
-                "Expected duration out of range");
-        }
-
-        [Test]
-        public void DelayRetry_DurationCorrect()
-        {
-            var traceId = "123";
-            var retryDuration = TimeSpan.FromSeconds(10);
-            var retryDurationMs = retryDuration.TotalMilliseconds;
-
-            var spanBatch = SpanBatchBuilder.Create()
-                .WithTraceId(traceId)
-                .WithSpan(SpanBuilder.Create("TestSpan").Build())
-                .Build();
-
-            var config = new TelemetryConfiguration().WithApiKey("12345");
-
-            var dataSender = new SpanDataSender(config);
-
-            //Mock out the communication layer
-            dataSender.WithHttpHandlerImpl((serializedJson) =>
-            {
-                var response = new HttpResponseMessage((System.Net.HttpStatusCode)429);
-                var retryOnSpecificTime = DateTimeOffset.Now + retryDuration;
-                response.Headers.RetryAfter = new System.Net.Http.Headers.RetryConditionHeaderValue(retryDuration);
-                return Task.FromResult(response);
-
-            });
-
-            var capturedDelays = new List<int>();
-            dataSender.WithDelayFunction((delay) =>
-            {
-                capturedDelays.Add(delay);
-                return Task.Delay(0);
-            });
-
-            var response = dataSender.SendDataAsync(spanBatch).Result;
-
-            Assert.AreEqual(NewRelicResponseStatus.Failure, response.ResponseStatus);
-            Assert.AreEqual(config.MaxRetryAttempts, capturedDelays.Count);
-
-            Assert.AreEqual(System.Net.HttpStatusCode.RequestTimeout, response.HttpStatusCode);
-            Assert.IsTrue(capturedDelays.All(x=> retryDurationMs == x), "Expected duration out of range");
-        }
-
         /// <summary>
         /// Test will manipulate the New Relic End point response such that any request with 4 or more spans will result in a 
         /// RequestTooLarge response. This will test:
@@ -287,11 +202,12 @@ namespace NewRelic.Telemetry.Tests
                 80000,
                 80000
             };
-            var actualBackoffSequenceFromTestRun = new List<int>();
+            var actualBackoffSequenceFromTestRun = new List<uint>();
             var actualCountCallsSendData = 0;
 
             var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
-            dataSender.WithDelayFunction(async (int milliSecondsDelay) =>
+
+            dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
             {
                 actualBackoffSequenceFromTestRun.Add(milliSecondsDelay);
                 await Task.Delay(0);
@@ -331,10 +247,10 @@ namespace NewRelic.Telemetry.Tests
                 20000,
             };
 
-            var actualBackoffSequenceFromTestRun = new List<int>();
+            var actualBackoffSequenceFromTestRun = new List<uint>();
 
             var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
-            dataSender.WithDelayFunction(async (int milliSecondsDelay) =>
+            dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
             {
                 actualBackoffSequenceFromTestRun.Add(milliSecondsDelay);
                 await Task.Delay(0);
@@ -387,10 +303,10 @@ namespace NewRelic.Telemetry.Tests
                 delayMS
             };
 
-            var actualBackoffSequenceFromTestRun = new List<int>();
+            var actualBackoffSequenceFromTestRun = new List<uint>();
 
             var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
-            dataSender.WithDelayFunction(async (int milliSecondsDelay) =>
+            dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
             {
                 actualBackoffSequenceFromTestRun.Add(milliSecondsDelay);
                 await Task.Delay(0);
@@ -423,7 +339,7 @@ namespace NewRelic.Telemetry.Tests
         }
 
         [Test]
-        async public Task RetryOn429_429HappensOnce()
+        async public Task RetryOn429WithDuration_429HappensOnce()
         {
             const int delayMS = 10000;
             const int expectedNumSendBatchAsyncCall = 2;
@@ -432,11 +348,11 @@ namespace NewRelic.Telemetry.Tests
                 delayMS
             };
 
-            var actualBackoffSequenceFromTestRun = new List<int>();
+            var actualBackoffSequenceFromTestRun = new List<uint>();
 
             var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
 
-            dataSender.WithDelayFunction(async (int milliSecondsDelay) =>
+            dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
             {
                 actualBackoffSequenceFromTestRun.Add(milliSecondsDelay);
                 await Task.Delay(0);
@@ -474,13 +390,50 @@ namespace NewRelic.Telemetry.Tests
         }
 
         [Test]
+        async public Task RetryOn429WithSpecificDate_429HappensOnce()
+        {
+            const int delayMs = 10000;
+            // The actual retry delay will be slightly less than delayMs since UtcNow is recalculated in RetryWithServerDelay()
+            var errorMargin = TimeSpan.FromMilliseconds(50).TotalMilliseconds;
+            var actualResponseFromTestRun = new List<Response>();
+
+            uint actualDelayFromTestRun = 0;
+
+            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456").WithMaxRetryAttempts(1));
+
+            dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
+            {
+                actualDelayFromTestRun = milliSecondsDelay;
+                await Task.Delay(0);
+                return;
+            });
+
+            dataSender.WithHttpHandlerImpl((json) =>
+            {
+                var httpResponse = new HttpResponseMessage((HttpStatusCode)429);
+                var retryOnSpecificTime = DateTimeOffset.UtcNow + TimeSpan.FromMilliseconds(delayMs);
+                httpResponse.Headers.RetryAfter = new System.Net.Http.Headers.RetryConditionHeaderValue(retryOnSpecificTime);
+
+                return Task.FromResult(httpResponse);
+            });
+
+            var spanBatch = SpanBatchBuilder.Create()
+               .WithSpan(SpanBuilder.Create("Test Span").Build())
+               .Build();
+
+            var response = await dataSender.SendDataAsync(spanBatch);
+
+            Assert.IsTrue(actualDelayFromTestRun >= delayMs - errorMargin && actualDelayFromTestRun <= delayMs + errorMargin,$"Expected delay: {delayMs}, margin: +/-{errorMargin}, actual delay: {actualDelayFromTestRun}");
+        }
+
+        [Test]
         async public Task SendDataAsyncThrowsHttpException()
         {
             const int expectedNumSendBatchAsyncCall = 1;
 
             var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
 
-            dataSender.WithDelayFunction(async (int milliSecondsDelay) =>
+            dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
             {
                 await Task.Delay(0);
                 return;
@@ -518,7 +471,7 @@ namespace NewRelic.Telemetry.Tests
 
             var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
 
-            dataSender.WithDelayFunction(async (int milliSecondsDelay) =>
+            dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
             {
                 await Task.Delay(0);
                 return;
