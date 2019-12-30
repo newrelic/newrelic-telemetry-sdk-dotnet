@@ -18,7 +18,8 @@ The New Relic Telemetry APIs are rate limited. Please reference the [documentati
 
 ### Building
 CI builds are run on Azure Pipelines: 
-[![Build Status](https://dev.azure.com/NRAzurePipelines/dotnet/_build/latest?definitionId=2&branchName=master)](https://dev.azure.com/NRAzurePipelines/dotnet/_build/latest?definitionId=2&branchName=master)
+[![Build Status](https://dev.azure.com/NRAzurePipelines/dotnet/_apis/build/status/newrelic.newrelic-telemetry-sdk-dotnet?branchName=master)](https://dev.azure.com/NRAzurePipelines/dotnet/_build/latest?definitionId=17&branchName=master)
+
 
 ### Contributing
 Full details are available in our [CONTRIBUTING.md](CONTRIBUTING.md) file. We'd love to get your contributions to improve the Telemetry SDK for .NET and for the OpenTelemetry Trace Exporter for .NET! Keep in mind when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. You only have to sign the CLA one time per project. To execute our corporate CLA, which is required if your contribution is on behalf of a company, or if you have any questions, please drop us an email at open-source@newrelic.com.
