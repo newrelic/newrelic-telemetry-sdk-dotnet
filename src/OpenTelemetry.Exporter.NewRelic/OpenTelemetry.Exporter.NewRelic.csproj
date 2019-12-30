@@ -27,7 +27,7 @@
     <Build>0</Build>
     <Revision>0</Revision>
     <Version>$(Major).$(Minor).$(Build).$(Revision)</Version>
-    <PackageVersion>$(Major).$(Minor).$(Build)-beta</PackageVersion>
+    <PackageVersion>$(Major).$(Minor).$(Build)-beta001</PackageVersion>
     <AssemblyVersion>$(Major).0.0.0</AssemblyVersion>
     <FileVersion>$(Major).$(Minor).$(Build).$(Revision)</FileVersion>
   </PropertyGroup>
