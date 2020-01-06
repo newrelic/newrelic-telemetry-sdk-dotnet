@@ -68,7 +68,7 @@ namespace NewRelic.Telemetry.Tests
         {
             var timestamp = DateTime.UtcNow;
             var interval = 33L;
-            var value = new MetricSummaryValue() { Count = 10d, Sum = 64, Min = 3, Max = 15 };
+            var value = MetricSummaryValue.Create(10d, 64, 3, 15);
 
             var attributes = new Dictionary<string, object>
             { { "attrKey", "attrValue" } };
@@ -96,7 +96,7 @@ namespace NewRelic.Telemetry.Tests
         {
             var timestamp = DateTime.UtcNow;
             var interval = 33L;
-            var value = new MetricSummaryValue() { Count = 10d, Sum = 64};
+            var value = MetricSummaryValue.Create(10d, 64);
 
             var attributes = new Dictionary<string, object>
             { { "attrKey", "attrValue" } };
