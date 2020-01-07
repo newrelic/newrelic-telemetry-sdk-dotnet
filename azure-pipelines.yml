@@ -17,6 +17,20 @@ steps:
     command: 'restore'
     restoreSolution: 'src/NewRelic.Telemetry.sln' 
 
+- task: SonarCloudPrepare@1
+  condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
+  displayName: 'Prepare SonarCloud analysis'
+  inputs:
+    SonarCloud: 'SonarCloud connection 1'
+    organization: '$(SonarOrganization)'
+    projectKey: '$(SonarProjectKey)'
+    projectName: '$(SonarProjectName)'
+    projectVersion: '$(Build.BuildNumber)'
+    extraProperties: |
+     sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/TestResults/Coverage/coverage.opencover.xml
+     sonar.exclusions=**/wwwroot/lib/**/*
+
+
 - task: MSBuild@1
   displayName: 'Build (configuration=$(buildConfiguration))'
   inputs:
@@ -44,6 +58,14 @@ steps:
     contents: 'src/OpenTelemetry.Exporter.NewRelic/bin/$(buildConfiguration)/**/*'
     targetFolder: '$(Build.ArtifactStagingDirectory)/OpenTelemetry'
 
+- task: SonarCloudAnalyze@1
+  condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
+  displayName: 'Run SonarCloud code analysis'
+
+- task: SonarCloudPublish@1
+  condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
+  displayName: 'Publish SonarCloud quality gate results'
+  
 - task: PublishBuildArtifacts@1
 
 - task: NuGetCommand@2
