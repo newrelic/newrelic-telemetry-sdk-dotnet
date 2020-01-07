@@ -34,6 +34,11 @@ steps:
     testRunner: VSTest
     testResultsFiles: '**/*.trx'
 
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: 'env | sort'
+
 - task: CopyFiles@2
   inputs:
     contents: 'src/NewRelic.Telemetry/bin/$(buildConfiguration)/**/*'
