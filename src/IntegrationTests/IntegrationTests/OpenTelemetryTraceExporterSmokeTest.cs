@@ -6,6 +6,7 @@ using Xunit;
 using Xunit.Abstractions;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace IntegrationTests
 {
@@ -13,15 +14,11 @@ namespace IntegrationTests
     {
         private readonly OpenTelemetryUsageApplicationFixture _fixture;
 
-        private const string _traceApiKey = "{YOUR_TRACE_API_KEY}";
+        private string _insightsQueryApiKey;
 
-        private const string _insightsQueryApiKey = "{YOUR_INSIGHT_QUERY_API_KEY}";
+        private string _insightsQueryApiEndpoint;
 
-        private const string _insightsQueryApiEndpoint = "https://insights-api.newrelic.com";
-
-        private const string _traceEndPointUrl = "https://trace-api.newrelic.com/trace/v1";
-
-        private const string _accountNumber = "{YOUR_ACCOUNT_NUMBER}";
+        private string _accountNumber;
 
         public OpenTelemetryTraceExporterSmokeTest(OpenTelemetryUsageApplicationFixture fixture, ITestOutputHelper output)
         {
@@ -33,11 +30,10 @@ namespace IntegrationTests
                 _fixture.MakeRequestToWeatherforecastEndpoint();
             };
 
-            _fixture.SetEnvironmentVariables(new Dictionary<string, string>()
-            {
-                {"NewRelic:ApiKey", _traceApiKey},
-                {"NewRelic:TraceUrlOverride", _traceEndPointUrl}
-            });
+            _accountNumber = Environment.GetEnvironmentVariable("NewRelic:AccountNumber");
+            _insightsQueryApiKey = Environment.GetEnvironmentVariable("NewRelic:InsightsQueryApiKey");
+            _insightsQueryApiEndpoint = Environment.GetEnvironmentVariable("NewRelic:InsightsQueryApiEndpoint");
+
 
             _fixture.Initialize();
 
@@ -45,7 +41,7 @@ namespace IntegrationTests
             Thread.Sleep(10000);
         }
 
-        [Fact(Skip = "Temporarily skipping this test so that the build pipeline won't fail. This is because this test requires setting Api keys manually.")]
+        [Fact]
         public async void Test()
         {
             using var httpClient = new HttpClient();

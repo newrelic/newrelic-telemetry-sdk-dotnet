@@ -15,8 +15,6 @@ namespace IntegrationTests.Fixtures
 
         public string[] ServiceNames { get; }
 
-        public Dictionary<string, string> UserProvidedEnvironmentVariables { get; set; }
-
         public ITestOutputHelper TestLogger { get; set; }
 
         protected BaseApplication(string applicationName, string[] serviceNames)
@@ -36,7 +34,7 @@ namespace IntegrationTests.Fixtures
             "https://api.nuget.org/v3/index.json"
         };
 
-        public Process InvokeAnExecutable(string executablePath, string arguments, string workingDirectory, bool waitForExit, Dictionary<string, string> environmentVariables)
+        public Process InvokeAnExecutable(string executablePath, string arguments, string workingDirectory, bool waitForExit)
         {
             var startInfo = new ProcessStartInfo
             {
@@ -47,15 +45,6 @@ namespace IntegrationTests.Fixtures
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
             };
-
-            foreach(var env in environmentVariables)
-            {
-                if (!startInfo.EnvironmentVariables.ContainsKey(env.Key))
-                {
-                    startInfo.EnvironmentVariables.Add(env.Key, env.Value);
-                }
-            }
-
 
             Process process = Process.Start(startInfo);
 

@@ -61,7 +61,7 @@ namespace IntegrationTests.Fixtures
 
                 var arguments = $@"build";
 
-                InvokeAnExecutable("dotnet.exe", arguments, workingDirectory, true, UserProvidedEnvironmentVariables);
+                InvokeAnExecutable("dotnet.exe", arguments, workingDirectory, true);
 
             }
             catch (Exception ex)
@@ -76,9 +76,9 @@ namespace IntegrationTests.Fixtures
             {
                 var workingDirectory = TestSampleApplicationDirectory;
 
-                var arguments = $@"run";
+                var arguments = $@"run ""{TestSampleApplicationDirectory}\bin\{SolutionConfiguration}\netcoreapp3.0\{ApplicationName}.dll"" --no-build";
 
-                _applicationProcess = InvokeAnExecutable("dotnet.exe", arguments, workingDirectory, false, UserProvidedEnvironmentVariables);
+                _applicationProcess = InvokeAnExecutable("dotnet.exe", arguments, workingDirectory, false);
 
             }
             catch(Exception ex)
@@ -116,7 +116,7 @@ namespace IntegrationTests.Fixtures
 
             try
             {
-                InvokeAnExecutable("dotnet.exe", arguments, TestSampleApplicationDirectory, true, UserProvidedEnvironmentVariables);
+                InvokeAnExecutable("dotnet.exe", arguments, TestSampleApplicationDirectory, true);
             }
             catch (Exception ex)
             {
@@ -136,7 +136,7 @@ namespace IntegrationTests.Fixtures
 
                 var arguments = $@"add package {packageName} -v {version} -s {sourceArgument}";
 
-                InvokeAnExecutable("dotnet.exe", arguments, workingDirectory, true, UserProvidedEnvironmentVariables);
+                InvokeAnExecutable("dotnet.exe", arguments, workingDirectory, true);
             }
             catch (Exception ex)
             {

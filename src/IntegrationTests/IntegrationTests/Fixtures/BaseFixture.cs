@@ -17,18 +17,10 @@ namespace IntegrationTests.Fixtures
 
         public Action Exercise { get; set; }
 
-        public void SetEnvironmentVariables(Dictionary<string, string> environmentVariables)
-        {
-            Application.UserProvidedEnvironmentVariables = environmentVariables;
-        }
-
         public void Initialize()
         {
             Application.TestLogger = TestLogger;
 
-            Application.InstallNugetPackages();
-
-            Application.Build();
 
             Application.Run();
 
