@@ -11,7 +11,7 @@ namespace IntegrationTests.Fixtures
         public void MakeRequestToWeatherforecastEndpoint()
         {
             using var client = new WebClient();
-            var response = client.DownloadString("https://localhost:5001/weatherforecast");
+            var response = client.DownloadString("http://localhost:5000/weatherforecast");
         }
     }
 }
