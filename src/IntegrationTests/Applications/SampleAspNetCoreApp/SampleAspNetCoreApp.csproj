@@ -6,6 +6,6 @@
     <PackageReference Include="OpenTelemetry.Collector.AspNetCore" Version="0.2.0-alpha.100" />
     <PackageReference Include="OpenTelemetry.Collector.Dependencies" Version="0.2.0-alpha.100" />
     <PackageReference Include="OpenTelemetry.Hosting" Version="0.2.0-alpha.100" />
-    <PackageReference Include="OpenTelemetry.Exporter.NewRelic" Version="1.0.0-beta*" />
+    <PackageReference Include="OpenTelemetry.Exporter.NewRelic" Version="1-*" />
   </ItemGroup>
 </Project>
