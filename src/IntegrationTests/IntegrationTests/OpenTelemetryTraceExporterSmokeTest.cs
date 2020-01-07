@@ -14,11 +14,11 @@ namespace IntegrationTests
     {
         private readonly OpenTelemetryUsageApplicationFixture _fixture;
 
-        private string _insightsQueryApiKey;
+        private readonly string _insightsQueryApiKey;
 
-        private string _insightsQueryApiEndpoint;
+        private readonly string _insightsQueryApiEndpoint;
 
-        private string _accountNumber;
+        private readonly string _accountNumber;
 
         public OpenTelemetryTraceExporterSmokeTest(OpenTelemetryUsageApplicationFixture fixture, ITestOutputHelper output)
         {
@@ -69,6 +69,14 @@ namespace IntegrationTests
                 Assert.Equal("SampleAspNetCoreApp", item.ServiceName);
                 Assert.Equal("SampleAspNetCoreApp", item.EntityName);
             });
+
+            var traceId = response.Results.FirstOrDefault().Events.FirstOrDefault().TraceId;
+
+            response.Results.FirstOrDefault().Events.ForEach(item =>
+            {
+                Assert.Equal(traceId, item.TraceId);
+            });
+
         }
     }
 }
