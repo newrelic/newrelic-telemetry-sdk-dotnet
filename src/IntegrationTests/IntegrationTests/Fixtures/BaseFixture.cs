@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using Xunit.Abstractions;
 
@@ -20,7 +19,6 @@ namespace IntegrationTests.Fixtures
         public void Initialize()
         {
             Application.TestLogger = TestLogger;
-
 
             Application.Run();
 

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using Xunit.Abstractions;
 
@@ -29,11 +26,6 @@ namespace IntegrationTests.Fixtures
 
         public abstract void Run();
 
-        public virtual List<string> NugetSources { get; } = new List<string>
-        {
-            "https://api.nuget.org/v3/index.json"
-        };
-
         public Process InvokeAnExecutable(string executablePath, string arguments, string workingDirectory, bool waitForExit)
         {
             var startInfo = new ProcessStartInfo
@@ -45,6 +37,8 @@ namespace IntegrationTests.Fixtures
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
             };
+
+            TestLogger?.WriteLine($@"[{DateTime.Now}] Executing command: {executablePath} {arguments}");
 
             Process process = Process.Start(startInfo);
 
@@ -82,8 +76,6 @@ namespace IntegrationTests.Fixtures
             }
         }
 
-        public abstract void InstallNugetPackages();
-        public abstract void Build();
         public abstract void StopApplication();
     }
 }
