@@ -18,7 +18,7 @@ This test solution validates the integration between the New Relic Open Telemetr
 * Run the test from Visual Studio Test Explorer or using the `dotnet test .\src\IntegrationTests\IntegrationTests --no-build` command
 
 
-### Limitations
+## Limitations
 The New Relic Telemetry APIs are rate limited. The execution of the integration tests will count against your rate limit. Please reference the documentation for the [New Relic Trace API](https://docs.newrelic.com/docs/understand-dependencies/distributed-tracing/trace-api/trace-api-general-requirements-limits) for the specific rate limits.
 
 
