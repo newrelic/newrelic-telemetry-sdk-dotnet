@@ -6,6 +6,7 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
+  NewRelic:ApiKey: $(NewRelic:ApiKey)
 
 steps:
 - task: NuGetToolInstaller@0
