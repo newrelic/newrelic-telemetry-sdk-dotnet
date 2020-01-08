@@ -30,10 +30,6 @@ steps:
   displayName: 'Run tests - OpenTelemetry'
 
 - script: dotnet test src/IntegrationTests/IntegrationTests --no-build --no-restore --configuration $(buildConfiguration) --logger trx
-  env: 
-    NewRelic:ApiKey: $(ApiKey)
-    NewRelic:AccountNumber: $(AccountNumber)
-    NewRelic:InsightsQueryApiKey: $(InsightsQueryApiKey)
   displayName: 'Run tests - OpenTelemetry Integration Tests'
 
 - task: PublishTestResults@2

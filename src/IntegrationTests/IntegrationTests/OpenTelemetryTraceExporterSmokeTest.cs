@@ -16,7 +16,7 @@ namespace IntegrationTests
 
         private readonly string _insightsQueryApiKey;
 
-        private readonly string _insightsQueryApiEndpoint;
+        private readonly string _insightsQueryApiEndpoint = "https://staging-insights-api.newrelic.com";
 
         private readonly string _accountNumber;
 
@@ -31,9 +31,19 @@ namespace IntegrationTests
             };
 
             _accountNumber = Environment.GetEnvironmentVariable("NewRelic:AccountNumber");
-            _insightsQueryApiKey = Environment.GetEnvironmentVariable("NewRelic:InsightsQueryApiKey");
-            _insightsQueryApiEndpoint = Environment.GetEnvironmentVariable("NewRelic:InsightsQueryApiEndpoint");
 
+            Assert.True(!string.IsNullOrEmpty(_accountNumber), "NewRelic:AccountNumber environment variable is either null, empty or does not exist.");
+
+            _insightsQueryApiKey = Environment.GetEnvironmentVariable("NewRelic:InsightsQueryApiKey");
+
+            Assert.True(!string.IsNullOrEmpty(_insightsQueryApiKey), "NewRelic:InsightsQueryApiKey environment variable is either null, empty or does not exist.");
+
+            var insightsQueryApiEndpointFromEnvironmentVariable = Environment.GetEnvironmentVariable("NewRelic:InsightsQueryApiEndpoint");
+
+            if (!string.IsNullOrEmpty(insightsQueryApiEndpointFromEnvironmentVariable))
+            {
+                _insightsQueryApiEndpoint = insightsQueryApiEndpointFromEnvironmentVariable;
+            }
 
             _fixture.Initialize();
 

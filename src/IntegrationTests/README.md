@@ -1,6 +1,6 @@
 # Integration tests for New Relic Open Telemetry Exporter for .NET
 
-This test solution provides an end-to-end validation for the integration between the New Relic Open Telemetry Exporter for .NET with an ASP.NET Core 3.0 application. When running the tests, the test runner will pull the newly built nuget packages, from the output directories of the OpenTelemetry.Exporter.NewRelic and NewRelic.Telemetry projects, into a sample application. It will then build, run and exercise the sample test application. Finally, it will validate if the collected data is succesfully sent up to New Relic.
+This test solution provides an end-to-end validation for the integration between the New Relic Open Telemetry Exporter for .NET with ASP.NET Core 3.0 applications.
 
 ## Prerequisites
 * A valid New Relic <a target="_blank" href="https://docs.newrelic.com/docs/insights/insights-data-sources/custom-data/introduction-event-api#register">Insights Insert API Key</a>.
@@ -8,11 +8,14 @@ This test solution provides an end-to-end validation for the integration between
 * A valid New Relic <a target="_blank" href="https://docs.newrelic.com/docs/accounts/install-new-relic/account-setup/account-id#finding">Account Id</a>.
 
 ## Getting Started
-* Build the NewRelic.Telemetry solution. This action will result creation of the OpenTelemetry.Exporter.NewRelic and NewRelic.Telemetry nuget packages in their respective output directories.
-* Open the `OpenTelemetryTraceExporterSmokeTest.cs` file and replace `{YOUR_TRACE_API_KEY}`, `{YOUR_INSIGHT_QUERY_API_KEY}` and `{YOUR_ACCOUNT_NUMBER}` with your Insights Insert API Key, Insights Query API Key and Account Id respectively.
+* Build the NewRelic.Telemetry solution. This action will result creating the OpenTelemetry.Exporter.NewRelic and NewRelic.Telemetry nuget packages in their respective output directories then pushing these packages to a Nuget local source located at this relative path `.\src\LocalNugetPackageSource`. This build process will also build the sample test application using these new nuget packages from the local source.
+* Set the following environment variables with the appropriate values:
+	`NewRelic:ApiKey`
+	`NewRelic:InsightsQueryApiKey`
+	`NewRelic:AccountNumber`
 
 ## Next Steps
-* Run the test from Visual Studio Test Explorer or using the `dotnet test` command
+* Run the test from Visual Studio Test Explorer or using the `dotnet test .\src\IntegrationTests\IntegrationTests --no-build` command
 
 
 ### Limitations
