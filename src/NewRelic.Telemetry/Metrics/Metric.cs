@@ -60,6 +60,10 @@ namespace NewRelic.Telemetry.Metrics
         /// <returns></returns>
         public long? IntervalMs { get; internal set; }
 
+
+        public string testPropertyID => IntervalMs.ToString();
+
+
         [DataMember(Name = "value")]
         public abstract object MetricValue { get; }
 
