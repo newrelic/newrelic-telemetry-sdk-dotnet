@@ -16,7 +16,7 @@ namespace IntegrationTests
 
         private readonly string _insightsQueryApiKey;
 
-        private readonly string _insightsQueryApiEndpoint = "https://staging-insights-api.newrelic.com";
+        private readonly string _insightsQueryApiEndpoint = "https://insights-api.newrelic.com";
 
         private readonly string _accountNumber;
 
