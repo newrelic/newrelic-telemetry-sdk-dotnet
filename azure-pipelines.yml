@@ -18,7 +18,7 @@ steps:
     restoreSolution: 'src/NewRelic.Telemetry.sln' 
 
 - task: SonarCloudPrepare@1
-  condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
+#   condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
   displayName: 'Prepare SonarCloud analysis'
   inputs:
     SonarCloud: 'SonarCloud'
@@ -59,11 +59,11 @@ steps:
     targetFolder: '$(Build.ArtifactStagingDirectory)/OpenTelemetry'
 
 - task: SonarCloudAnalyze@1
-  condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
+#   condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
   displayName: 'Run SonarCloud code analysis'
 
 - task: SonarCloudPublish@1
-  condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
+#   condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
   displayName: 'Publish SonarCloud quality gate results'
   
 - task: PublishBuildArtifacts@1
