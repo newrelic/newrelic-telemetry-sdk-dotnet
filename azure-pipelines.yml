@@ -22,9 +22,9 @@ steps:
   displayName: 'Prepare SonarCloud analysis'
   inputs:
     SonarCloud: 'SonarCloud'
-    organization: '$(SonarOrganization)'
-    projectKey: '$(SonarProjectKey)'
-    projectName: '$(SonarProjectName)'
+    organization: '$(SonarCloudOrganization)'
+    projectKey: '$(SonarCloudProjectKey)'
+    projectName: '$(SonarCloudProjectName)'
     projectVersion: '$(Build.BuildNumber)'
     extraProperties: |
      sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/TestResults/Coverage/coverage.opencover.xml
