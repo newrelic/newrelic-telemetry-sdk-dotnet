@@ -68,4 +68,8 @@
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 
+  <Target Name="PublishNugetPackage" AfterTargets="Pack">
+    <MakeDir Directories="$(MSBuildProjectDirectory)\..\LocalNugetPackageSource"/>
+    <Exec Command="dotnet nuget push &quot;$(MSBuildProjectDirectory)\bin\$(Configuration)\*.nupkg&quot; -s &quot;$(SolutionDir)LocalNugetPackageSource&quot;" />
+  </Target>
 </Project>
