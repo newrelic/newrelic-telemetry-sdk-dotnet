@@ -127,6 +127,13 @@ namespace OpenTelemetry.Exporter.NewRelic
             var nrSpans = new List<NRSpans.Span>();
             var spanIdsToFilter = new List<string>();
 
+            var i = 0;
+            for (var x = 0; x < 10; x++)
+            {
+                i =+ 3;
+                Console.WriteLine(i);
+            }
+
             foreach (var otSpan in otSpans)
             {
                 if(otSpan == null)
