@@ -48,6 +48,7 @@ steps:
     testRunner: VSTest
     testResultsFiles: '**/*.trx'
 
+
 - task: CopyFiles@2
   inputs:
     contents: 'src/NewRelic.Telemetry/bin/$(buildConfiguration)/**/*'
@@ -66,6 +67,37 @@ steps:
 #   condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
   displayName: 'Publish SonarCloud quality gate results'
   
+
+
+
+
+# Validate that the Sonicloud quality gate passed.
+- task: PowerShell@2
+  env:
+      AuthKey : $(SonarCloudAuthKey)
+      ProjKey : $(SonarCloudProjectKey)
+  inputs:
+    targetType: 'inline'
+    script: |
+      $token = [System.Text.Encoding]::UTF8.GetBytes($env:AuthKey + ":")
+      $base64 = [System.Convert]::ToBase64String($token)
+       
+      $basicAuth = [string]::Format("Basic {0}", $base64)
+      $headers = @{ Authorization = $basicAuth }
+       
+      $result = Invoke-RestMethod -Method Get -Uri http://sonarcloud.io/api/qualitygates/project_status?projectKey=$env:ProjKey -Headers $headers
+      $result | ConvertTo-Json | Write-Host
+       
+      if ($result.projectStatus.status -eq "OK") {
+      Write-Host "Quality Gate Succeeded"
+      }else{
+      throw "Quality gate failed"
+      }
+
+
+
+
+
 - task: PublishBuildArtifacts@1
 
 - task: NuGetCommand@2
