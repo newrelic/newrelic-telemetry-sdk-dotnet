@@ -36,9 +36,19 @@ $QualityGateResult = Invoke-RestMethod -Method Get -Uri http://$SonarServerName/
 
 $QualityGateResult | ConvertTo-Json | Write-Host
  
+ Write-Host ""
+ Write-Host "------------------------------------------------------------------------------------------------------------------------------"
+ Write-Host "Use the following link will view the output of SonarCloud analysis"
+ Write-Host "The following link will provide details: https://$SonarServerName/dashboard?id=$SonarProjectKey&pullRequest=$PullRequestNumber"
+ Write-Host "------------------------------------------------------------------------------------------------------------------------------"
+ Write-Host ""
+
 if ($QualityGateResult.projectStatus.status -eq "OK"){
-    Write-Host "Quality Gate Succeeded"
+    Write-Host "SonarCloud Quality Gate Succeeded!!!"
 }
 else{
-    throw "Quality gate failed. Please check and fix the issues by reviewing the same."
+
+    
+
+    throw "SonarCloud Quality Gate Failed"
 }
