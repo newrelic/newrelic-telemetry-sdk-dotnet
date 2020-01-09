@@ -69,9 +69,11 @@ steps:
   
 
 - task: PowerShell@2
+  description: "Check the SonarCloud Quality Gate Results"
+  #   condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
   inputs:
     filePath: 'build/CheckSonarCloudQualityGate.ps1'
-    arguments: '-SonarServerName "sonarcloud.io" -SonarProjectKey $(SonarCloudProjectKey) -SonarToken $(SonarCloudAuthKey) -PullRequestId $(System.PullRequest.PullRequestId)'
+    arguments: '-SonarServerName "sonarcloud.io" -SonarProjectKey $(SonarCloudProjectKey) -SonarToken $(SonarCloudAuthKey) -PullRequestId $(System.PullRequest.PullRequestNumber)'
 
 - task: PublishBuildArtifacts@1
 

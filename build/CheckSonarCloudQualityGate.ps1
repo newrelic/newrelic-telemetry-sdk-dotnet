@@ -19,7 +19,7 @@ Param(
     # Define Project Key
     [Parameter (Mandatory=$true)]
     [ValidateNotNullOrEmpty()]
-    [int] $PullRequestId
+    [int] $PullRequestNumber
     
 )
 
@@ -29,7 +29,7 @@ $TokenInBase64 = [System.Convert]::ToBase64String($Token)
 $basicAuth = [string]::Format("Basic {0}", $TokenInBase64)
 $Headers = @{ Authorization = $basicAuth }
 
-$qryParams = @{ projectKey = $SonarProjectKey; pullRequest = $PullRequestId}
+$qryParams = @{ projectKey = $SonarProjectKey; pullRequest = $PullRequestNumber}
 
 # $QualityGateResult = Invoke-RestMethod -Method Get -Uri http://$SonarServerName/api/qualitygates/project_status?projectKey=($SonarProjectKey)&amp;pullRequest=62 -Headers $Headers
 $QualityGateResult = Invoke-RestMethod -Method Get -Uri http://$SonarServerName/api/qualitygates/project_status -Headers $Headers -Body $qryParams
