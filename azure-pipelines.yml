@@ -18,7 +18,6 @@ steps:
     restoreSolution: 'src/NewRelic.Telemetry.sln' 
 
 - task: SonarCloudPrepare@1
-#   condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
   displayName: 'SonarCloud - Prepare for Analysis'
   inputs:
     SonarCloud: 'SonarCloud'
@@ -69,6 +68,7 @@ steps:
 
 - task: sonarcloud-buildbreaker@2
   displayName: "SonarCloud - Valiate Quality Gate Results"
+  condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
   inputs:
     SonarCloud: 'SonarCloud'
     organization: '$(SonarCloudOrganization)'

@@ -37,6 +37,9 @@ namespace NewRelic.Telemetry.Metrics
 
     public abstract class Metric
     {
+
+        protected string badName => "bad test name";
+
         /// <summary>
         /// TODO
         /// </summary>
