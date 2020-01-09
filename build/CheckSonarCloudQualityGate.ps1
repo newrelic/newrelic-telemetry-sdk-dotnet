@@ -39,7 +39,7 @@ $QualityGateResult | ConvertTo-Json | Write-Host
  Write-Host ""
  Write-Host "------------------------------------------------------------------------------------------------------------------------------"
  Write-Host "Use the following link will view the output of SonarCloud analysis"
- Write-Host "The following link will provide details: https://$SonarServerName/dashboard?id=$SonarProjectKey&pullRequest=$PullRequestNumber"
+ Write-Host "https://$SonarServerName/dashboard?id=$SonarProjectKey&pullRequest=$PullRequestNumber"
  Write-Host "------------------------------------------------------------------------------------------------------------------------------"
  Write-Host ""
 
