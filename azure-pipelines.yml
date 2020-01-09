@@ -69,7 +69,7 @@ steps:
   
 
 - task: PowerShell@2
-  description: "Check the SonarCloud Quality Gate Results"
+  displayName: "Check the SonarCloud Quality Gate Results"
   #   condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
   inputs:
     filePath: 'build/CheckSonarCloudQualityGate.ps1'
