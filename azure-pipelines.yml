@@ -19,7 +19,7 @@ steps:
 
 - task: SonarCloudPrepare@1
 #   condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
-  displayName: 'Prepare SonarCloud analysis'
+  displayName: 'SonarCloud - Prepare for Analysis'
   inputs:
     SonarCloud: 'SonarCloud'
     organization: '$(SonarCloudOrganization)'
@@ -61,19 +61,19 @@ steps:
 
 - task: SonarCloudAnalyze@1
 #   condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
-  displayName: 'Run SonarCloud code analysis'
+  displayName: 'SonarCloud - Code analysis'
 
 - task: SonarCloudPublish@1
 #   condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
-  displayName: 'Publish SonarCloud quality gate results'
+  displayName: 'SonarCloud - Publish Quality Gate Results'
   
 
 - task: PowerShell@2
-  displayName: "Check the SonarCloud Quality Gate Results"
+  displayName: "SonarCloud - Valiate Quality Gate Results"
   #   condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
   inputs:
     filePath: 'build/CheckSonarCloudQualityGate.ps1'
-    arguments: '-SonarServerName "sonarcloud.io" -SonarProjectKey "$(SonarCloudProjectKey)" -SonarToken "$(SonarCloudAuthKey)" -$PullRequestNumber $(System.PullRequest.PullRequestNumber)'
+    arguments: '-SonarServerName "sonarcloud.io" -SonarProjectKey "$(SonarCloudProjectKey)" -SonarToken "$(SonarCloudAuthKey)" -PullRequestNumber $(System.PullRequest.PullRequestNumber)'
 
 - task: PublishBuildArtifacts@1
 
