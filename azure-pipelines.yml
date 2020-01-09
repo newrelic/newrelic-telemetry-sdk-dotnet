@@ -73,7 +73,7 @@ steps:
   #   condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
   inputs:
     filePath: 'build/CheckSonarCloudQualityGate.ps1'
-    arguments: '-SonarServerName "sonarcloud.io" -SonarProjectKey $(SonarCloudProjectKey) -SonarToken $(SonarCloudAuthKey) -PullRequestId $(System.PullRequest.PullRequestNumber)'
+    arguments: '-SonarServerName "sonarcloud.io" -SonarProjectKey "$(SonarCloudProjectKey)" -SonarToken "$(SonarCloudAuthKey)" -$PullRequestNumber $(System.PullRequest.PullRequestNumber)'
 
 - task: PublishBuildArtifacts@1
 
