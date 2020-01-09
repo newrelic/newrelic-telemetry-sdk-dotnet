@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{
 	ProjectSection(SolutionItems) = preProject
 		..\azure-pipelines.yml = ..\azure-pipelines.yml
 		..\CHANGELOG.md = ..\CHANGELOG.md
+		..\build\CheckSonarCloudQualityGate.ps1 = ..\build\CheckSonarCloudQualityGate.ps1
 		..\README.md = ..\README.md
 		..\THIRD_PARTY_NOTICES.md = ..\THIRD_PARTY_NOTICES.md
 	EndProjectSection
