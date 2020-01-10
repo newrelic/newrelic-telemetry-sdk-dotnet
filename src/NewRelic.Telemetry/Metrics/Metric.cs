@@ -40,7 +40,6 @@ namespace NewRelic.Telemetry.Metrics
         /// <summary>
         /// TODO
         /// </summary>
-        [DataMember(Name = "name")]
         public string Name { get; internal set; }
 
         /// <summary>
@@ -62,6 +61,7 @@ namespace NewRelic.Telemetry.Metrics
         [DataMember(Name = "interval.ms")]
         public long? IntervalMs { get; internal set; }
 
+        [DataMember(Name = "value")]
         public abstract object MetricValue { get; }
 
         /// <summary>
