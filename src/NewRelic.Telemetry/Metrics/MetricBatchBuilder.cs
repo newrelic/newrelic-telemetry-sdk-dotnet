@@ -26,7 +26,8 @@ namespace NewRelic.Telemetry.Metrics
         }
 
         /// <summary>
-        /// Returns the built MetricBatch to the caller.
+        /// Returns the built MetricBatch to the caller.  This is what is serialized and sent
+        /// to the New Relic endpoint.
         /// </summary>
         /// <returns></returns>
         public MetricBatch Build()
@@ -41,10 +42,10 @@ namespace NewRelic.Telemetry.Metrics
         private List<Metric> _metrics => _metricBatch.Metrics ?? (_metricBatch.Metrics = new List<Metric>());
 
         /// <summary>
-        /// Optional:  TODO
+        /// Identifies the metrics start time for all of the metrics that are part 
+        /// of this batch.
         /// </summary>
-        /// <param name="timestamp">Unix timestamp value ms precision.  Should be reported in UTC.</param>
-        /// <returns></returns>
+        /// <param name="timestamp">Should be reported in UTC.</param>
         public MetricBatchBuilder WithTimestamp(DateTime timestamp)
         {
             if (timestamp == default)
@@ -58,10 +59,10 @@ namespace NewRelic.Telemetry.Metrics
         }
 
         /// <summary>
-        /// Optional:  TODO
+        /// Used in conjunction with <see cref="WithTimestamp(DateTime)"/>, identifies the duration of 
+        /// the observation window for this metric batch.
         /// </summary>
-        /// <param name="intervalMs">TODO</param>
-        /// <returns></returns>
+        /// <param name="intervalMs">The number of milliseconds</param>
         public MetricBatchBuilder WithIntervalMs(long intervalMs)
         {
             if (intervalMs == default)
@@ -80,7 +81,6 @@ namespace NewRelic.Telemetry.Metrics
         /// </summary>
         /// <param name="attribName">Required: The name of the attribute.  If the name is already used, this operation will overwrite any existing value.</param>
         /// <param name="attribValue">The value of the attribute.  A NULL value will NOT be reported to the New Relic endpoint.</param>
-        /// <returns></returns>
         public MetricBatchBuilder WithAttribute(string attribName, object attribValue)
         {
             if (string.IsNullOrWhiteSpace(attribName))
@@ -119,7 +119,6 @@ namespace NewRelic.Telemetry.Metrics
         /// Adds a single Metric to this MetricBatch.
         /// </summary>
         /// <param name="metric"></param>
-        /// <returns></returns>
         public MetricBatchBuilder WithMetric(Metric metric)
         {
             if (metric == null)
@@ -135,7 +134,6 @@ namespace NewRelic.Telemetry.Metrics
         /// Adds one or many metrics to this batch.
         /// </summary>
         /// <param name="metrics"></param>
-        /// <returns></returns>
         public MetricBatchBuilder WithMetrics(params Metric[] metrics)
         {
             return WithMetrics(metrics as IEnumerable<Metric>);
@@ -145,7 +143,6 @@ namespace NewRelic.Telemetry.Metrics
         /// Adds a collection of spans to this batch.
         /// </summary>
         /// <param name="spans"></param>
-        /// <returns></returns>
         public MetricBatchBuilder WithMetrics(IEnumerable<Metric> metrics)
         {
             if (metrics == null)

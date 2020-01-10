@@ -17,7 +17,7 @@ namespace OpenTelemetry.Exporter.NewRelic
     /// <summary>
     /// An exporter used to send Trace/Span information to New Relic.
     /// </summary>
-    public class NewRelicTraceExporter : SpanExporter
+    public class NewRelicTraceExporter : SpanExporter, IDisposable
     {
         private readonly NRSpans.SpanDataSender _spanDataSender;
         private const string _productName = "NewRelic-Dotnet-OpenTelemetry";
@@ -90,7 +90,6 @@ namespace OpenTelemetry.Exporter.NewRelic
         public async override Task<ExportResult> ExportAsync(IEnumerable<Span> otSpans, CancellationToken cancellationToken)
         {
             if (otSpans == null) throw new ArgumentNullException(nameof(otSpans));
-            if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
 
             var nrSpanBatch = ToNewRelicSpanBatch(otSpans);
 
@@ -120,6 +119,7 @@ namespace OpenTelemetry.Exporter.NewRelic
 
         public void Dispose()
         {
+            // Method intentionally left empty.
         }
 
         private NRSpans.SpanBatch ToNewRelicSpanBatch(IEnumerable<Span> otSpans)
