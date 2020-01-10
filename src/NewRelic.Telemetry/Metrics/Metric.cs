@@ -15,17 +15,17 @@ namespace NewRelic.Telemetry.Metrics
         public double Count { get; private set; }
 
         /// <summary>
-        /// The sum of the values that were observed
+        /// The sum of the values that were observed.
         /// </summary>
         public double Sum { get; private set; }
 
         /// <summary>
-        /// The lowest value observed
+        /// The lowest value observed.
         /// </summary>
         public double? Min { get; private set; }
 
         /// <summary>
-        /// The highest value observed
+        /// The highest value observed.
         /// </summary>
         public double? Max { get; private set; }
 
@@ -34,7 +34,7 @@ namespace NewRelic.Telemetry.Metrics
         }
 
         /// <summary>
-        /// Creates a summary value
+        /// Creates a summary value.
         /// </summary>
         /// <param name="count"></param>
         /// <param name="sum"></param>
@@ -52,7 +52,7 @@ namespace NewRelic.Telemetry.Metrics
 
 
         /// <summary>
-        /// Creates a summary value
+        /// Creates a summary value.
         /// </summary>
         /// <param name="count"></param>
         /// <param name="sum"></param>
@@ -67,12 +67,12 @@ namespace NewRelic.Telemetry.Metrics
     }
 
     /// <summary>
-    /// A metric represents the value of a measurement
+    /// A metric represents the value of a measurement.
     /// </summary>
     public abstract class Metric
     {
         /// <summary>
-        /// The name of the metric.  Must be less that 255 characters
+        /// The name of the metric.  Must be less that 255 characters.
         /// </summary>
         public string Name { get; internal set; }
 
@@ -98,7 +98,7 @@ namespace NewRelic.Telemetry.Metrics
         public long? IntervalMs { get; internal set; }
 
         /// <summary>
-        /// The value being reported for this metric.  This layout of this value will
+        /// The value being reported for this metric.  The layout of this value will
         /// vary depending on the implementation: count, summary, or gauge
         /// </summary>
         [DataMember(Name = "value")]
@@ -107,7 +107,7 @@ namespace NewRelic.Telemetry.Metrics
         /// <summary>
         /// A map of Key Value pairs identifying the dimensions of this metric.
         /// Keys are case sensitive and must be less than 255 characters.  Values may be
-        /// strings, numbers, or booleans
+        /// strings, numbers, or booleans.
         /// </summary>
         public Dictionary<string, object> Attributes { get; internal set; }
     }
@@ -122,13 +122,13 @@ namespace NewRelic.Telemetry.Metrics
 
     /// <summary>
     /// Count Metrics measure the number of occurrences of an event within 
-    /// a reporting window. The count should be reset to 0 for each window (ie every time the 
+    /// a reporting window. The count should be reset to 0 for each window (i.e. every time the 
     /// metric is reported). 
-    /// When using a CountMetric, IntervalMs must be reported
-    /// When using a CountMetric, the Value must be a positive value
+    /// When using a CountMetric, IntervalMs must be reported.
+    /// When using a CountMetric, the Value must be a positive value.
     /// </summary>
-    /// <example>Cache hits per reporting interval</example>
-    /// <example>Number of threads created per reporting interval</example>
+    /// <example>Cache hits per reporting interval.</example>
+    /// <example>Number of threads created per reporting interval.</example>
     public class CountMetric : Metric<double>
     {
         public override string Type => "count";
@@ -137,7 +137,7 @@ namespace NewRelic.Telemetry.Metrics
     /// <summary>
     /// Gauge Metrics represent a value that can increase or decrease with time.
     /// </summary>
-    /// <example>the temperature, CPU usage, and memory</example>
+    /// <example>The temperature, CPU usage, and memory.</example>
     public class GaugeMetric : Metric<double>
     {
         public override string Type => "gauge";
