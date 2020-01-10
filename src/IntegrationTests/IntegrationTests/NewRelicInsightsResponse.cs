@@ -4,21 +4,21 @@ using System.Collections.Generic;
 namespace IntegrationTests
 {
     [JsonObject]
-    public class NewRelicInsightsResponse
+    public class NewRelicInsightsResponse<T>
     {
         [JsonProperty("results")]
-        public List<Result> Results { get; set; }
+        public List<Result<T>> Results { get; set; }
     }
 
     [JsonObject]
-    public class Result
+    public class Result<T>
     {
         [JsonProperty("events")]
-        public List<NewRelicEvent> Events { get; set; }
+        public List<T> Events { get; set; }
     }
 
     [JsonObject]
-    public class NewRelicEvent
+    public class NewRelicSpanEvent
     {
         [JsonProperty("entityName")]
         public string EntityName { get; set; }
@@ -34,5 +34,18 @@ namespace IntegrationTests
 
         [JsonProperty("trace.id")]
         public string TraceId { get; set; }
+    }
+
+    [JsonObject]
+    public class NewRelicMetricEvent
+    {
+        [JsonProperty("metricName")]
+        public string MetricName { get; set; }
+
+        [JsonProperty("newrelic.source")]
+        public string NewRelicSource { get; set; }
+
+        [JsonProperty("timestamp")]
+        public long TimeStamp { get; set; }
     }
 }
