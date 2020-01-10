@@ -1,3 +1,24 @@
+<!--
+    The VersionByGitTag target is used to version build artifacts based on git tags that conform to the following format:
+
+        <GitTagPrefix><Major>.<Minor>.<Patch>[-<PreReleaseMoniker>]
+
+        GitTagPrefix:       Defaults to 'v'. This can be overriden by setting the GitTagPrefix MSBuild property which
+                            allows for different projects in the same repository to be versioned independently from one another.
+
+        Major:              The major version.
+
+        Minor:              The minor version.
+
+        Patch:              The patch version.
+
+        PreReleaseMonkier:  Optional. If the tag contains a prerelese moniker (e.g., alpha, beta, preview, etc), NuGet artifacts
+                            will include the prerelease moniker followed by a dot plus the number of commits since the tag.
+                            For example, if the latest tag is v1.0.0-alpha and HEAD is 10 commits ahead of the tag, then NuGet
+                            packages will be versioned 1.0.0-alpha.10. This versioning conforms to SemVer 2.0.0 (https://semver.org/)
+                            which is support by NuGet clients version 4.3 or later.
+-->
+
 <Project>
   <PropertyGroup>
     <!-- Ignore SemVer 2.0.0 not supported on legacy NuGet clients -->
