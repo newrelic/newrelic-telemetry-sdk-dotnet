@@ -1,5 +1,9 @@
 trigger:
-- master
+  - master
+  - refs/tags/v*.*.*      # v1.0.0
+  - refs/tags/v*.*.*-*    # v1.0.0-alpha
+  - refs/tags/*_v*.*.*    # SomePrefix_v1.0.0
+  - refs/tags/*_v*.*.*-*  # SomePrefix_v1.0.0-alpha
 
 pool:
   vmImage: 'windows-latest'

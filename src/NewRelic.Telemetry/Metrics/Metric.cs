@@ -94,6 +94,7 @@ namespace NewRelic.Telemetry.Metrics
         /// Identifies the duration of the time window that the value represents.
         /// This is required for count and summary type metrics.
         /// </summary>
+        [DataMember(Name = "interval.ms")]
         public long? IntervalMs { get; internal set; }
 
         /// <summary>
