@@ -16,7 +16,7 @@ namespace SampleAspNetFrameworkApp.Controllers
         };
 
         [HttpGet]
-        public async Task<IEnumerable<WeatherForecast>> Get()
+        public IEnumerable<WeatherForecast> Get()
         {
             var span = WebApiApplication.OTTracer.StartRootSpan("/WeatherForecastController/Get");
 
@@ -38,7 +38,7 @@ namespace SampleAspNetFrameworkApp.Controllers
                 return result;
             }
             // If an unhandled exception occurs, it can be denoted on the span.
-            catch (Exception ex)
+            catch
             {
                 span.Status = Status.Internal;
                 throw;
