@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Xunit.Abstractions;
@@ -25,7 +26,14 @@ namespace IntegrationTests.Fixtures
 
         public string SrcDirectoryPath { get; } = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\..");
 
+        public virtual List<string> NugetSources { get; } = new List<string>
+        {
+            "https://api.nuget.org/v3/index.json"
+        };
+
         public abstract void Run();
+
+        public abstract void Build();
 
         public Process InvokeAnExecutable(string executablePath, string arguments, string workingDirectory, bool waitForExit)
         {

@@ -23,6 +23,8 @@ namespace IntegrationTests.Fixtures
         {
             Application.TestLogger = TestLogger;
 
+            Application.Build();
+
             Application.Run();
 
             //Give the test app some time to start. 
