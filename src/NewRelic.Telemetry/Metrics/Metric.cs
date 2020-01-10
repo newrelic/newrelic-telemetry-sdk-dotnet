@@ -46,14 +46,12 @@ namespace NewRelic.Telemetry.Metrics
         /// <summary>
         /// TODO
         /// </summary>
-        [DataMember(Name = "type")]
         public abstract string Type { get; }
 
         /// <summary>
         /// TODO
         /// </summary>
         ///
-        [DataMember(Name = "timestamp")]
         public long? Timestamp { get; internal set; }
 
         /// <summary>
@@ -64,7 +62,6 @@ namespace NewRelic.Telemetry.Metrics
         [DataMember(Name = "interval.ms")]
         public long? IntervalMs { get; internal set; }
 
-        [DataMember(Name = "value")]
         public abstract object MetricValue { get; }
 
         /// <summary>

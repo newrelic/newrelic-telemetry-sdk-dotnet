@@ -7,11 +7,11 @@ namespace SampleAspNetCoreApp
 {
     public class CountMetricGenerator
     {
-        private IConfiguration _config;
+        private MetricDataSender _metricDataSender;
 
-        public CountMetricGenerator(IConfiguration configuration) 
+        public CountMetricGenerator(MetricDataSender metricDataSender) 
         {
-            _config = configuration;
+            _metricDataSender = metricDataSender;
         }
 
         public async Task CreateAsync(string metricName) 
@@ -27,8 +27,7 @@ namespace SampleAspNetCoreApp
             .WithMetric(metric)
             .Build();
 
-            var dataSender = new MetricDataSender(_config);
-            _ = await dataSender.SendDataAsync(metricBatch);
+            _ = await _metricDataSender.SendDataAsync(metricBatch);
         }
     }
 }
