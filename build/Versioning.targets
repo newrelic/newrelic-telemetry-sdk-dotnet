@@ -16,7 +16,7 @@
                             will include the prerelease moniker followed by a dot plus the number of commits since the tag.
                             For example, if the latest tag is v1.0.0-alpha and HEAD is 10 commits ahead of the tag, then NuGet
                             packages will be versioned 1.0.0-alpha.10. This versioning conforms to SemVer 2.0.0 (https://semver.org/)
-                            which is support by NuGet clients version 4.3 or later.
+                            which is supported by NuGet clients version 4.3 or later.
 -->
 
 <Project>
