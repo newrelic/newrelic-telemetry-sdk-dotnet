@@ -14,11 +14,11 @@ namespace NewRelic.Telemetry.Transport
 {
     public abstract class DataSender<TData> where TData : ITelemetryDataType
     {
-        private static string _telemetrySdkVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
-        
-        private static string _userAgentBase = "NewRelic-Dotnet-TelemetrySDK/" + _telemetrySdkVersion;
+        private readonly string _telemetrySdkVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
 
-        internal string UserAgent = _userAgentBase;
+        private readonly string _userAgentBase;
+
+        internal string UserAgent;
 
         protected readonly TelemetryConfiguration _config;
         protected readonly TelemetryLogging _logger;
@@ -49,6 +49,10 @@ namespace NewRelic.Telemetry.Transport
 
         protected DataSender(TelemetryConfiguration config, ILoggerFactory loggerFactory)
         {
+
+            _userAgentBase = "NewRelic-Dotnet-TelemetrySDK/" + _telemetrySdkVersion;
+            UserAgent = _userAgentBase;
+
             _config = config;
             _logger = new TelemetryLogging(loggerFactory);
 
