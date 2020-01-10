@@ -7,8 +7,6 @@
     <PackageReference Include="OpenTelemetry.Collector.Dependencies" Version="0.2.0-alpha.100" />
     <PackageReference Include="OpenTelemetry.Hosting" Version="0.2.0-alpha.100" />
     <PackageReference Include="OpenTelemetry.Exporter.NewRelic" Version="1-*" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\NewRelic.Telemetry\NewRelic.Telemetry.csproj" />
+    <PackageReference Include="NewRelic.Telemetry" Version="1-*" />
   </ItemGroup>
 </Project>
