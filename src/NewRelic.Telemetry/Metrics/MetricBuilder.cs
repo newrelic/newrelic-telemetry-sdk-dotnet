@@ -5,7 +5,7 @@ using NewRelic.Telemetry.Extensions;
 namespace NewRelic.Telemetry.Metrics
 {
     /// <summary>
-    /// Helper class that is used to create new metrics
+    /// Helper class that is used to create new metrics.
     /// </summary>
     public class MetricBuilder
     {
@@ -32,8 +32,8 @@ namespace NewRelic.Telemetry.Metrics
     /// <summary>
     /// Helper class that is used to create new type-specific metrics.
     /// </summary>
-    /// <typeparam name="TMetric">The type of metric being built (Count, Gauge, Summary)</typeparam>
-    /// <typeparam name="TValue">The value of the type of metric being reported</typeparam>
+    /// <typeparam name="TMetric">The type of metric being built (Count, Gauge, Summary).</typeparam>
+    /// <typeparam name="TValue">The value of the type of metric being reported.</typeparam>
     public class MetricBuilder<TMetric, TValue> : MetricBuilder
         where TMetric : Metric<TValue>, new()
     {
@@ -67,7 +67,7 @@ namespace NewRelic.Telemetry.Metrics
         }
 
         /// <summary>
-        /// Sets the value of the metric
+        /// Sets the value of the metric.
         /// </summary>
         public MetricBuilder<TMetric, TValue> WithValue(TValue value)
         {
@@ -81,7 +81,7 @@ namespace NewRelic.Telemetry.Metrics
         /// for the values being reported.
         /// 
         /// </summary>
-        /// <param name="intervalMs">The number of milliseconds</param>
+        /// <param name="intervalMs">The number of milliseconds.</param>
         /// <returns></returns>
         public MetricBuilder<TMetric, TValue> WithIntervalMs(long intervalMs)
         {
