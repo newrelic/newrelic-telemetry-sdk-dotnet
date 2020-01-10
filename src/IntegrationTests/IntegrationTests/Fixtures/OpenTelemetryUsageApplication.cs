@@ -11,8 +11,6 @@ namespace IntegrationTests.Fixtures
 
         private readonly string TestPackageVersion;
 
-        private readonly string ExporterNugetPackageOutputPath;
-
         public string TestSampleApplicationDirectory { get; }
 
         public string SolutionConfiguration { get; }
@@ -43,7 +41,7 @@ namespace IntegrationTests.Fixtures
 
                 var workingDirectory = TestSampleApplicationDirectory;
 
-                var arguments = $@"build";
+                var arguments = $@"build --configuration {SolutionConfiguration}";
 
                 InvokeAnExecutable("dotnet.exe", arguments, workingDirectory, true);
 
