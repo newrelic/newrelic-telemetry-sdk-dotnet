@@ -32,6 +32,14 @@
     <FileVersion>$(Major).$(Minor).$(Build).$(Revision)</FileVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+    <CodeAnalysisRuleSet>OpenTelemetry.Exporter.NewRelic.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+    <CodeAnalysisRuleSet>OpenTelemetry.Exporter.NewRelic.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="1.0.0" />
@@ -59,7 +67,7 @@
   </ItemGroup>
 
   <Target Name="PublishNugetPackage" AfterTargets="Pack">
-    <MakeDir Directories="$(MSBuildProjectDirectory)\..\LocalNugetPackageSource"/>
+    <MakeDir Directories="$(MSBuildProjectDirectory)\..\LocalNugetPackageSource" />
     <Exec Command="dotnet nuget push &quot;$(MSBuildProjectDirectory)\bin\$(Configuration)\*.nupkg&quot; -s &quot;$(SolutionDir)LocalNugetPackageSource&quot;" />
   </Target>
 </Project>

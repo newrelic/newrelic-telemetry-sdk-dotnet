@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="SonarQube - newrelic-telemetry-sdk-dotnet New Relic DOTNET c#" ToolsVersion="16.0">
+  <Include Path="..\..\..\.sonarlint\newrelic-telemetry-sdk-dotnetcsharp.ruleset" Action="Default" />
+</RuleSet>

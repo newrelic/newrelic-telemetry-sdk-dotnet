@@ -6,7 +6,6 @@ using System.Linq;
 
 namespace NewRelic.Telemetry.Metrics
 {
-    [DataContract]
     public class MetricBatch : ITelemetryDataType
     {
         /// <summary>
@@ -16,7 +15,7 @@ namespace NewRelic.Telemetry.Metrics
         public MetricBatchCommonProperties CommonProperties { get; internal set; }
 
         /// <summary>
-        /// TODO
+        /// The collection of metrics being reported in this batch.
         /// </summary>
         public List<Metric> Metrics { get; internal set; }
 
