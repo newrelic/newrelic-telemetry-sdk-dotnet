@@ -82,20 +82,19 @@ steps:
 
 - task: PublishBuildArtifacts@1
 
-- task: NuGetCommand@2
-  condition: and(succeeded(), eq(variables['pushNupkgTelemetrySDK'], 'true'))
-  displayName: 'Push NuGet Packages - Telemetry SDK'
+- task: NuGetToolInstaller@0
   inputs:
-    command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/TelemetrySDK/**/*.nupkg'
-    nuGetFeedType: 'external'
-    publishFeedCredentials: 'NuGet'
+    versionSpec: '4.3.0'
 
 - task: NuGetCommand@2
-  condition: and(succeeded(), eq(variables['pushNupkgOpenTelemetry'], 'true'))
-  displayName: 'Push NuGet Packages - OpenTelemetry Exporter'
+  condition: and (succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
+  displayName: 'Push packages to MyGet'
   inputs:
     command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/OpenTelemetry/**/*.nupkg'
+    packagesToPush: |
+      $(Build.ArtifactStagingDirectory)/**/*.nupkg;
+      $(Build.ArtifactStagingDirectory)/**/*.snupkg;
+      !$(Build.ArtifactStagingDirectory)/**/*-unreleased*.nupkg;
+      !$(Build.ArtifactStagingDirectory)/**/*-unreleased*.snupkg
     nuGetFeedType: 'external'
-    publishFeedCredentials: 'NuGet'
+    publishFeedCredentials: 'MyGet'
