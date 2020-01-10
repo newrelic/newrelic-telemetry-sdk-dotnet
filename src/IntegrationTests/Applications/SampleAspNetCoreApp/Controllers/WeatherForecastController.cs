@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using NewRelic.Telemetry.Metrics;
 
 namespace SampleAspNetCoreApp.Controllers
 {
@@ -12,11 +12,11 @@ namespace SampleAspNetCoreApp.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        private readonly IConfiguration _config;
+        private readonly CountMetricGenerator _countMetricGenerator;
 
-        public WeatherForecastController(IConfiguration config) 
+        public WeatherForecastController(CountMetricGenerator countMetricGenerator) 
         {
-            _config = config;
+            _countMetricGenerator = countMetricGenerator;
         }
 
 
@@ -26,22 +26,9 @@ namespace SampleAspNetCoreApp.Controllers
         };
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public async Task<IEnumerable<WeatherForecast>> GetAsync()
         {
-            var metricBuilder = MetricBuilder.CreateCountMetric("WeatherForecast/Get")
-            .WithTimestamp(DateTime.Now)
-            .WithValue(1)
-            .WithIntervalMs(10)
-            .WithAttribute("testAttributeKey1", "testAttributeValue1");
-            
-            var metric = metricBuilder.Build();
-
-            var metricBatch = MetricBatchBuilder.Create()
-            .WithMetric(metric)
-            .Build();
-
-            var dataSender = new MetricDataSender(_config);
-            var response = dataSender.SendDataAsync(metricBatch).Result;
+            await _countMetricGenerator.CreateAsync("WeatherForecast/Get");
 
             HttpClient client = new HttpClient();
             HttpResponseMessage ret = client.GetAsync("http://www.newrelic.com").Result;

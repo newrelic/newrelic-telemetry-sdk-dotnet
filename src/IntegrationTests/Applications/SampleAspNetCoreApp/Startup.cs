@@ -47,6 +47,8 @@ namespace SampleAspNetCoreApp
                 var dependenciesCollector = new DependenciesCollector(new HttpClientCollectorOptions(), tracerFactory);
                 var aspNetCoreCollector = new AspNetCoreCollector(tracerFactory.GetTracer(null));
             });
+
+            services.AddSingleton<CountMetricGenerator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
