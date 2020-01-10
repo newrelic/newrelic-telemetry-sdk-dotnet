@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -15,8 +14,11 @@ namespace NewRelic.Telemetry.Transport
 {
     public abstract class DataSender<TData> where TData : ITelemetryDataType
     {
-        protected static readonly string _telemetrySdkVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
-        protected string _userAgent = "NewRelic-Dotnet-TelemetrySDK/" + _telemetrySdkVersion;
+        private readonly string _telemetrySdkVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
+
+        private readonly string _userAgentBase;
+
+        internal string UserAgent;
 
         protected readonly TelemetryConfiguration _config;
         protected readonly TelemetryLogging _logger;
@@ -47,6 +49,10 @@ namespace NewRelic.Telemetry.Transport
 
         protected DataSender(TelemetryConfiguration config, ILoggerFactory loggerFactory)
         {
+
+            _userAgentBase = "NewRelic-Dotnet-TelemetrySDK/" + _telemetrySdkVersion;
+            UserAgent = _userAgentBase;
+
             _config = config;
             _logger = new TelemetryLogging(loggerFactory);
 
@@ -76,7 +82,7 @@ namespace NewRelic.Telemetry.Transport
             _captureSendDataAsyncCallDelegate = captureTestDataImpl;
         }
 
-       private async Task<Response> RetryWithSplit(TData data)
+        private async Task<Response> RetryWithSplit(TData data)
         {
             var newBatches = Split(data);
 
@@ -226,7 +232,7 @@ namespace NewRelic.Telemetry.Transport
                 var requestMessage = new HttpRequestMessage(HttpMethod.Post, EndpointUrl);
                 requestMessage.Content = streamContent;
 
-                requestMessage.Headers.Add("User-Agent", _userAgent);
+                requestMessage.Headers.Add("User-Agent", UserAgent);
 
                 requestMessage.Headers.Add("Api-Key", _config.ApiKey);
                 requestMessage.Method = HttpMethod.Post;
@@ -269,7 +275,7 @@ namespace NewRelic.Telemetry.Transport
             if (!string.IsNullOrEmpty(productName) && !string.IsNullOrEmpty(productVersion))
             {
                 var productIdentifier = string.Join("/", productName, productVersion);
-                _userAgent = string.Join(" ", _userAgent, productIdentifier);
+                UserAgent = string.Join(" ", _userAgentBase, productIdentifier);
             }
         }
     }

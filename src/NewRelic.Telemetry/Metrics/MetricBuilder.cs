@@ -4,6 +4,9 @@ using NewRelic.Telemetry.Extensions;
 
 namespace NewRelic.Telemetry.Metrics
 {
+    /// <summary>
+    /// Helper class that is used to create new metrics.
+    /// </summary>
     public class MetricBuilder
     {
         public static MetricBuilder<CountMetric, double> CreateCountMetric(string name)
@@ -20,14 +23,19 @@ namespace NewRelic.Telemetry.Metrics
         {
             return new MetricBuilder<SummaryMetric, MetricSummaryValue>(name);
         }
+
+        protected MetricBuilder()
+        {
+        }
     }
 
     /// <summary>
-    /// Helper class that is used to create new metrics.
+    /// Helper class that is used to create new type-specific metrics.
     /// </summary>
-    /// 
-    public class MetricBuilder<TMetric, TValue>  : MetricBuilder
-        where TMetric:Metric<TValue>, new()
+    /// <typeparam name="TMetric">The type of metric being built (Count, Gauge, Summary).</typeparam>
+    /// <typeparam name="TValue">The value of the type of metric being reported.</typeparam>
+    public class MetricBuilder<TMetric, TValue> : MetricBuilder
+        where TMetric : Metric<TValue>, new()
     {
         private readonly TMetric _metric;
 
@@ -35,7 +43,7 @@ namespace NewRelic.Telemetry.Metrics
 
         internal MetricBuilder(string name)
         {
-            if(string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -47,9 +55,11 @@ namespace NewRelic.Telemetry.Metrics
         }
 
         /// <summary>
-        /// TODO
+        /// Identifies the start time for all of the observations that are being
+        /// aggregated as part of this metric.  For gauge metrics, this value
+        /// represents the time at which the observation was made.
         /// </summary>
-        /// <param name="timestamp"></param>
+        /// <param name="timestamp">Should be reported in UTC.</param>
         public MetricBuilder<TMetric, TValue> WithTimestamp(DateTime timestamp)
         {
             _metric.Timestamp = DateTimeExtensions.ToUnixTimeMilliseconds(timestamp);
@@ -57,7 +67,7 @@ namespace NewRelic.Telemetry.Metrics
         }
 
         /// <summary>
-        /// TODO
+        /// Sets the value of the metric.
         /// </summary>
         public MetricBuilder<TMetric, TValue> WithValue(TValue value)
         {
@@ -66,9 +76,12 @@ namespace NewRelic.Telemetry.Metrics
         }
 
         /// <summary>
-        /// TODO
+        /// For Count and Summary Metrics, identifies the duration of the observation window.  Used in conjunction with
+        /// <see cref="WithTimestamp(DateTime)"/> to describe an observation window
+        /// for the values being reported.
+        /// 
         /// </summary>
-        /// <param name="intervalMs">TODO</param>
+        /// <param name="intervalMs">The number of milliseconds.</param>
         /// <returns></returns>
         public MetricBuilder<TMetric, TValue> WithIntervalMs(long intervalMs)
         {
@@ -81,7 +94,7 @@ namespace NewRelic.Telemetry.Metrics
         /// information for later analysis.  
         /// </summary>
         /// <param name="attributes">Key/Value pairs representing the custom attributes.  In the event of a duplicate key, the last value will be used.</param>
-        public MetricBuilder<TMetric, TValue> WithAttributes<T>(IEnumerable<KeyValuePair<string,T>> attributes)
+        public MetricBuilder<TMetric, TValue> WithAttributes<T>(IEnumerable<KeyValuePair<string, T>> attributes)
         {
             if (attributes == null)
             {
@@ -107,7 +120,7 @@ namespace NewRelic.Telemetry.Metrics
             {
                 throw new InvalidOperationException($"{nameof(attribName)} cannot be empty.");
             }
-           
+
             _attributes[attribName] = attribVal;
             return this;
         }

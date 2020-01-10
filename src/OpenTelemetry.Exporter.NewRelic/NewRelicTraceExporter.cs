@@ -90,7 +90,6 @@ namespace OpenTelemetry.Exporter.NewRelic
         public async override Task<ExportResult> ExportAsync(IEnumerable<Span> otSpans, CancellationToken cancellationToken)
         {
             if (otSpans == null) throw new ArgumentNullException(nameof(otSpans));
-            if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
 
             var nrSpanBatch = ToNewRelicSpanBatch(otSpans);
 
@@ -116,10 +115,6 @@ namespace OpenTelemetry.Exporter.NewRelic
         public override Task ShutdownAsync(CancellationToken cancellationToken)
         {
             return Task.FromResult(true);
-        }
-
-        public void Dispose()
-        {
         }
 
         private NRSpans.SpanBatch ToNewRelicSpanBatch(IEnumerable<Span> otSpans)

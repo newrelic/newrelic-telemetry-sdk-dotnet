@@ -11,7 +11,7 @@ namespace NewRelic.Telemetry
         private const string _prefix = "NewRelic Telemetry:";
         private const string _category = "NewRelic.Telemetry";
 
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         private static string MessageFormatter(object state, Exception error)
         {
