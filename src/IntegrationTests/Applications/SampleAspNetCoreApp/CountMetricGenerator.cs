@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using NewRelic.Telemetry.Metrics;
+﻿using NewRelic.Telemetry.Metrics;
 using System;
 using System.Threading.Tasks;
 
@@ -7,7 +6,7 @@ namespace SampleAspNetCoreApp
 {
     public class CountMetricGenerator
     {
-        private MetricDataSender _metricDataSender;
+        private readonly MetricDataSender _metricDataSender;
 
         public CountMetricGenerator(MetricDataSender metricDataSender) 
         {

@@ -105,11 +105,12 @@ namespace IntegrationTests.Fixtures
         private string GetNugetPackageVersion(string nugetSource, string packageName)
         {
             var package = Directory.GetFiles(nugetSource, packageName + "*").FirstOrDefault();
+            package = Path.GetFileName(package);
             if (package != null)
             {
-                var parts = package.Split('.');
-
-                return $@"{parts[^4]}.{parts[^3]}.{parts[^2]}";
+                package = package.Replace(packageName + ".", string.Empty);
+                package = package.Replace(".nupkg", string.Empty);
+                return package;
             }
 
             return string.Empty;
