@@ -6,6 +6,7 @@ using Xunit;
 using Xunit.Abstractions;
 using System.Linq;
 using System;
+using System.Web;
 
 namespace IntegrationTests
 {
@@ -56,9 +57,8 @@ namespace IntegrationTests
         public async void TraceExporterTest()
         {
             using var httpClient = new HttpClient();
-
-            // SELECT * FROM Span WHERE service.name = 'SampleAspNetCoreApp' SINCE 2 minutes ago
-            var insightQuery = "SELECT%20*%20FROM%20Span%20WHERE%20service.name%20%3D%20%27SampleAspNetCoreApp%27%20SINCE%202%20minutes%20ago";
+            var insightQuery = HttpUtility.UrlEncode("SELECT * FROM Span WHERE service.name = 'SampleAspNetCoreApp' SINCE 2 minutes ago")
+;
             var request = new HttpRequestMessage(HttpMethod.Get, @$"{_insightsQueryApiEndpoint}/v1/accounts/{_accountNumber}/query?nrql={insightQuery}");
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("X-Query-Key", _insightsQueryApiKey);
@@ -95,8 +95,7 @@ namespace IntegrationTests
         {
             using var httpClient = new HttpClient();
 
-            // SELECT * FROM Metric WHERE metricName = 'WeatherForecast/Get' SINCE 2 minutes ago
-            var insightQuery = "SELECT%20%2A%20FROM%20Metric%20WHERE%20metricName%20%3D%20%27WeatherForecast%2FGet%27%20SINCE%202%20minutes%20ago";
+            var insightQuery = HttpUtility.UrlEncode("SELECT * FROM Metric WHERE metricName = 'WeatherForecast/Get' SINCE 2 minutes ago");
             var request = new HttpRequestMessage(HttpMethod.Get, @$"{_insightsQueryApiEndpoint}/v1/accounts/{_accountNumber}/query?nrql={insightQuery}");
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("X-Query-Key", _insightsQueryApiKey);
