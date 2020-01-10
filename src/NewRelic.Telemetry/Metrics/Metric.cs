@@ -50,7 +50,7 @@ namespace NewRelic.Telemetry.Metrics
         /// <summary>
         /// TODO
         /// </summary>
-        /// 
+        ///
         public long? Timestamp { get; internal set; }
 
         /// <summary>
@@ -58,6 +58,7 @@ namespace NewRelic.Telemetry.Metrics
         /// </summary>
         /// <param name="intervalMs">TODO</param>
         /// <returns></returns>
+        [DataMember(Name = "interval.ms")]
         public long? IntervalMs { get; internal set; }
 
         [DataMember(Name = "value")]

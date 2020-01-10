@@ -71,7 +71,8 @@ namespace NewRelic.Telemetry
         /// </summary>
         public string[] NewRelicEndpoints => new []
         {
-            TraceUrl
+            TraceUrl,
+            MetricUrl
         };
 
         /// <summary>
@@ -116,6 +117,7 @@ namespace NewRelic.Telemetry
             ApiKey = GetValue("ApiKey", productConfigSection, newRelicConfigSection, ApiKey);
             ServiceName = GetValue("ServiceName", productConfigSection, newRelicConfigSection, ServiceName);
             TraceUrl = GetValue("TraceUrlOverride", productConfigSection, newRelicConfigSection, TraceUrl);
+            MetricUrl = GetValue("MetricUrlOverride", productConfigSection, newRelicConfigSection, MetricUrl);
             AuditLoggingEnabled = GetValue("AuditLoggingEnabled", productConfigSection, newRelicConfigSection, AuditLoggingEnabled);
             SendTimeout = GetValue("SendTimeoutSeconds", productConfigSection, newRelicConfigSection, SendTimeout);
             MaxRetryAttempts = GetValue("MaxRetryAttempts", productConfigSection, newRelicConfigSection, MaxRetryAttempts);

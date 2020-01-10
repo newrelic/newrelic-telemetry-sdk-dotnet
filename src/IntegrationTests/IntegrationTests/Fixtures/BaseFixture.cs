@@ -9,6 +9,9 @@ namespace IntegrationTests.Fixtures
         public BaseApplication Application { get; }
         public ITestOutputHelper TestLogger { get; set; }
 
+        private bool _initialized;
+        public bool Initialized => _initialized;
+
         public BaseFixture(BaseApplication application)
         {
             Application = application;
@@ -20,6 +23,8 @@ namespace IntegrationTests.Fixtures
         {
             Application.TestLogger = TestLogger;
 
+            Application.Build();
+
             Application.Run();
 
             //Give the test app some time to start. 
@@ -30,6 +35,8 @@ namespace IntegrationTests.Fixtures
             Exercise.Invoke();
 
             TestLogger?.WriteLine($@"[{DateTime.Now}] ... Testing done");
+
+            _initialized = true;
         }
 
         public void Dispose()

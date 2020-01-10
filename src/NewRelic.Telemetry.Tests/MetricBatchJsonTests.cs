@@ -42,10 +42,12 @@ namespace NewRelic.Telemetry.Tests
                 .WithIntervalMs(interval)
                 .WithTimestamp(timestamp)
                 .WithMetric(MetricBuilder.CreateCountMetric("metric1")
+                    .WithIntervalMs(interval)
                     .WithValue(countValue)
                     .WithAttributes(CustomAttributes)
                     .Build())
                 .WithMetric(MetricBuilder.CreateSummaryMetric("metric2")
+                    .WithIntervalMs(interval)
                     .WithValue(summaryValue)
                     .Build())
 
@@ -72,11 +74,13 @@ namespace NewRelic.Telemetry.Tests
 
             var countMetric = resultMetrics.FirstOrDefault();
 
-            TestHelpers.AssertForAttribCount(countMetric, 4);
+            TestHelpers.AssertForAttribCount(countMetric, 5);
 
             TestHelpers.AssertForAttribValue(countMetric, "name", "metric1");
             TestHelpers.AssertForAttribValue(countMetric, "type", "count");
             TestHelpers.AssertForAttribValue(countMetric, "value", countValue);
+            TestHelpers.AssertForAttribValue(countMetric, "interval.ms", interval);
+
 
             var countMetricAttribs = TestHelpers.DeserializeObject(countMetric["attributes"]);
             TestHelpers.AssertForAttribCount(countMetricAttribs, 1);
@@ -85,11 +89,12 @@ namespace NewRelic.Telemetry.Tests
             // SummaryMetric
             var summaryMetric = resultMetrics[1];
 
-            TestHelpers.AssertForAttribCount(summaryMetric, 3);
+            TestHelpers.AssertForAttribCount(summaryMetric, 4);
 
             TestHelpers.AssertForAttribValue(summaryMetric, "name", "metric2");
             TestHelpers.AssertForAttribValue(summaryMetric, "type", "summary");
             TestHelpers.AssertForAttribValue(summaryMetric, "value", summaryValue);
+            TestHelpers.AssertForAttribValue(countMetric, "interval.ms", interval);
         }
     }
 }
