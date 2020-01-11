@@ -15,6 +15,12 @@ The [New Relic Telemetry SDK](./src/NewRelic.Telemetry/README.md) allows trackin
 ### Limitations
 The New Relic Telemetry APIs are rate limited. Please reference the [documentation](https://github.com/newrelic/newrelic-telemetry-sdk-specs) for New Relic Metrics API and New Relic Trace API Requirements and Limits on the specifics of the rate limits.
 
+### Packages
+
+| Package | MyGet (CI) | NuGet (releases) |
+| ------- | ---------- | ---------------- |
+| NewRelic.Telemetry | [![MyGet CI][myget-image-NewRelic-Telemetry]][myget-url-NewRelic-Telemetry] | [![NuGet Release][nuget-image-NewRelic-Telemetry]][nuget-url-NewRelic-Telemetry] |
+| OpenTelemetry.Exporter.NewRelic | [![MyGet CI][myget-image-OpenTelemetry-Exporter-NewRelic]][myget-url-OpenTelemetry-Exporter-NewRelic] | [![NuGet Release][nuget-image-OpenTelemetry-Exporter-NewRelic]][nuget-url-OpenTelemetry-Exporter-NewRelic] |
 
 ### Building
 CI builds are run on Azure Pipelines: 
@@ -33,3 +39,13 @@ This project is distributed under the [Apache 2 license](LICENSE).
 New Relic has open-sourced this project. This project is provided AS-IS WITHOUT WARRANTY OR DEDICATED SUPPORT. Issues and contributions should be reported to the project here on GitHub.
 
 We encourage you to bring your experiences and questions to the [Explorers Hub](https://discuss.newrelic.com) where our community members collaborate on solutions and new ideas.
+
+[myget-image-NewRelic-Telemetry]:                   https://img.shields.io/myget/newrelic/vpre/NewRelic.Telemetry.svg
+[myget-url-NewRelic-Telemetry]:                     https://www.myget.org/feed/newrelic/package/nuget/NewRelic.Telemetry
+[nuget-image-NewRelic-Telemetry]:                   https://img.shields.io/nuget/vpre/NewRelic.Telemetry.svg
+[nuget-url-NewRelic-Telemetry]:                     https://www.nuget.org/packages/NewRelic.Telemetry
+
+[myget-image-OpenTelemetry-Exporter-NewRelic]:      https://img.shields.io/myget/newrelic/vpre/OpenTelemetry.Exporter.NewRelic.svg
+[myget-url-OpenTelemetry-Exporter-NewRelic]:        https://www.myget.org/feed/newrelic/package/nuget/OpenTelemetry.Exporter.NewRelic
+[nuget-image-OpenTelemetry-Exporter-NewRelic]:      https://img.shields.io/nuget/vpre/OpenTelemetry.Exporter.NewRelic.svg
+[nuget-url-OpenTelemetry-Exporter-NewRelic]:        https://www.nuget.org/packages/OpenTelemetry.Exporter.NewRelic
