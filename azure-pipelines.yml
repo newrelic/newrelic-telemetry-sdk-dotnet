@@ -82,12 +82,15 @@ steps:
 
 - task: PublishBuildArtifacts@1
 
-- task: NuGetToolInstaller@0
-  inputs:
-    versionSpec: '4.3.0'
-
 - task: NuGetCommand@2
-  condition: and (succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
+  condition: | 
+    and (
+      succeeded(),
+      or (
+        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+        startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+      )
+    )
   displayName: 'Push packages to MyGet'
   inputs:
     command: 'push'
