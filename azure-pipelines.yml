@@ -83,19 +83,21 @@ steps:
 - task: PublishBuildArtifacts@1
 
 - task: NuGetCommand@2
-  condition: and(succeeded(), eq(variables['pushNupkgTelemetrySDK'], 'true'))
-  displayName: 'Push NuGet Packages - Telemetry SDK'
+  condition: | 
+    and (
+      succeeded(),
+      or (
+        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+        startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+      )
+    )
+  displayName: 'Push packages to MyGet'
   inputs:
     command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/TelemetrySDK/**/*.nupkg'
+    packagesToPush: |
+      $(Build.ArtifactStagingDirectory)/**/*.nupkg;
+      $(Build.ArtifactStagingDirectory)/**/*.snupkg;
+      !$(Build.ArtifactStagingDirectory)/**/*-unreleased*.nupkg;
+      !$(Build.ArtifactStagingDirectory)/**/*-unreleased*.snupkg
     nuGetFeedType: 'external'
-    publishFeedCredentials: 'NuGet'
-
-- task: NuGetCommand@2
-  condition: and(succeeded(), eq(variables['pushNupkgOpenTelemetry'], 'true'))
-  displayName: 'Push NuGet Packages - OpenTelemetry Exporter'
-  inputs:
-    command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/OpenTelemetry/**/*.nupkg'
-    nuGetFeedType: 'external'
-    publishFeedCredentials: 'NuGet'
+    publishFeedCredentials: 'MyGet'
