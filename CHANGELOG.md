@@ -19,4 +19,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 
 
-[Unreleased]: https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/compare/9793b2c..HEAD
+[Unreleased]: https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/compare/76cb4c5..HEAD
+[1.0.0-beta.117]: https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/compare/v1.0.0-beta..76cb4c5
+[1.0.0-beta]: https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/releases/tag/v1.0.0-beta
