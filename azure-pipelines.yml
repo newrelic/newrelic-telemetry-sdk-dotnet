@@ -80,15 +80,13 @@ steps:
     SonarCloud: 'SonarCloud'
     organization: '$(SonarCloudOrganization)'
 
-- task: PublishBuildArtifacts@1
-
-- task: NuGetCommand@2
-  condition: | 
+- task: PublishBuildArtifacts@1- task: NuGetCommand@2
+  condition: |
     and (
       succeeded(),
       or (
         eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-        startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+        startsWith(variables['Build.SourceBranch'], 'refs/tags')
       )
     )
   displayName: 'Push packages to MyGet'
@@ -96,8 +94,24 @@ steps:
     command: 'push'
     packagesToPush: |
       $(Build.ArtifactStagingDirectory)/**/*.nupkg;
-      $(Build.ArtifactStagingDirectory)/**/*.snupkg;
       !$(Build.ArtifactStagingDirectory)/**/*-unreleased*.nupkg;
-      !$(Build.ArtifactStagingDirectory)/**/*-unreleased*.snupkg
     nuGetFeedType: 'external'
     publishFeedCredentials: 'MyGet'
+
+- task: NuGetCommand@2
+  condition: |
+    and (
+      succeeded(),
+      or (
+        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+        startsWith(variables['Build.SourceBranch'], 'refs/tags')
+      )
+    )
+  displayName: 'Push symbols packages to MyGet'
+  inputs:
+    command: 'push'
+    packagesToPush: |
+      $(Build.ArtifactStagingDirectory)/**/*.snupkg;
+      !$(Build.ArtifactStagingDirectory)/**/*-unreleased*.snupkg
+    nuGetFeedType: 'external'
+    publishFeedCredentials: 'MyGetSymbols'
