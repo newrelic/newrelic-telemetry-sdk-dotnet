@@ -71,10 +71,8 @@ steps:
 - task: SonarCloudPublish@1
   displayName: 'SonarCloud - Publish Quality Gate Results'
   
-
-
 - task: sonarcloud-buildbreaker@2
-  displayName: "SonarCloud - Valiate Quality Gate Results"
+  displayName: "SonarCloud - Validate Quality Gate Results"
   condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
   inputs:
     SonarCloud: 'SonarCloud'
