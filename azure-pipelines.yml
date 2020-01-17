@@ -80,7 +80,9 @@ steps:
     SonarCloud: 'SonarCloud'
     organization: '$(SonarCloudOrganization)'
 
-- task: PublishBuildArtifacts@1- task: NuGetCommand@2
+- task: PublishBuildArtifacts@1
+
+- task: NuGetCommand@2
   condition: |
     and (
       succeeded(),
