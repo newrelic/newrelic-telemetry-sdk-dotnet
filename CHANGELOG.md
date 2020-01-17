@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 - 
 
-## [1.0.0-beta.109] - 2020-01-17
+## [1.0.0-beta.117] - 2020-01-17
 ### Added
 - Support for sending Metrics to the New Relic endpoint.
 ### Changed
