@@ -12,7 +12,7 @@
 
         Patch:              The patch version.
 
-        PreReleaseMonkier:  Optional. If the tag contains a prerelese moniker (e.g., alpha, beta, preview, etc), NuGet artifacts
+        PreReleaseMoniker:  Optional. If the tag contains a prerelese moniker (e.g., alpha, beta, preview, etc), NuGet artifacts
                             will include the prerelease moniker followed by a dot plus the number of commits since the tag.
                             For example, if the latest tag is v1.0.0-alpha and HEAD is 10 commits ahead of the tag, then NuGet
                             packages will be versioned 1.0.0-alpha.10. This versioning conforms to SemVer 2.0.0 (https://semver.org/)
@@ -30,7 +30,7 @@
       <GitTagPrefix>v</GitTagPrefix>
     </PropertyGroup>
 
-    <Exec Command="git describe --match $(GitTagPrefix)[0-9]* --abbrev=0 HEAD --tags" ConsoleToMSBuild="true" StandardOutputImportance="low" IgnoreExitCode="true">
+    <Exec Command="git describe --match $(GitTagPrefix)* --abbrev=0 HEAD --tags" ConsoleToMSBuild="true" StandardOutputImportance="low" IgnoreExitCode="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="LatestTagVersion" />
       <Output TaskParameter="ExitCode" PropertyName="GitExitCode" />
     </Exec>
@@ -56,7 +56,9 @@
       <Output PropertyName="PreReleaseMoniker" TaskParameter="PreReleaseMoniker" />
     </ParseVersion>
 
-    <PropertyGroup Condition="$(PreReleaseMoniker) == '' And $(Revision) > 0">
+    <!-- If a tag with the correct GitTagPrefix for this product was not found on the commit we're building from, set the PreReleaseMoniker to 'unreleased'.
+         This will prevent the resulting NuGet packages from being pushed to MyGet by the Azure build pipeline. -->
+    <PropertyGroup Condition="$(GitExitCode) != 0 Or $(Revision) > 0">
       <PreReleaseMoniker>unreleased</PreReleaseMoniker>
     </PropertyGroup>
 
@@ -85,7 +87,7 @@
         <![CDATA[
         var preReleaseMonikerStart = VersionString.IndexOf('-');
         var preReleaseMonikerLength = preReleaseMonikerStart < 0 ? 0 : VersionString.Substring(preReleaseMonikerStart).Length;
-        var preReleaseMonkier = preReleaseMonikerLength == 0 ? "" : VersionString.Substring(preReleaseMonikerStart + 1);
+        var preReleaseMoniker = preReleaseMonikerLength == 0 ? "" : VersionString.Substring(preReleaseMonikerStart + 1);
         var majorVersionStart = 0;
         var majorVersionLength = VersionString.IndexOf('.', majorVersionStart);
         var minorVersionStart = 1 + majorVersionLength;
@@ -97,7 +99,7 @@
         Major = int.Parse(VersionString.Substring(majorVersionStart, majorVersionLength));
         Minor = int.Parse(VersionString.Substring(minorVersionStart, minorVersionLength));
         Patch = int.Parse(VersionString.Substring(patchVersionStart, patchVersionLength));
-        PreReleaseMoniker = preReleaseMonkier;
+        PreReleaseMoniker = preReleaseMoniker;
         ]]>
       </Code>
     </Task>
