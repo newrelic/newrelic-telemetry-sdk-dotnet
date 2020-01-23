@@ -29,7 +29,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageIconUrl>https://newrelic.com/images/avatar-newrelic.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/newrelic/newrelic-telemetry-sdk-dotnet</RepositoryUrl>
-    <PackageReleaseNotes>For detailed information see: https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/CHANGELOG.md</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/blob/master/CHANGELOG.md</PackageReleaseNotes>
     <Copyright>Copyright (c) 2008-2020 New Relic, Inc.  All rights reserved.</Copyright>
 
   </PropertyGroup>
