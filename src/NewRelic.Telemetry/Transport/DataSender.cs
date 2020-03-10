@@ -49,7 +49,6 @@ namespace NewRelic.Telemetry.Transport
 
         protected DataSender(TelemetryConfiguration config, ILoggerFactory loggerFactory)
         {
-
             _userAgentBase = "NewRelic-Dotnet-TelemetrySDK/" + _telemetrySdkVersion;
             UserAgent = _userAgentBase;
 
@@ -261,7 +260,18 @@ namespace NewRelic.Telemetry.Transport
                 return Response.Failure("API Key was not available");
             }
 
+            BeforeDataSend(dataToSend);
+
             return await SendDataAsync(dataToSend, 0);
+        }
+
+        /// <summary>
+        /// Provides a place to do any pre-work on the data to send
+        /// For example, allows updating of the instrumentation provider for spans
+        /// </summary>
+        /// <param name="dataToSend"></param>
+        protected virtual void BeforeDataSend(TData dataToSend)
+        {
         }
 
         /// <summary>

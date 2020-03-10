@@ -72,6 +72,8 @@ namespace OpenTelemetry.Exporter.NewRelic
 
             _config = config;
 
+            _config.WithInstrumentationProvderName("opentelemetry");
+
             _nrEndpoints = config.NewRelicEndpoints.Select(x => x.ToLower()).ToArray();
 
             if (loggerFactory != null)
@@ -211,8 +213,13 @@ namespace OpenTelemetry.Exporter.NewRelic
             var newRelicSpanBuilder = NRSpans.SpanBuilder.Create(openTelemetrySpan.Context.SpanId.ToHexString())
                    .WithTraceId(openTelemetrySpan.Context.TraceId.ToHexString())
                    .WithExecutionTimeInfo(openTelemetrySpan.StartTimestamp, openTelemetrySpan.EndTimestamp)   //handles Nulls
-                   .HasError(!openTelemetrySpan.Status.IsOk)
                    .WithName(openTelemetrySpan.Name);       //Handles Nulls
+
+            if(!openTelemetrySpan.Status.IsOk)
+            {
+                //this will set HasError = true and the description if available
+                newRelicSpanBuilder.HasError(openTelemetrySpan.Status.Description);
+            }
 
             if (!string.IsNullOrWhiteSpace(_config.ServiceName))
             {
@@ -239,6 +246,8 @@ namespace OpenTelemetry.Exporter.NewRelic
                     newRelicSpanBuilder.WithAttribute(spanAttrib.Key, spanAttrib.Value);
                 }
             }
+
+            
 
             return newRelicSpanBuilder.Build();
         }
