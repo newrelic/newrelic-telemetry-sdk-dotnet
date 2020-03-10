@@ -14,6 +14,8 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
     public class SpanConverterTests
 	{
         const string testServiceName = "TestService";
+        const string errorMessage = "This is a test error description";
+
         const int expected_CountSpans = 4;
 
         private List<ISpan> _otSpans = new List<ISpan>();
@@ -62,9 +64,9 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
                 _otSpans.Add(tracer.StartRootSpan("Test Span 4"));
                 _otSpans.Add(tracer.StartSpan("Should Be Filtered - HTTP Call to NR",_otSpans[3]).PutHttpRawUrlAttribute(config.TraceUrl));
                 _otSpans.Add(tracer.StartSpan("Should Be Filtered - Child of HTTP", _otSpans[4]));
-
+                
                 _otSpans[0].Status = Status.Ok;
-                _otSpans[1].Status = Status.Aborted;
+                _otSpans[1].Status = Status.Aborted.WithDescription(errorMessage);
                 _otSpans[2].Status = Status.Ok;
                 _otSpans[3].Status = Status.Ok;
                 _otSpans[4].Status = Status.Ok;
@@ -116,9 +118,9 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             var resultSpan2 = resultNRSpansDic[_otSpans[2].Context.SpanId.ToHexString()];
             var resultSpan3 = resultNRSpansDic[_otSpans[3].Context.SpanId.ToHexString()];
 
-
             Assert.False(resultSpan0.Attributes.ContainsKey("error"), "resultSpan0 should NOT have Error Attribute");
             Assert.AreEqual(resultSpan1.Attributes["error"], true, "resultSpan1 should have Error Attribute = true");
+            Assert.AreEqual(resultSpan1.Attributes["error.message"], errorMessage, $"resultSpan1 should have Error.Message Attribute = '{errorMessage}'");
             Assert.False(resultSpan2.Attributes.ContainsKey("error"), "resultSpan2 should NOT have Error Attribute");
             Assert.False(resultSpan3.Attributes.ContainsKey("error"), "resultSpan3 should NOT have Error Attribute");
         }
@@ -181,6 +183,26 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
                 Assert.AreEqual(expectedStartTimestampUnixMs, nrSpan.Timestamp, $"{otSpan.Name} - Open Telemetry StartTime should translate to {expectedStartTimestampUnixMs}");
                 Assert.AreEqual(expectedDurationMs, nrSpan.Attributes["duration.ms"]);
             }
+        }
+
+        [Test]
+        public void Test_InstrumentationProvider()
+        {
+            foreach (var otISpan in _otSpans)
+            {
+                var otSpan = otISpan as Span;
+
+                if (!resultNRSpansDic.TryGetValue(otSpan.Context.SpanId.ToHexString(), out var nrSpan))
+                {
+                    continue;
+                }
+
+                Assert.IsNotNull(nrSpan.Attributes);
+                Assert.IsTrue(nrSpan.Attributes.ContainsKey("instrumentation.provider"));
+                Assert.AreEqual("opentelemetry", nrSpan.Attributes["instrumentation.provider"]);
+
+            }
+
         }
     }
 }

@@ -14,6 +14,8 @@ namespace NewRelic.Telemetry.Spans
         internal const string attribName_Name = "name";
         internal const string attribName_ParentID = "parent.id";
         internal const string attribName_Error = "error";
+        internal const string attribName_ErrorMsg = "error.message";
+        internal const string attribName_InstrumentationProvider = "instrumentation.provider";
 
         /// <summary>
         /// Creates a new SpanBuilder with a unique SpanId Identifier.
@@ -92,7 +94,7 @@ namespace NewRelic.Telemetry.Spans
         
         /// <summary>
         /// Used to indicate that an error has occurred during the unit of work represented
-        /// by this Span.
+        /// by this Span.  Setting hasError to false will also clear the "error.message" value.
         /// </summary>
         /// <param name="hasError"></param>
         public SpanBuilder HasError(bool hasError)
@@ -107,7 +109,29 @@ namespace NewRelic.Telemetry.Spans
                 _span.Attributes.Remove(attribName_Error);
             }
 
+            if (_span.Attributes?.ContainsKey(attribName_ErrorMsg) == true)
+            {
+                _span.Attributes.Remove(attribName_ErrorMsg);
+            }
+
             return this;
+        }
+
+        /// <summary>
+        /// Used to indicate that an error has occurred during the unit of work represented
+        /// by this Span.  Additionally records a message describing the error condition.
+        /// </summary>
+        /// <param name="hasError"></param>
+        public SpanBuilder HasError(string errorMessage)
+        {
+            HasError(true);
+
+            if (string.IsNullOrWhiteSpace(errorMessage))
+            {
+                return this;
+            }
+
+            return WithAttribute(attribName_ErrorMsg, errorMessage);
         }
 
         /// <summary>
@@ -171,7 +195,6 @@ namespace NewRelic.Telemetry.Spans
             WithAttribute(attribName_ParentID, parentId);
             return this;
         }
-
 
         /// <summary>
         /// Identifies the name of a service performing the units of work measured by these Spans.

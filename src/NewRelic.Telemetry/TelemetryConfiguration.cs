@@ -66,6 +66,11 @@ namespace NewRelic.Telemetry
         public string ServiceName { get; private set; }
 
         /// <summary>
+        /// Identifies the source of information that is being sent to New Relic.
+        /// </summary>
+        public string InstrumentationProvider { get; private set; }
+
+        /// <summary>
         /// A list of the New Relic endpoints where information is sent.  This collection may be used
         /// to filter out communications with New Relic endpoints during analysis.
         /// </summary>
@@ -228,6 +233,12 @@ namespace NewRelic.Telemetry
         public TelemetryConfiguration WithBackoffMaxSeconds(int backoffMaxSeconds)
         {
             BackoffMaxSeconds = backoffMaxSeconds;
+            return this;
+        }
+
+        public TelemetryConfiguration WithInstrumentationProviderName(string providerName)
+        {
+            InstrumentationProvider = providerName?.Trim();
             return this;
         }
 

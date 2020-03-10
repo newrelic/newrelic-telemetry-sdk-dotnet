@@ -72,6 +72,8 @@ namespace OpenTelemetry.Exporter.NewRelic
 
             _config = config;
 
+            _config.WithInstrumentationProviderName("opentelemetry");
+
             _nrEndpoints = config.NewRelicEndpoints.Select(x => x.ToLower()).ToArray();
 
             if (loggerFactory != null)
@@ -204,22 +206,24 @@ namespace OpenTelemetry.Exporter.NewRelic
         {
             if (openTelemetrySpan == null) throw new ArgumentNullException(nameof(openTelemetrySpan));
             if (openTelemetrySpan.Context == null) throw new NullReferenceException($"{nameof(openTelemetrySpan)}.Context");
-            if (openTelemetrySpan.Context.SpanId == null) throw new NullReferenceException($"{nameof(openTelemetrySpan)}.Context.SpanId");
-            if (openTelemetrySpan.Context.TraceId == null) throw new NullReferenceException($"{nameof(openTelemetrySpan)}.Context.TraceId");
-            if (openTelemetrySpan.StartTimestamp == null) throw new NullReferenceException($"{nameof(openTelemetrySpan)}.StartTimestamp");
 
             var newRelicSpanBuilder = NRSpans.SpanBuilder.Create(openTelemetrySpan.Context.SpanId.ToHexString())
                    .WithTraceId(openTelemetrySpan.Context.TraceId.ToHexString())
                    .WithExecutionTimeInfo(openTelemetrySpan.StartTimestamp, openTelemetrySpan.EndTimestamp)   //handles Nulls
-                   .HasError(!openTelemetrySpan.Status.IsOk)
                    .WithName(openTelemetrySpan.Name);       //Handles Nulls
+
+            if(!openTelemetrySpan.Status.IsOk)
+            {
+                //this will set HasError = true and the description if available
+                newRelicSpanBuilder.HasError(openTelemetrySpan.Status.Description);
+            }
 
             if (!string.IsNullOrWhiteSpace(_config.ServiceName))
             {
                 newRelicSpanBuilder.WithServiceName(_config.ServiceName);
             }
 
-            if (openTelemetrySpan.ParentSpanId != null && openTelemetrySpan.ParentSpanId != default)
+            if (openTelemetrySpan.ParentSpanId != default)
             {
                 newRelicSpanBuilder.WithParentId(openTelemetrySpan.ParentSpanId.ToHexString());
             }
@@ -239,6 +243,8 @@ namespace OpenTelemetry.Exporter.NewRelic
                     newRelicSpanBuilder.WithAttribute(spanAttrib.Key, spanAttrib.Value);
                 }
             }
+
+            
 
             return newRelicSpanBuilder.Build();
         }

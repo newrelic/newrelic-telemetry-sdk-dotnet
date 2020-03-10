@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NewRelic.Telemetry.Transport;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace NewRelic.Telemetry.Spans
@@ -53,6 +54,24 @@ namespace NewRelic.Telemetry.Spans
         /// <param name="loggerFactory"></param>
         public SpanDataSender(IConfiguration configProvider, ILoggerFactory loggerFactory) : base(configProvider, loggerFactory)
         {
+        }
+
+        protected override void BeforeDataSend(SpanBatch dataToSend)
+        {
+            base.BeforeDataSend(dataToSend);
+
+            if (!string.IsNullOrWhiteSpace(_config.InstrumentationProvider))
+            {
+
+                foreach (var span in dataToSend.Spans)
+                {
+                    if(span.Attributes == null)
+                    {
+                        span.Attributes = new Dictionary<string, object>();
+                    }
+                    span.Attributes[SpanBuilder.attribName_InstrumentationProvider] = _config.InstrumentationProvider;
+                }
+            }
         }
 
         protected override bool ContainsNoData(SpanBatch dataToCheck)
