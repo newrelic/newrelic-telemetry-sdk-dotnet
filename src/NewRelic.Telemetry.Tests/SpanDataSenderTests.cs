@@ -65,7 +65,7 @@ namespace NewRelic.Telemetry.Tests
 
             var dataSender = new SpanDataSender(new TelemetryConfiguration()
                 .WithApiKey("123456")
-                .WithInstrumentationProvderName(instrumentationProvider));
+                .WithInstrumentationProviderName(instrumentationProvider));
 
             SpanBatch capturedSpanbatch = null;
             dataSender.WithCaptureSendDataAsyncDelegate((spanBatch, attempt) =>

@@ -236,7 +236,7 @@ namespace NewRelic.Telemetry
             return this;
         }
 
-        public TelemetryConfiguration WithInstrumentationProvderName(string providerName)
+        public TelemetryConfiguration WithInstrumentationProviderName(string providerName)
         {
             InstrumentationProvider = providerName?.Trim();
             return this;
