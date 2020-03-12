@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
 
+### Changed
+
+
+## [1.0.0-beta.134] - 2020-03-11
 ### Added
 - Added Configuration Setting `InstrumentationProvider` which identifies any service that uses the Telemetry SDK to create Span Events.
 - `SpanBuilder` allows the reporting error conditions using overload `HasError(string message)`.
@@ -27,6 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 
 
-[Unreleased]: https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/compare/76cb4c5..HEAD
+[Unreleased]: https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/compare/v1.0.0-beta.134..HEAD
+[1.0.0-beta.134]: https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/compare/76cb4c5..v1.0.0-beta.134
 [1.0.0-beta.117]: https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/compare/v1.0.0-beta..76cb4c5
 [1.0.0-beta]: https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/releases/tag/v1.0.0-beta
