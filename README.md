@@ -4,7 +4,7 @@ This repo contains the New Relic Telemetry SDK and an OpenTelemetry provider for
 
 
 ### [New Relic OpenTelemetry trace exporter](./src/OpenTelemetry.Exporter.NewRelic/README.md)
-[OpenTelemetry](https://opentelemetry.io/) is a set of APIs that aim to standardize the collection and reporting of application telemetry information.  The [New Relic Trace Exporter for OpenTelemetry](./src/OpenTelemetry.Exporter.NewRelic/README.md) allows tracing information collected within the OpenTelemetry framework to be reported to New Relic.  This exporter is built using New Relic's Telemetry SDK.
+[OpenTelemetry](https://opentelemetry.io/) is a set of APIs that aim to standardize the collection and reporting of application telemetry information.  The [New Relic trace exporter for OpenTelemetry](./src/OpenTelemetry.Exporter.NewRelic/README.md) allows tracing information collected within the OpenTelemetry framework to be reported to New Relic.  This exporter is built using New Relic's Telemetry SDK.
 
 
 ### [New Relic Telemetry SDK](./src/NewRelic.Telemetry/README.md)
