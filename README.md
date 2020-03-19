@@ -14,7 +14,7 @@ The [New Relic Telemetry SDK](./src/NewRelic.Telemetry/README.md) allows trackin
 ### Limitations
 The New Relic Telemetry APIs are rate limited. Please reference the [documentation](https://github.com/newrelic/newrelic-telemetry-sdk-specs) for New Relic Metrics API and New Relic Trace API requirements and limits on the specifics of the rate limits.
 
-## Find and use your data
+### Find and use your data
 
 Tips on how to find and query your data in New Relic:
 - [Find metric data](https://docs.newrelic.com/docs/data-ingest-apis/get-data-new-relic/metric-api/introduction-metric-api#find-data)
