@@ -1,11 +1,10 @@
-# New Relic Telemetry SDK and OpenTelemetry Support for .NET
+# New Relic Telemetry SDK and OpenTelemetry support for .NET
 
-This repo contains the New Relic Telemetry SDK and an OpenTelemetry Provider for .NET.
+This repo contains the New Relic Telemetry SDK and an OpenTelemetry provider for .NET.
 
 
-
-### [New Relic OpenTelemetry Trace Exporter](./src/OpenTelemetry.Exporter.NewRelic/README.md)
-[OpenTelemetry](https://opentelemetry.io/) is a set of APIs that aim to standardize the collection and reporting of application telemetry information.  The [New Relic Trace Exporter for OpenTelemetry](./src/OpenTelemetry.Exporter.NewRelic/README.md) allows tracing information collected within the OpenTelemetry framework to be reported to New Relic.  The OpenTelemetry Trace Exporter is built using New Relic's Telemetry SDK.
+### [New Relic OpenTelemetry trace exporter](./src/OpenTelemetry.Exporter.NewRelic/README.md)
+[OpenTelemetry](https://opentelemetry.io/) is a set of APIs that aim to standardize the collection and reporting of application telemetry information.  The [New Relic Trace Exporter for OpenTelemetry](./src/OpenTelemetry.Exporter.NewRelic/README.md) allows tracing information collected within the OpenTelemetry framework to be reported to New Relic.  This exporter is built using New Relic's Telemetry SDK.
 
 
 ### [New Relic Telemetry SDK](./src/NewRelic.Telemetry/README.md)
@@ -13,7 +12,17 @@ The [New Relic Telemetry SDK](./src/NewRelic.Telemetry/README.md) allows trackin
 
 
 ### Limitations
-The New Relic Telemetry APIs are rate limited. Please reference the [documentation](https://github.com/newrelic/newrelic-telemetry-sdk-specs) for New Relic Metrics API and New Relic Trace API Requirements and Limits on the specifics of the rate limits.
+The New Relic Telemetry APIs are rate limited. Please reference the [documentation](https://github.com/newrelic/newrelic-telemetry-sdk-specs) for New Relic Metrics API and New Relic Trace API requirements and limits on the specifics of the rate limits.
+
+## Find and use your data
+
+Tips on how to find and query your data in New Relic:
+- [Find metric data](https://docs.newrelic.com/docs/data-ingest-apis/get-data-new-relic/metric-api/introduction-metric-api#find-data)
+- [Find trace/span data](https://docs.newrelic.com/docs/understand-dependencies/distributed-tracing/trace-api/introduction-trace-api#view-data)
+
+For general querying information, see:
+- [Query New Relic data](https://docs.newrelic.com/docs/using-new-relic/data/understand-data/query-new-relic-data)
+- [Intro to NRQL](https://docs.newrelic.com/docs/query-data/nrql-new-relic-query-language/getting-started/introduction-nrql)
 
 ### Packages
 
@@ -24,14 +33,14 @@ The New Relic Telemetry APIs are rate limited. Please reference the [documentati
 
 ### Building
 CI builds are run on Azure Pipelines: 
-[![Build Status](https://dev.azure.com/NRAzurePipelines/dotnet/_apis/build/status/newrelic.newrelic-telemetry-sdk-dotnet?branchName=master)](https://dev.azure.com/NRAzurePipelines/dotnet/_build/latest?definitionId=17&branchName=master)
+[![Build status](https://dev.azure.com/NRAzurePipelines/dotnet/_apis/build/status/newrelic.newrelic-telemetry-sdk-dotnet?branchName=master)](https://dev.azure.com/NRAzurePipelines/dotnet/_build/latest?definitionId=17&branchName=master)
 
 
 ### Contributing
 Full details are available in our [CONTRIBUTING.md](CONTRIBUTING.md) file. We'd love to get your contributions to improve the Telemetry SDK for .NET and for the OpenTelemetry Trace Exporter for .NET! Keep in mind when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. You only have to sign the CLA one time per project. To execute our corporate CLA, which is required if your contribution is on behalf of a company, or if you have any questions, please drop us an email at open-source@newrelic.com.
 
 
-### Open Source License
+### Open source license
 This project is distributed under the [Apache 2 license](LICENSE).
 
 
