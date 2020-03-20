@@ -11,6 +11,7 @@ The New Relic Telemetry SDK for .NET allows the capture of information about the
 
 ## Next Steps
 * Using the [Telemetry SDK for Tracing](./Spans/README.md)
+* Review Telemetry SDK [Configuration Options](./TelemetryConfiguration.md)
 
 
 
