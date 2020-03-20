@@ -10,6 +10,8 @@ The New Relic OpenTelemetry Trace Exporter is a OpenTelemetry Provider that send
 
 ## Getting Started
 * Incorporate the [OpenTelemetry.Exporter.NewRelic](https://www.nuget.org/packages/OpenTelemetry.Exporter.NewRelic) NuGet Packge into your project.
+* Review Telemetry SDK [Configuration Options](../NewRelic.Telemetry/TelemetryConfiguration.md)
+
 
 ## Configuration
 
