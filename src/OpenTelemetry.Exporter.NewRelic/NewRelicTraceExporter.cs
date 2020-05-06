@@ -1,6 +1,6 @@
 ﻿using NewRelic.Telemetry;
 using NewRelic.Telemetry.Transport;
-using NRSpans = NewRelic.Telemetry.Spans;
+using NewRelic.Telemetry.Spans;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
 using OpenTelemetry.Trace.Export;
-using OpenTelemetry.Trace;
 using System.Reflection;
 
 namespace OpenTelemetry.Exporter.NewRelic
@@ -19,7 +18,7 @@ namespace OpenTelemetry.Exporter.NewRelic
     /// </summary>
     public class NewRelicTraceExporter : SpanExporter
     {
-        private readonly NRSpans.SpanDataSender _spanDataSender;
+        private readonly SpanDataSender _spanDataSender;
         private const string _productName = "NewRelic-Dotnet-OpenTelemetry";
         private static readonly string _productVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
 
@@ -61,11 +60,11 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// accepts a logger factory supported by Microsoft.Extensions.Logging.
         /// </summary>
         /// <param name="config"></param>
-        public NewRelicTraceExporter(TelemetryConfiguration config, ILoggerFactory loggerFactory) : this(new NRSpans.SpanDataSender(config, loggerFactory),config,loggerFactory)
+        public NewRelicTraceExporter(TelemetryConfiguration config, ILoggerFactory loggerFactory) : this(new SpanDataSender(config, loggerFactory),config,loggerFactory)
         {
         }
 
-        internal NewRelicTraceExporter(NRSpans.SpanDataSender spanDataSender, TelemetryConfiguration config, ILoggerFactory loggerFactory)
+        internal NewRelicTraceExporter(SpanDataSender spanDataSender, TelemetryConfiguration config, ILoggerFactory loggerFactory)
         {
             _spanDataSender = spanDataSender;
             spanDataSender.AddVersionInfo(_productName, _productVersion);
@@ -89,7 +88,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// <param name="otSpans">Collection of Open Telemetry spans to be sent to New Relic</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async override Task<ExportResult> ExportAsync(IEnumerable<Span> otSpans, CancellationToken cancellationToken)
+        public async override Task<ExportResult> ExportAsync(IEnumerable<SpanData> otSpans, CancellationToken cancellationToken)
         {
             if (otSpans == null) throw new ArgumentNullException(nameof(otSpans));
 
@@ -119,9 +118,9 @@ namespace OpenTelemetry.Exporter.NewRelic
             return Task.FromResult(true);
         }
 
-        private NRSpans.SpanBatch ToNewRelicSpanBatch(IEnumerable<Span> otSpans)
+        private SpanBatch ToNewRelicSpanBatch(IEnumerable<SpanData> otSpans)
         {
-            var nrSpans = new List<NRSpans.Span>();
+            var nrSpans = new List<Span>();
             var spanIdsToFilter = new List<string>();
 
             foreach (var otSpan in otSpans)
@@ -162,7 +161,7 @@ namespace OpenTelemetry.Exporter.NewRelic
 
             nrSpans = FilterSpans(nrSpans, spanIdsToFilter);
 
-            var spanBatchBuilder = NRSpans.SpanBatchBuilder.Create();
+            var spanBatchBuilder = SpanBatchBuilder.Create();
 
             spanBatchBuilder.WithSpans(nrSpans);
 
@@ -171,7 +170,7 @@ namespace OpenTelemetry.Exporter.NewRelic
             return nrSpanBatch;
         }
 
-        private List<NRSpans.Span> FilterSpans(List<NRSpans.Span> spans, List<string> spanIdsToFilter)
+        private List<Span> FilterSpans(List<Span> spans, List<string> spanIdsToFilter)
         {
             if(spanIdsToFilter.Count == 0)
             {
@@ -202,12 +201,12 @@ namespace OpenTelemetry.Exporter.NewRelic
             return FilterSpans(spans, spanIdsToFilter);
         }
 
-        private NRSpans.Span ToNewRelicSpan(Span openTelemetrySpan)
+        private Span ToNewRelicSpan(SpanData openTelemetrySpan)
         {
             if (openTelemetrySpan == null) throw new ArgumentNullException(nameof(openTelemetrySpan));
             if (openTelemetrySpan.Context == null) throw new NullReferenceException($"{nameof(openTelemetrySpan)}.Context");
 
-            var newRelicSpanBuilder = NRSpans.SpanBuilder.Create(openTelemetrySpan.Context.SpanId.ToHexString())
+            var newRelicSpanBuilder = SpanBuilder.Create(openTelemetrySpan.Context.SpanId.ToHexString())
                    .WithTraceId(openTelemetrySpan.Context.TraceId.ToHexString())
                    .WithExecutionTimeInfo(openTelemetrySpan.StartTimestamp, openTelemetrySpan.EndTimestamp)   //handles Nulls
                    .WithName(openTelemetrySpan.Name);       //Handles Nulls
