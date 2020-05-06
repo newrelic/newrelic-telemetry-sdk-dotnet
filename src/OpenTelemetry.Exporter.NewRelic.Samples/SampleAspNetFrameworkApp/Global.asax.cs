@@ -3,7 +3,6 @@ using System.Web.Http;
 using OpenTelemetry.Collector.Dependencies;
 using OpenTelemetry.Trace.Configuration;
 using OpenTelemetry.Exporter.NewRelic;
-using OpenTelemetry.Trace.Sampler;
 using OpenTelemetry.Trace;
 
 namespace SampleAspNetFrameworkApp
@@ -11,7 +10,7 @@ namespace SampleAspNetFrameworkApp
     public class WebApiApplication : System.Web.HttpApplication
     {
         // Static handle to the OpenTelemetry Tracer
-        public static ITracer OTTracer;
+        public static Tracer OTTracer;
 
         protected void Application_Start()
         {
@@ -24,8 +23,7 @@ namespace SampleAspNetFrameworkApp
             var tracerFactory = TracerFactory.Create((b) =>
             {
                 b.UseNewRelic(apiKey)
-                .AddDependencyCollector()
-                .SetSampler(Samplers.AlwaysSample);
+                .AddDependencyCollector();
             });
 
             var dependenciesCollector = new DependenciesCollector(new HttpClientCollectorOptions(), tracerFactory);
