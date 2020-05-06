@@ -32,14 +32,14 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         //  5           Should be filtered - Child of HTTP      Trace 3     Excluded
 
         private static DateTimeOffset _traceStartTime = DateTime.UtcNow;
-        private (int? Parent, string Name, DateTimeOffset Start, DateTimeOffset End, Status Status)[] spanDefinitions = new (int?, string, DateTimeOffset, DateTimeOffset, Status)[]
+        private (int? Parent, string Name, DateTimeOffset Start, DateTimeOffset End, Status Status, bool IsCallToNewRelic)[] spanDefinitions = new (int?, string, DateTimeOffset, DateTimeOffset, Status, bool)[]
         {
-            (null, "Test Span 1", _traceStartTime, _traceStartTime.AddMilliseconds(225), Status.Ok ),
-            (0, "Test Span 2", _traceStartTime.AddMilliseconds(1), _traceStartTime.AddMilliseconds(100), Status.Aborted.WithDescription(errorMessage) ),
-            (null, "Test Span 3", _traceStartTime.AddMilliseconds(2), _traceStartTime.AddMilliseconds(375), Status.Ok ),
-            (null, "Test Span 4", _traceStartTime.AddMilliseconds(3), _traceStartTime.AddMilliseconds(650), Status.Ok ),
-            (3, "Should Be Filtered - HTTP Call to NR", _traceStartTime.AddMilliseconds(4), _traceStartTime.AddMilliseconds(600), Status.Ok ),
-            (4, "Should Be Filtered - Child of HTTP", _traceStartTime.AddMilliseconds(5), _traceStartTime.AddMilliseconds(500), Status.Ok ),
+            (null, "Test Span 1", _traceStartTime, _traceStartTime.AddMilliseconds(225), Status.Ok, false ),
+            (0, "Test Span 2", _traceStartTime.AddMilliseconds(1), _traceStartTime.AddMilliseconds(100), Status.Aborted.WithDescription(errorMessage), false ),
+            (null, "Test Span 3", _traceStartTime.AddMilliseconds(2), _traceStartTime.AddMilliseconds(375), Status.Ok, false ),
+            (null, "Test Span 4", _traceStartTime.AddMilliseconds(3), _traceStartTime.AddMilliseconds(650), Status.Ok, false ),
+            (3, "Should Be Filtered - HTTP Call to NR", _traceStartTime.AddMilliseconds(4), _traceStartTime.AddMilliseconds(600), Status.Ok, true ),
+            (4, "Should Be Filtered - Child of HTTP", _traceStartTime.AddMilliseconds(5), _traceStartTime.AddMilliseconds(500), Status.Ok, false ),
         };
 
         [SetUp]
@@ -73,7 +73,11 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
                     var spanDefinition = spanDefinitions[i];
                     var span = !spanDefinition.Parent.HasValue
                         ? tracer.StartRootSpan(spanDefinition.Name, SpanKind.Server, new SpanCreationOptions { StartTimestamp = spanDefinition.Start })
-                        : tracer.StartSpan(spanDefinition.Name, SpanKind.Server, new SpanCreationOptions { StartTimestamp = spanDefinition.Start });
+                        : tracer.StartSpan(spanDefinition.Name, _otSpans[spanDefinition.Parent.Value], SpanKind.Server, new SpanCreationOptions { StartTimestamp = spanDefinition.Start });
+                    if (spanDefinition.IsCallToNewRelic)
+                    {
+                        span.PutHttpRawUrlAttribute(config.TraceUrl);
+                    }
                     span.Status = spanDefinition.Status;
                     span.End(spanDefinition.End);
                     _otSpans.Add(span);
