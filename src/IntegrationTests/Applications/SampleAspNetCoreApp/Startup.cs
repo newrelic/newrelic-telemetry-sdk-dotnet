@@ -9,7 +9,6 @@ using OpenTelemetry.Collector.AspNetCore;
 using OpenTelemetry.Collector.Dependencies;
 using OpenTelemetry.Exporter.NewRelic;
 using OpenTelemetry.Trace.Configuration;
-using OpenTelemetry.Trace.Sampler;
 
 namespace SampleAspNetCoreApp
 {
@@ -34,8 +33,7 @@ namespace SampleAspNetCoreApp
                 var loggerFactory = svcProvider.GetRequiredService<ILoggerFactory>();
 
                 // Adds the New Relic Exporter loading settings from the appsettings.json
-                var tracerFactory = TracerFactory.Create(b => b.UseNewRelic(Configuration, loggerFactory)
-                                                 .SetSampler(Samplers.AlwaysSample));
+                var tracerFactory = TracerFactory.Create(b => b.UseNewRelic(Configuration, loggerFactory));
 
                 var dependenciesCollector = new DependenciesCollector(new HttpClientCollectorOptions(), tracerFactory);
                 var aspNetCoreCollector = new AspNetCoreCollector(tracerFactory.GetTracer(null));
