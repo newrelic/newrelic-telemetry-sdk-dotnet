@@ -105,7 +105,7 @@ steps:
       )
     )
   displayName: "SonarCloud - Validate Quality Gate Results"
-  condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
+  # condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
   inputs:
     SonarCloud: 'SonarCloud'
     organization: '$(SonarCloudOrganization)'
