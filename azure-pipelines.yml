@@ -22,6 +22,14 @@ steps:
     restoreSolution: 'src/NewRelic.Telemetry.sln' 
 
 - task: SonarCloudPrepare@1
+  condition: |
+    and (
+      succeeded(),
+      or (
+        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+        startsWith(variables['Build.SourceBranch'], 'refs/tags')
+      )
+    )
   displayName: 'SonarCloud - Prepare for Analysis'
   inputs:
     SonarCloud: 'SonarCloud'
@@ -66,14 +74,38 @@ steps:
     targetFolder: '$(Build.ArtifactStagingDirectory)/OpenTelemetry'
 
 - task: SonarCloudAnalyze@1
+  condition: |
+    and (
+      succeeded(),
+      or (
+        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+        startsWith(variables['Build.SourceBranch'], 'refs/tags')
+      )
+    )
   displayName: 'SonarCloud - Code analysis'
 
 - task: SonarCloudPublish@1
+  condition: |
+    and (
+      succeeded(),
+      or (
+        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+        startsWith(variables['Build.SourceBranch'], 'refs/tags')
+      )
+    )
   displayName: 'SonarCloud - Publish Quality Gate Results'
   
 - task: sonarcloud-buildbreaker@2
+  condition: |
+    and (
+      succeeded(),
+      or (
+        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+        startsWith(variables['Build.SourceBranch'], 'refs/tags')
+      )
+    )
   displayName: "SonarCloud - Validate Quality Gate Results"
-  condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
+  # condition: and ( succeeded(), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'master'))
   inputs:
     SonarCloud: 'SonarCloud'
     organization: '$(SonarCloudOrganization)'
