@@ -1,22 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NewRelic.Telemetry;
-using OpenTelemetry.Collector.AspNetCore;
-using OpenTelemetry.Collector.Dependencies;
 using OpenTelemetry.Exporter.NewRelic;
 using OpenTelemetry.Trace.Configuration;
-using OpenTelemetry.Trace.Export;
-using OpenTelemetry.Trace.Sampler;
 
 namespace SampleAspNetCoreApp
 {
@@ -34,18 +23,17 @@ namespace SampleAspNetCoreApp
         {
             services.AddControllers();
 
-            services.AddOpenTelemetry((svcProvider, tracerBuilder) =>
+            services.AddOpenTelemetry((serviceProvider, tracerBuilder) =>
             {
                 // Make the logger factory available to the dependency injection
                 // container so that it may be injected into the OpenTelemetry Tracer.
-                var loggerFactory = svcProvider.GetRequiredService<ILoggerFactory>();
+                var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
                 // Adds the New Relic Exporter loading settings from the appsettings.json
-                var tracerFactory = TracerFactory.Create(b => b.UseNewRelic(Configuration, loggerFactory)
-                                                 .SetSampler(Samplers.AlwaysSample));
-
-                var dependenciesCollector = new DependenciesCollector(new HttpClientCollectorOptions(), tracerFactory);
-                var aspNetCoreCollector = new AspNetCoreCollector(tracerFactory.GetTracer(null));
+                tracerBuilder
+                    .UseNewRelic(Configuration, loggerFactory)
+                    .AddRequestCollector()
+                    .AddDependencyCollector();
             });
         }
 

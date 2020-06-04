@@ -87,16 +87,16 @@
       <HintPath>..\..\packages\Microsoft.Extensions.Primitives.2.1.0\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="OpenTelemetry, Version=0.0.0.0, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\OpenTelemetry.0.2.0-alpha.100\lib\net46\OpenTelemetry.dll</HintPath>
+      <HintPath>..\..\packages\OpenTelemetry.0.2.0-alpha.179\lib\net46\OpenTelemetry.dll</HintPath>
     </Reference>
     <Reference Include="OpenTelemetry.Api, Version=0.0.0.0, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\OpenTelemetry.Api.0.2.0-alpha.100\lib\net45\OpenTelemetry.Api.dll</HintPath>
+      <HintPath>..\..\packages\OpenTelemetry.Api.0.2.0-alpha.179\lib\net45\OpenTelemetry.Api.dll</HintPath>
     </Reference>
     <Reference Include="OpenTelemetry.Collector.Dependencies, Version=0.0.0.0, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\OpenTelemetry.Collector.Dependencies.0.2.0-alpha.100\lib\netstandard2.0\OpenTelemetry.Collector.Dependencies.dll</HintPath>
+      <HintPath>..\..\packages\OpenTelemetry.Collector.Dependencies.0.2.0-alpha.179\lib\netstandard2.0\OpenTelemetry.Collector.Dependencies.dll</HintPath>
     </Reference>
     <Reference Include="OpenTelemetry.Hosting, Version=0.0.0.0, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\OpenTelemetry.Hosting.0.2.0-alpha.100\lib\netstandard2.0\OpenTelemetry.Hosting.dll</HintPath>
+      <HintPath>..\..\packages\OpenTelemetry.Hosting.0.2.0-alpha.179\lib\netstandard2.0\OpenTelemetry.Hosting.dll</HintPath>
     </Reference>
     <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
