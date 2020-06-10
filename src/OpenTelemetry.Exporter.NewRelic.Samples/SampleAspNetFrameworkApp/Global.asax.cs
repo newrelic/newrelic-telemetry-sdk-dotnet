@@ -10,7 +10,7 @@ namespace SampleAspNetFrameworkApp
     public class WebApiApplication : System.Web.HttpApplication
     {
         // Static handle to the OpenTelemetry Tracer
-        public static Tracer OTTracer;
+        public static Tracer OTTracer { get; private set; }
 
         protected void Application_Start()
         {
