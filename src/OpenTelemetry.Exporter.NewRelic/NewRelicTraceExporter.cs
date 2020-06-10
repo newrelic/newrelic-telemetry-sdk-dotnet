@@ -85,14 +85,14 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// <summary>
         /// Responsible for sending Open Telemetry Spans to New Relic endpoint.
         /// </summary>
-        /// <param name="otSpans">Collection of Open Telemetry spans to be sent to New Relic</param>
+        /// <param name="batch">Collection of Open Telemetry spans to be sent to New Relic</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async override Task<ExportResult> ExportAsync(IEnumerable<SpanData> otSpans, CancellationToken cancellationToken)
+        public async override Task<ExportResult> ExportAsync(IEnumerable<SpanData> batch, CancellationToken cancellationToken)
         {
-            if (otSpans == null) throw new ArgumentNullException(nameof(otSpans));
+            if (batch == null) return ExportResult.Success;
 
-            var nrSpanBatch = ToNewRelicSpanBatch(otSpans);
+            var nrSpanBatch = ToNewRelicSpanBatch(batch);
 
             if(nrSpanBatch.Spans.Count == 0)
             {
@@ -203,8 +203,8 @@ namespace OpenTelemetry.Exporter.NewRelic
 
         private Span ToNewRelicSpan(SpanData openTelemetrySpan)
         {
-            if (openTelemetrySpan == null) throw new ArgumentNullException(nameof(openTelemetrySpan));
-            if (openTelemetrySpan.Context == null) throw new NullReferenceException($"{nameof(openTelemetrySpan)}.Context");
+            if (openTelemetrySpan == default) throw new ArgumentException(nameof(openTelemetrySpan));
+            if (openTelemetrySpan.Context == default) throw new ArgumentException($"{nameof(openTelemetrySpan)}.Context");
 
             var newRelicSpanBuilder = SpanBuilder.Create(openTelemetrySpan.Context.SpanId.ToHexString())
                    .WithTraceId(openTelemetrySpan.Context.TraceId.ToHexString())
