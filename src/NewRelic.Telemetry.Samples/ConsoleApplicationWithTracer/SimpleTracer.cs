@@ -159,7 +159,7 @@ namespace ConsoleApplicationWithTracer
             finally
             {
                 // In all cases, record the execution duration
-                thisSpan.WithExecutionTimeInfo(startTime, DateTime.UtcNow);
+                thisSpan.WithExecutionTimeInfo(startTime, TimeSpan.FromMilliseconds(100));
              
                 // Attach the span to the SpanBatch (Trace).
                 var spanBatch = _currentSpanBatch.Value.WithSpan(thisSpan.Build());

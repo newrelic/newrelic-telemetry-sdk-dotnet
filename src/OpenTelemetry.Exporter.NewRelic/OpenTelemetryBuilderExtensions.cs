@@ -1,15 +1,15 @@
 ﻿using NewRelic.Telemetry;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using OpenTelemetry.Exporter.NewRelic;
 using OpenTelemetry.Trace.Export;
-using OpenTelemetry.Trace.Configuration;
 
-namespace OpenTelemetry.Exporter.NewRelic
+namespace OpenTelemetry.Trace
 {
     /// <summary>
     /// Extension methods to help instantiate and configure the New Relic data exporter.
     /// </summary>
-    public static class NewRelicOpenTelemetryExtensions
+    public static class OpenTelemetryBuilderExtensions
     {
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// <param name="configProvider"></param>
         /// <param name="loggerFactory">Logger Factory supported by Microsoft.Extensions.Logging</param>
         /// <returns></returns>
-        public static TracerBuilder UseNewRelic(this TracerBuilder builder, IConfiguration configProvider, ILoggerFactory loggerFactory)
+        public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, IConfiguration configProvider, ILoggerFactory loggerFactory)
         {
             builder.AddProcessorPipeline(c => c.SetExporter(new NewRelicTraceExporter(configProvider, loggerFactory)));
             return builder;
@@ -33,7 +33,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// <param name="builder"></param>
         /// <param name="configProvider"></param>
         /// <returns></returns>
-        public static TracerBuilder UseNewRelic(this TracerBuilder builder, IConfiguration configProvider)
+        public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, IConfiguration configProvider)
         {
             return UseNewRelic(builder, configProvider, null);
         }
@@ -45,10 +45,10 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// <param name="config"></param>
         /// <param name="loggerFactory">Logger Factory supported by Microsoft.Extensions.Logging</param>
         /// <returns></returns>
-        public static TracerBuilder UseNewRelic(this TracerBuilder builder, TelemetryConfiguration config, ILoggerFactory loggerFactory)
+        public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, TelemetryConfiguration config, ILoggerFactory loggerFactory)
         {
             builder.AddProcessorPipeline(c => c.SetExporter(new NewRelicTraceExporter(config, loggerFactory))
-                                               .SetExportingProcessor(e => new BatchingSpanProcessor(e)));
+                                               .SetExportingProcessor(e => new BatchingActivityProcessor(e)));
             return builder;
         }
 
@@ -58,7 +58,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// <param name="builder"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        public static TracerBuilder UseNewRelic(this TracerBuilder builder, TelemetryConfiguration config)
+        public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, TelemetryConfiguration config)
         {
             return UseNewRelic(builder, config, null);
         }
@@ -69,7 +69,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// <param name="builder"></param>
         /// <param name="apiKey"></param>
         /// <returns></returns>
-        public static TracerBuilder UseNewRelic(this TracerBuilder builder, string apiKey)
+        public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, string apiKey)
         {
             return UseNewRelic(builder, apiKey, null);
         }
@@ -80,7 +80,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// <param name="builder"></param>
         /// <param name="apiKey"></param>
         /// <returns></returns>
-        public static TracerBuilder UseNewRelic(this TracerBuilder builder, string apiKey, ILoggerFactory loggerFactory)
+        public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, string apiKey, ILoggerFactory loggerFactory)
         {
             return UseNewRelic(builder, new TelemetryConfiguration().WithApiKey(apiKey), loggerFactory);
         }

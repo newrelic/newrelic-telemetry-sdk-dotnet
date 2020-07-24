@@ -1,16 +1,13 @@
+using System;
 using System.Configuration;
 using System.Web.Http;
-using OpenTelemetry.Collector.Dependencies;
-using OpenTelemetry.Trace.Configuration;
-using OpenTelemetry.Exporter.NewRelic;
 using OpenTelemetry.Trace;
 
 namespace SampleAspNetFrameworkApp
 {
     public class WebApiApplication : System.Web.HttpApplication
     {
-        // Static handle to the OpenTelemetry Tracer
-        public static Tracer OTTracer { get; private set; }
+        private IDisposable openTelemetry;
 
         protected void Application_Start()
         {
@@ -19,17 +16,19 @@ namespace SampleAspNetFrameworkApp
             // Obtain the API Key from the Web.Config file
             var apiKey = ConfigurationManager.AppSettings["NewRelic.Telemetry.ApiKey"];
 
-            // Create the tracer factory registering New Relic as the Data Exporter
-            var tracerFactory = TracerFactory.Create((b) =>
+            // Initialize OpenTelemetry and register the New Relic Exporter
+            var openTelemetry = OpenTelemetrySdk.CreateTracerProvider((builder) =>
             {
-                b.UseNewRelic(apiKey)
-                .AddDependencyCollector();
+                builder
+                    .UseNewRelic(apiKey)
+                    .AddAspNetInstrumentation()
+                    .AddHttpInstrumentation();
             });
+        }
 
-            var dependenciesCollector = new DependenciesCollector(new HttpClientCollectorOptions(), tracerFactory);
-
-            // Make the tracer available to the application
-            OTTracer = tracerFactory.GetTracer("SampleAspNetFrameworkApp");
+        protected void Application_End()
+        {
+            this.openTelemetry?.Dispose();
         }
     }
 }

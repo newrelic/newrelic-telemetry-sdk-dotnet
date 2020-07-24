@@ -4,8 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using OpenTelemetry.Exporter.NewRelic;
-using OpenTelemetry.Trace.Configuration;
+using OpenTelemetry.Trace;
 
 namespace SampleAspNetCoreApp
 {
@@ -32,8 +31,8 @@ namespace SampleAspNetCoreApp
                 // Adds the New Relic Exporter loading settings from the appsettings.json
                 tracerBuilder
                     .UseNewRelic(Configuration, loggerFactory)
-                    .AddRequestCollector()
-                    .AddDependencyCollector();
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation();
             });
         }
 

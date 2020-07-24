@@ -151,9 +151,9 @@ namespace NewRelic.Telemetry.Spans
         /// </summary>
         /// <param name="startTimestamp"></param>
         /// <param name="endTimestamp"></param>
-        public SpanBuilder WithExecutionTimeInfo(DateTimeOffset startTimestamp, DateTimeOffset endTimestamp)
+        public SpanBuilder WithExecutionTimeInfo(DateTimeOffset startTimestamp, TimeSpan duration)
         {
-            if(startTimestamp == null)
+            if (startTimestamp == default)
             {
                 return this;
             }
@@ -161,12 +161,12 @@ namespace NewRelic.Telemetry.Spans
             var startTimestampUnix = DateTimeExtensions.ToUnixTimeMilliseconds(startTimestamp);
             WithTimestamp(startTimestampUnix);
             
-            if(endTimestamp == null)
+            if (duration == default)
             {
                 return this;
             }
 
-            WithDurationMs(DateTimeExtensions.ToUnixTimeMilliseconds(endTimestamp) - startTimestampUnix);
+            WithDurationMs(duration.TotalMilliseconds);
 
             return this;
         }

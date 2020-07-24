@@ -1,12 +1,13 @@
 using NUnit.Framework;
 using OpenTelemetry.Trace;
-using OpenTelemetry.Trace.Configuration;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NewRelic.Telemetry;
 using NewRelic.Telemetry.Spans;
 using System;
+using System.Diagnostics;
+using OpenTelemetry.Trace.Export;
 
 namespace OpenTelemetry.Exporter.NewRelic.Tests
 {
@@ -17,7 +18,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 
         const int expected_CountSpans = 4;
 
-        private List<TelemetrySpan> _otSpans = new List<TelemetrySpan>();
+        private List<Activity> _otSpans = new List<Activity>();
         private List<Span> _resultNRSpans = new List<Span>();
 
         private Dictionary<string, Span> resultNRSpansDic => _resultNRSpans.ToDictionary(x => x.Id);
@@ -28,7 +29,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         //  1       Test Span 2                                 Trace 1     Included
         //  2   Test Span 3                                     Trace 2     Included
         //  3   Test Span 4                                     Trace 3     Included
-        //  4       Shoul be Filtered - HTTP Call to NR         Trace 3     Excluded
+        //  4       Should be Filtered - HTTP Call to NR        Trace 3     Excluded
         //  5           Should be filtered - Child of HTTP      Trace 3     Excluded
 
         private static DateTimeOffset _traceStartTime = DateTime.UtcNow;
@@ -61,26 +62,34 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             });
 
             var exporter = new NewRelicTraceExporter(mockDataSender, config, null);
+            var source = new ActivitySource("newrelic.test");
 
-            using (var tracerFactory = TracerFactory.Create(
-                                  builder => builder.AddProcessorPipeline(
-                                        c => c.SetExporter(exporter))))
+            using (var openTelemetrySdk = OpenTelemetrySdk.CreateTracerProvider(
+                                  builder => builder
+                                    .AddActivitySource("newrelic.test")
+                                    .AddProcessorPipeline(builder =>
+                                        builder
+                                            .SetExporter(exporter)
+                                            .SetExportingProcessor(e => new BatchingActivityProcessor(e)))))
             {
-                var tracer = tracerFactory.GetTracer("TestTracer");
+                var tracer = openTelemetrySdk.GetTracer("TestTracer");
 
                 for (var i = 0; i < spanDefinitions.Length; ++i)
                 {
                     var spanDefinition = spanDefinitions[i];
-                    var span = !spanDefinition.Parent.HasValue
-                        ? tracer.StartRootSpan(spanDefinition.Name, SpanKind.Server, new SpanCreationOptions { StartTimestamp = spanDefinition.Start })
-                        : tracer.StartSpan(spanDefinition.Name, _otSpans[spanDefinition.Parent.Value], SpanKind.Server, new SpanCreationOptions { StartTimestamp = spanDefinition.Start });
+                    var parentContext = spanDefinition.Parent.HasValue ? _otSpans[spanDefinition.Parent.Value].Context : default(ActivityContext);
+                    var activity = source.StartActivity(spanDefinition.Name, ActivityKind.Server, parentContext);
+
+                    activity.SetStartTime(spanDefinition.Start.UtcDateTime);
                     if (spanDefinition.IsCallToNewRelic)
                     {
-                        span.PutHttpRawUrlAttribute(config.TraceUrl);
+                        activity.AddTag("http.url", config.TraceUrl);
                     }
-                    span.Status = spanDefinition.Status;
-                    span.End(spanDefinition.End);
-                    _otSpans.Add(span);
+                    activity.SetEndTime(spanDefinition.End.UtcDateTime);
+                    activity.SetStatus(spanDefinition.Status);
+                    activity?.Stop();
+
+                    _otSpans.Add(activity);
                 }
             }
         }
@@ -141,6 +150,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 
         }
 
+        [Test]
         public void Test_ParentSpanId()
         {
             var resultNRSpan0 = resultNRSpansDic[_otSpans[0].Context.SpanId.ToHexString()];

@@ -5,9 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenTelemetry.Collector.AspNetCore" Version="0.2.0-alpha.179" />
-    <PackageReference Include="OpenTelemetry.Collector.Dependencies" Version="0.2.0-alpha.179" />
-    <PackageReference Include="OpenTelemetry.Hosting" Version="0.2.0-alpha.179" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="0.3.0-beta.1" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="0.3.0-beta.1" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="0.3.0-beta.1" />
   </ItemGroup>
 
   <ItemGroup>
