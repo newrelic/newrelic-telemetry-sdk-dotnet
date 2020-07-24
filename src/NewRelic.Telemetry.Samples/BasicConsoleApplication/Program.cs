@@ -96,8 +96,8 @@ namespace BasicConsoleApplication
                 finally
                 {
                     // Calculate the duration of execution and record it
-                    var endTime = DateTime.UtcNow;
-                    spanBuilder.WithExecutionTimeInfo(startTime, endTime);
+                    var duration = TimeSpan.FromMilliseconds(100);
+                    spanBuilder.WithExecutionTimeInfo(startTime, duration);
 
                     //Obtain the completed Span from the SpanBuilder
                     var span = spanBuilder.Build();
@@ -157,8 +157,8 @@ namespace BasicConsoleApplication
                     finally
                     {
                         // Calculate the duration of execution and record it
-                        var endTime = DateTime.UtcNow;
-                        spanBuilder.WithExecutionTimeInfo(startTime, endTime);
+                        var duration = TimeSpan.FromMilliseconds(100);
+                        spanBuilder.WithExecutionTimeInfo(startTime, duration);
 
                         //Obtain the completed Span from the SpanBuilder
                         var span = spanBuilder.Build();
