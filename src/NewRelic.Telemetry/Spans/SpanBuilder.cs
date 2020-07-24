@@ -146,11 +146,11 @@ namespace NewRelic.Telemetry.Spans
         }
 
         /// <summary>
-        /// Used to record both the start and end time as well as the duration of the unit of work 
+        /// Used to record both the start time and duration of the unit of work 
         /// represented by this Span.
         /// </summary>
         /// <param name="startTimestamp"></param>
-        /// <param name="endTimestamp"></param>
+        /// <param name="duration"></param>
         public SpanBuilder WithExecutionTimeInfo(DateTimeOffset startTimestamp, TimeSpan duration)
         {
             if (startTimestamp == default)
