@@ -9,10 +9,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
 using OpenTelemetry.Trace;
-using OpenTelemetry.Trace.Export;
 using System.Reflection;
 using System.Diagnostics;
-using NewRelic.Telemetry.Extensions;
 
 namespace OpenTelemetry.Exporter.NewRelic
 {
