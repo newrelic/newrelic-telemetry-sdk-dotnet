@@ -7,7 +7,6 @@ using NewRelic.Telemetry;
 using NewRelic.Telemetry.Spans;
 using System;
 using System.Diagnostics;
-using OpenTelemetry.Trace.Export;
 
 namespace OpenTelemetry.Exporter.NewRelic.Tests
 {
@@ -64,7 +63,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             var exporter = new NewRelicTraceExporter(mockDataSender, config, null);
             var source = new ActivitySource("newrelic.test");
 
-            using (var openTelemetrySdk = OpenTelemetrySdk.CreateTracerProvider(
+            using (var openTelemetrySdk = Sdk.CreateTracerProvider(
                                   builder => builder
                                     .AddActivitySource("newrelic.test")
                                     .AddProcessorPipeline(builder =>
