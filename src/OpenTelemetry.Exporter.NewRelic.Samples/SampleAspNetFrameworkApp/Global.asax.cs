@@ -1,6 +1,7 @@
 using System;
 using System.Configuration;
 using System.Web.Http;
+using OpenTelemetry;
 using OpenTelemetry.Trace;
 
 namespace SampleAspNetFrameworkApp
@@ -17,7 +18,7 @@ namespace SampleAspNetFrameworkApp
             var apiKey = ConfigurationManager.AppSettings["NewRelic.Telemetry.ApiKey"];
 
             // Initialize OpenTelemetry and register the New Relic Exporter
-            this.openTelemetry = OpenTelemetrySdk.CreateTracerProvider((builder) =>
+            this.openTelemetry = Sdk.CreateTracerProvider((builder) =>
             {
                 builder
                     .UseNewRelic(apiKey)

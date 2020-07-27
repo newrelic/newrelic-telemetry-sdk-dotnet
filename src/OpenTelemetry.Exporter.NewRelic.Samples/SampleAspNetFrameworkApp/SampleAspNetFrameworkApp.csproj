@@ -89,20 +89,17 @@
     <Reference Include="Microsoft.Extensions.Primitives, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Extensions.Primitives.2.1.0\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTelemetry, Version=0.3.0.1, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\OpenTelemetry.0.3.0-beta.1\lib\net46\OpenTelemetry.dll</HintPath>
+    <Reference Include="OpenTelemetry, Version=0.4.0.2, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\OpenTelemetry.0.4.0-beta.2\lib\net46\OpenTelemetry.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTelemetry.Api, Version=0.3.0.1, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\OpenTelemetry.Api.0.3.0-beta.1\lib\net452\OpenTelemetry.Api.dll</HintPath>
+    <Reference Include="OpenTelemetry.Api, Version=0.4.0.2, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\OpenTelemetry.Api.0.4.0-beta.2\lib\net452\OpenTelemetry.Api.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTelemetry.Extensions.Hosting, Version=0.3.0.1, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\OpenTelemetry.Extensions.Hosting.0.3.0-beta.1\lib\netstandard2.0\OpenTelemetry.Extensions.Hosting.dll</HintPath>
+    <Reference Include="OpenTelemetry.Instrumentation.AspNet, Version=0.4.0.2, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\OpenTelemetry.Instrumentation.AspNet.0.4.0-beta.2\lib\net46\OpenTelemetry.Instrumentation.AspNet.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTelemetry.Instrumentation.AspNet, Version=0.3.0.1, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\OpenTelemetry.Instrumentation.AspNet.0.3.0-beta.1\lib\net46\OpenTelemetry.Instrumentation.AspNet.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTelemetry.Instrumentation.Http, Version=0.3.0.1, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\OpenTelemetry.Instrumentation.Http.0.3.0-beta.1\lib\net461\OpenTelemetry.Instrumentation.Http.dll</HintPath>
+    <Reference Include="OpenTelemetry.Instrumentation.Http, Version=0.4.0.2, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\OpenTelemetry.Instrumentation.Http.0.4.0-beta.2\lib\net461\OpenTelemetry.Instrumentation.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
