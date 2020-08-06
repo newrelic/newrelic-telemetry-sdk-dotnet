@@ -3,54 +3,54 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29424.173
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Telemetry", "NewRelic.Telemetry\NewRelic.Telemetry.csproj", "{62CE6D9B-449B-4956-94FC-0FBBA235145F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Telemetry", "src\NewRelic.Telemetry\NewRelic.Telemetry.csproj", "{62CE6D9B-449B-4956-94FC-0FBBA235145F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Telemetry.Tests", "NewRelic.Telemetry.Tests\NewRelic.Telemetry.Tests.csproj", "{46FE3771-EB5C-4C05-B76C-DDEF7BCC7706}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Telemetry.Tests", "tests\NewRelic.Telemetry.Tests\NewRelic.Telemetry.Tests.csproj", "{46FE3771-EB5C-4C05-B76C-DDEF7BCC7706}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{1F32F4A4-3650-48B6-B384-445DB48ECF20}"
 	ProjectSection(SolutionItems) = preProject
-		..\azure-pipelines.yml = ..\azure-pipelines.yml
-		..\CHANGELOG.md = ..\CHANGELOG.md
-		..\README.md = ..\README.md
-		..\THIRD_PARTY_NOTICES.md = ..\THIRD_PARTY_NOTICES.md
+		.\azure-pipelines.yml = .\azure-pipelines.yml
+		.\CHANGELOG.md = .\CHANGELOG.md
+		.\README.md = .\README.md
+		.\THIRD_PARTY_NOTICES.md = .\THIRD_PARTY_NOTICES.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetry.Exporter.NewRelic", "OpenTelemetry.Exporter.NewRelic\OpenTelemetry.Exporter.NewRelic.csproj", "{2477CD19-50D2-44E3-BC83-BCFE027B60B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetry.Exporter.NewRelic", "src\OpenTelemetry.Exporter.NewRelic\OpenTelemetry.Exporter.NewRelic.csproj", "{2477CD19-50D2-44E3-BC83-BCFE027B60B8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetry.Exporter.NewRelic.Tests", "OpenTelemetry.Exporter.NewRelic.Tests\OpenTelemetry.Exporter.NewRelic.Tests.csproj", "{4D5BC297-24D2-47FE-85C2-051A29A59B7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetry.Exporter.NewRelic.Tests", "tests\OpenTelemetry.Exporter.NewRelic.Tests\OpenTelemetry.Exporter.NewRelic.Tests.csproj", "{4D5BC297-24D2-47FE-85C2-051A29A59B7D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Telemetry SDK", "Telemetry SDK", "{D095AF96-3B3A-46D6-99FE-1DC845FA4BCE}"
 	ProjectSection(SolutionItems) = preProject
-		NewRelic.Telemetry\README.md = NewRelic.Telemetry\README.md
+		src\NewRelic.Telemetry\README.md = src\NewRelic.Telemetry\README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Open Telemetry", "Open Telemetry", "{82DD26D6-9333-4B4B-999B-E32E7359D7BE}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenTelemetry", "OpenTelemetry", "{82DD26D6-9333-4B4B-999B-E32E7359D7BE}"
 	ProjectSection(SolutionItems) = preProject
-		OpenTelemetry.Exporter.NewRelic\README.md = OpenTelemetry.Exporter.NewRelic\README.md
+		src\OpenTelemetry.Exporter.NewRelic\README.md = src\OpenTelemetry.Exporter.NewRelic\README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{FECC3BEB-820C-4B94-BB0E-98228ADE6237}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{FECC3BEB-820C-4B94-BB0E-98228ADE6237}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{F028FF9D-9262-45A6-AC4D-79C54943DB03}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{F028FF9D-9262-45A6-AC4D-79C54943DB03}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleAspNetCoreApp", "OpenTelemetry.Exporter.NewRelic.Samples\SampleAspNetCoreApp\SampleAspNetCoreApp.csproj", "{F2E815B3-5902-4DD5-9D37-CFB514D6B4DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore", "examples\OpenTelemetry.Exporter.NewRelic\AspNetCore\AspNetCore.csproj", "{F2E815B3-5902-4DD5-9D37-CFB514D6B4DE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApplicationWithTracer", "NewRelic.Telemetry.Samples\ConsoleApplicationWithTracer\ConsoleApplicationWithTracer.csproj", "{647540D5-0080-4594-879E-8F3394F3E391}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleWithTracer", "examples\NewRelic.Telemetry\ConsoleWithTracer\ConsoleWithTracer.csproj", "{647540D5-0080-4594-879E-8F3394F3E391}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BasicConsoleApplication", "NewRelic.Telemetry.Samples\BasicConsoleApplication\BasicConsoleApplication.csproj", "{131E8A7A-2FC0-4D1F-84E6-0A3CCE37DE1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console", "examples\NewRelic.Telemetry\Console\Console.csproj", "{131E8A7A-2FC0-4D1F-84E6-0A3CCE37DE1D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreWebApiApplication", "NewRelic.Telemetry.Samples\AspNetCoreWebApiApplication\AspNetCoreWebApiApplication.csproj", "{408E065C-BEA1-461C-B2D4-7879261C8EBE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore", "examples\NewRelic.Telemetry\AspNetCore\AspNetCore.csproj", "{408E065C-BEA1-461C-B2D4-7879261C8EBE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleAspNetFrameworkApp", "OpenTelemetry.Exporter.NewRelic.Samples\SampleAspNetFrameworkApp\SampleAspNetFrameworkApp.csproj", "{59A82C1E-3349-466B-8FD6-5EBC93B1141A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNet", "examples\OpenTelemetry.Exporter.NewRelic\AspNet\AspNet.csproj", "{59A82C1E-3349-466B-8FD6-5EBC93B1141A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASPNetFrameworkApiApplication", "NewRelic.Telemetry.Samples\ASPNetFrameworkApiApplication\ASPNetFrameworkApiApplication.csproj", "{2002CE3F-509D-4992-88AF-A4D5B306E16F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNet", "examples\NewRelic.Telemetry\AspNet\AspNet.csproj", "{2002CE3F-509D-4992-88AF-A4D5B306E16F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration Tests", "Integration Tests", "{CD92E0B7-C24F-4B8C-9E86-C5CD30390618}"
 	ProjectSection(SolutionItems) = preProject
-		IntegrationTests\README.md = IntegrationTests\README.md
+		tests\IntegrationTests\README.md = tests\IntegrationTests\README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "IntegrationTests\IntegrationTests\IntegrationTests.csproj", "{14C5D71D-A011-46A0-9D40-CF40C3954821}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "tests\IntegrationTests\IntegrationTests\IntegrationTests.csproj", "{14C5D71D-A011-46A0-9D40-CF40C3954821}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

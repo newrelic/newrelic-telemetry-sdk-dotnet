@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NewRelic.Telemetry\NewRelic.Telemetry.csproj" />
+    <ProjectReference Include="..\..\src\NewRelic.Telemetry\NewRelic.Telemetry.csproj" />
   </ItemGroup>
 
 </Project>
