@@ -349,4 +349,4 @@ Any additional information that is available to describe the outcome.
 <br/>
 
 ## Next Steps
-* Review these [Sample Applications](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/tree/master/src/NewRelic.Telemetry.Samples) for guidance on configuration and usage of the New Relic Telemetry SDK for Tracing.
+* Review these [Sample Applications](/examples/NewRelic.Telemetry) for guidance on configuration and usage of the New Relic Telemetry SDK for Tracing.
