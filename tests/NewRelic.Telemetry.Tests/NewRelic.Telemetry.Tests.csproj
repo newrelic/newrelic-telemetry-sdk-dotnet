@@ -9,7 +9,7 @@
     <Authors>newrelic</Authors>
 
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\keys\NewRelic.Telemetry.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\build\NewRelic.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>

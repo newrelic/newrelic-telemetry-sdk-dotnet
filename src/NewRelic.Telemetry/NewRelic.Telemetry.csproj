@@ -25,7 +25,7 @@
     <FileVersion>$(Major).$(Minor).$(Build).$(Revision)</FileVersion>
 
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\keys\NewRelic.Telemetry.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\build\NewRelic.snk</AssemblyOriginatorKeyFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageIconUrl>https://newrelic.com/images/avatar-newrelic.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/newrelic/newrelic-telemetry-sdk-dotnet</RepositoryUrl>
