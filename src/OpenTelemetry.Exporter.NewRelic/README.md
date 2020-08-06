@@ -24,7 +24,7 @@ You can configure the `NewRelicTraceExporter` by following the directions below:
 * `SendTimeout`: Timeout in seconds.
 
 ## Next Steps
-* Review these [Sample Applications](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/tree/master/src/OpenTelemetry.Exporter.NewRelic.Samples) for guidance on configuration and usage.
+* Review these [Sample Applications](/examples/OpenTelemetry.Exporter.NewRelic) for guidance on configuration and usage.
 
 ## References
 
