@@ -11,17 +11,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetry.Exporter.NewR
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetry.Exporter.NewRelic.Tests", "tests\OpenTelemetry.Exporter.NewRelic.Tests\OpenTelemetry.Exporter.NewRelic.Tests.csproj", "{4D5BC297-24D2-47FE-85C2-051A29A59B7D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore", "examples\OpenTelemetry.Exporter.NewRelic\AspNetCore\AspNetCore.csproj", "{F2E815B3-5902-4DD5-9D37-CFB514D6B4DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Examples.AspNetCore", "examples\OpenTelemetry.Exporter.NewRelic\AspNetCore\NewRelic.Examples.AspNetCore.csproj", "{F2E815B3-5902-4DD5-9D37-CFB514D6B4DE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleWithTracer", "examples\NewRelic.Telemetry\ConsoleWithTracer\ConsoleWithTracer.csproj", "{647540D5-0080-4594-879E-8F3394F3E391}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Examples.ConsoleWithTracer", "examples\NewRelic.Telemetry\ConsoleWithTracer\NewRelic.Examples.ConsoleWithTracer.csproj", "{647540D5-0080-4594-879E-8F3394F3E391}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console", "examples\NewRelic.Telemetry\Console\Console.csproj", "{131E8A7A-2FC0-4D1F-84E6-0A3CCE37DE1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Examples.Console", "examples\NewRelic.Telemetry\Console\NewRelic.Examples.Console.csproj", "{131E8A7A-2FC0-4D1F-84E6-0A3CCE37DE1D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore", "examples\NewRelic.Telemetry\AspNetCore\AspNetCore.csproj", "{408E065C-BEA1-461C-B2D4-7879261C8EBE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Examples.AspNetCore", "examples\NewRelic.Telemetry\AspNetCore\NewRelic.Examples.AspNetCore.csproj", "{408E065C-BEA1-461C-B2D4-7879261C8EBE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNet", "examples\OpenTelemetry.Exporter.NewRelic\AspNet\AspNet.csproj", "{59A82C1E-3349-466B-8FD6-5EBC93B1141A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewRelic.Examples.AspNet", "examples\OpenTelemetry.Exporter.NewRelic\AspNet\NewRelic.Examples.AspNet.csproj", "{59A82C1E-3349-466B-8FD6-5EBC93B1141A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNet", "examples\NewRelic.Telemetry\AspNet\AspNet.csproj", "{2002CE3F-509D-4992-88AF-A4D5B306E16F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewRelic.Examples.AspNet", "examples\NewRelic.Telemetry\AspNet\NewRelic.Examples.AspNet.csproj", "{2002CE3F-509D-4992-88AF-A4D5B306E16F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{A76FE35F-7402-4B7D-BA8A-9DE4B1C63102}"
 EndProject
