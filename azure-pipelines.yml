@@ -19,7 +19,7 @@ steps:
 - task: NuGetCommand@2
   inputs:
     command: 'restore'
-    restoreSolution: 'NewRelic.Telemetry.sln' 
+    restoreSolution: 'NewRelic.sln' 
 
 # - task: SonarCloudPrepare@1
 #   condition: |
@@ -45,7 +45,7 @@ steps:
 - task: MSBuild@1
   displayName: 'Build (configuration=$(buildConfiguration))'
   inputs:
-    solution: 'NewRelic.Telemetry.sln'
+    solution: 'NewRelic.sln'
     configuration: $(buildConfiguration) 
 
 - script: dotnet test tests/NewRelic.Telemetry.Tests --no-build --no-restore --configuration $(buildConfiguration) --logger trx
