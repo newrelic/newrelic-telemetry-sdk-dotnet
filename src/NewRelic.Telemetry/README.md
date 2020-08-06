@@ -1,5 +1,8 @@
 # New Relic Telemetry SDK for .NET
 
+[![NuGet](https://img.shields.io/nuget/v/NewRelic.Telemetry.svg)](https://www.nuget.org/packages/NewRelic.Telemetry)
+[![NuGet](https://img.shields.io/nuget/dt/NewRelic.Telemetry.svg)](https://www.nuget.org/packages/NewRelic.Telemetry)
+
 The New Relic Telemetry SDK for .NET allows the capture of information about the execution of your application and provides a mechanism to send this information to New Relic.
 
 

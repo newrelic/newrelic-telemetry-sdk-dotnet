@@ -1,11 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <IsPackable>false</IsPackable>
-
-    <AssemblyOriginatorKeyFile>..\..\keys\NewRelic.Telemetry.snk</AssemblyOriginatorKeyFile>
-    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OpenTelemetry.Exporter.NewRelic\OpenTelemetry.Exporter.NewRelic.csproj" />
+    <ProjectReference Include="..\..\src\OpenTelemetry.Exporter.NewRelic\OpenTelemetry.Exporter.NewRelic.csproj" />
   </ItemGroup>
-
 </Project>

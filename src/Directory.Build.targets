@@ -1,0 +1,3 @@
+<Project InitialTargets="VersionByGitTag">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), 'NewRelic.sln'))\build\Versioning.targets" />
+</Project>
