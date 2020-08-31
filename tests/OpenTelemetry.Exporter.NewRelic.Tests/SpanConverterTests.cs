@@ -10,6 +10,7 @@ using Xunit;
 
 namespace OpenTelemetry.Exporter.NewRelic.Tests
 {
+    [Collection("newrelic-exporter")]
     public class SpanConverterTests : IDisposable
     {
         const string testServiceName = "TestService";
