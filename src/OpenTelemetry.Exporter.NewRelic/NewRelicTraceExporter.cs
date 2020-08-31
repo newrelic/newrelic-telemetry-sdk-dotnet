@@ -87,9 +87,12 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// <inheritdoc />
         public override ExportResult Export(in Batch<Activity> batch)
         {
+            // Prevent exporter's HTTP operations from being instrumented.
+            using var scope = SuppressInstrumentationScope.Begin();
+
             var nrSpanBatch = ToNewRelicSpanBatch(batch);
 
-            if (nrSpanBatch.Spans.Count == 0)
+            if (nrSpanBatch.Spans?.Count == 0)
             {
                 return ExportResult.Success;
             }
