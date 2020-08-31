@@ -11,6 +11,7 @@ using Xunit;
 
 namespace OpenTelemetry.Exporter.NewRelic.Tests
 {
+    [Collection("newrelic-exporter")]
     public class NewRelicExporterTests : IDisposable
     {
         private static readonly ConcurrentDictionary<Guid, string> Responses = new ConcurrentDictionary<Guid, string>();
