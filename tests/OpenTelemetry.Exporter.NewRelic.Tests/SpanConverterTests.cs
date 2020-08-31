@@ -63,13 +63,10 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             var exporter = new NewRelicTraceExporter(mockDataSender, config, null);
             var source = new ActivitySource("newrelic.test");
 
-            using (var openTelemetrySdk = Sdk.CreateTracerProvider(
-                                  builder => builder
-                                    .AddActivitySource("newrelic.test")
-                                    .AddProcessorPipeline(builder =>
-                                        builder
-                                            .SetExporter(exporter)
-                                            .SetExportingProcessor(e => new BatchingActivityProcessor(e)))))
+            using (var openTelemetrySdk = Sdk.CreateTracerProviderBuilder()
+                    .AddSource("newrelic.test")
+                    .AddProcessor(new BatchExportActivityProcessor(exporter))
+                    .Build())
             {
                 var tracer = openTelemetrySdk.GetTracer("TestTracer");
 

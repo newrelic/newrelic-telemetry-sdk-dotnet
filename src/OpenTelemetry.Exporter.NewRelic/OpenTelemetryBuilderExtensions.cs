@@ -21,7 +21,7 @@ namespace OpenTelemetry.Trace
         /// <returns></returns>
         public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, IConfiguration configProvider, ILoggerFactory loggerFactory)
         {
-            builder.AddProcessorPipeline(c => c.SetExporter(new NewRelicTraceExporter(configProvider, loggerFactory)));
+            builder.AddProcessor(new BatchExportActivityProcessor(new NewRelicTraceExporter(configProvider, loggerFactory)));
             return builder;
         }
 
@@ -46,8 +46,7 @@ namespace OpenTelemetry.Trace
         /// <returns></returns>
         public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, TelemetryConfiguration config, ILoggerFactory loggerFactory)
         {
-            builder.AddProcessorPipeline(c => c.SetExporter(new NewRelicTraceExporter(config, loggerFactory))
-                                               .SetExportingProcessor(e => new BatchingActivityProcessor(e)));
+            builder.AddProcessor(new BatchExportActivityProcessor(new NewRelicTraceExporter(config, loggerFactory)));
             return builder;
         }
 

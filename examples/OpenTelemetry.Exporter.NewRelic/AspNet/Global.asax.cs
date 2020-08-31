@@ -18,13 +18,11 @@ namespace SampleAspNetFrameworkApp
             var apiKey = ConfigurationManager.AppSettings["NewRelic.Telemetry.ApiKey"];
 
             // Initialize OpenTelemetry and register the New Relic Exporter
-            this.openTelemetry = Sdk.CreateTracerProvider((builder) =>
-            {
-                builder
-                    .UseNewRelic(apiKey)
-                    .AddAspNetInstrumentation()
-                    .AddHttpInstrumentation();
-            });
+            this.openTelemetry = Sdk.CreateTracerProviderBuilder()
+                .UseNewRelic(apiKey)
+                .AddAspNetInstrumentation()
+                .AddHttpClientInstrumentation()
+                .Build();
         }
 
         protected void Application_End()
