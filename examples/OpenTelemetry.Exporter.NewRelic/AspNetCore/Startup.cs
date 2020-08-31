@@ -22,7 +22,7 @@ namespace SampleAspNetCoreApp
         {
             services.AddControllers();
 
-            services.AddOpenTelemetry((serviceProvider, tracerBuilder) =>
+            services.AddOpenTelemetryTracerProvider((serviceProvider, tracerBuilder) =>
             {
                 // Make the logger factory available to the dependency injection
                 // container so that it may be injected into the OpenTelemetry Tracer.

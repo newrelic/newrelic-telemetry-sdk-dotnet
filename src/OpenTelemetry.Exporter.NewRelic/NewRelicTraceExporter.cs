@@ -21,6 +21,8 @@ namespace OpenTelemetry.Exporter.NewRelic
     {
         private readonly SpanDataSender _spanDataSender;
         private const string _productName = "NewRelic-Dotnet-OpenTelemetry";
+
+        private static readonly ActivitySpanId EmptyActivitySpanId = ActivitySpanId.CreateFromBytes(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, });
         private static readonly string _productVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
 
         private const string _attribName_url = "http.url";
@@ -82,27 +84,20 @@ namespace OpenTelemetry.Exporter.NewRelic
             }
         }
 
-
-        /// <summary>
-        /// Responsible for sending Open Telemetry Spans to New Relic endpoint.
-        /// </summary>
-        /// <param name="batch">Collection of Open Telemetry spans to be sent to New Relic</param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public override async Task<ExportResult> ExportAsync(IEnumerable<Activity> batch, CancellationToken cancellationToken)
+        /// <inheritdoc />
+        public override ExportResult Export(in Batch<Activity> batch)
         {
-            if (batch == null) return ExportResult.Success;
-
             var nrSpanBatch = ToNewRelicSpanBatch(batch);
 
-            if(nrSpanBatch.Spans.Count == 0)
+            if (nrSpanBatch.Spans.Count == 0)
             {
                 return ExportResult.Success;
             }
 
-            var result = await _spanDataSender.SendDataAsync(nrSpanBatch);
+            Response response = null;
+            Task.Run(async () => response = await _spanDataSender.SendDataAsync(nrSpanBatch)).GetAwaiter().GetResult();
 
-            switch (result.ResponseStatus)
+            switch (response.ResponseStatus)
             {
                 case NewRelicResponseStatus.DidNotSend_NoData:
                 case NewRelicResponseStatus.Success:
@@ -110,16 +105,11 @@ namespace OpenTelemetry.Exporter.NewRelic
                
                 case NewRelicResponseStatus.Failure:
                 default:
-                    return ExportResult.FailedRetryable;
+                    return ExportResult.Failure;
             }
         }
 
-        public override Task ShutdownAsync(CancellationToken cancellationToken)
-        {
-            return Task.FromResult(true);
-        }
-
-        private SpanBatch ToNewRelicSpanBatch(IEnumerable<Activity> otSpans)
+        private SpanBatch ToNewRelicSpanBatch(in Batch<Activity> otSpans)
         {
             var nrSpans = new List<Span>();
             var spanIdsToFilter = new List<string>();
@@ -224,7 +214,7 @@ namespace OpenTelemetry.Exporter.NewRelic
                 newRelicSpanBuilder.WithServiceName(_config.ServiceName);
             }
 
-            if (openTelemetrySpan.ParentSpanId != default)
+            if (openTelemetrySpan.ParentSpanId != EmptyActivitySpanId)
             {
                 newRelicSpanBuilder.WithParentId(openTelemetrySpan.ParentSpanId.ToHexString());
             }
