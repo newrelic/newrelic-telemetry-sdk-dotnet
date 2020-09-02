@@ -24,8 +24,12 @@
     <ProjectReference Include="..\NewRelic.Telemetry\NewRelic.Telemetry.csproj" />
   </ItemGroup>
 
-  <Target Name="PublishNugetPackage" AfterTargets="Pack">
+  <!-- There is an integration test that relies on pushing NuGet packages
+       to a local package source. The integration test is still a work in
+       progress, so for now we're not performing the local NuGet package push.
+  -->
+  <!--<Target Name="PublishNugetPackage" AfterTargets="Pack">
     <MakeDir Directories="$(MSBuildProjectDirectory)\..\LocalNugetPackageSource" />
     <Exec Command="dotnet nuget push &quot;$(MSBuildProjectDirectory)/bin/$(Configuration)/*.nupkg&quot; -s &quot;$(MSBuildProjectDirectory)/../LocalNugetPackageSource&quot;" />
-  </Target>
+  </Target>-->
 </Project>
