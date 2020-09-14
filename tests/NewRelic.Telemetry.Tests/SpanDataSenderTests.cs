@@ -12,9 +12,8 @@ namespace NewRelic.Telemetry.Tests
         public void SendAnEmptySpanBatch()
         {
             var traceId = "123";
-            var spanBatch = SpanBatchBuilder.Create()
-                .WithTraceId(traceId)
-                .Build();
+            var spanBatch = SpanBatch.Create()
+                .WithTraceId(traceId);
 
             var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
 
@@ -34,10 +33,9 @@ namespace NewRelic.Telemetry.Tests
         {
             var traceId = "123";
 
-            var spanBatch = SpanBatchBuilder.Create()
+            var spanBatch = SpanBatch.Create()
                 .WithTraceId(traceId)
-                .WithSpan(SpanBuilder.Create("TestSpan").Build())
-                .Build();
+                .WithSpan(Span.Create("TestSpan"));
 
             var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
 
@@ -58,16 +56,15 @@ namespace NewRelic.Telemetry.Tests
             var traceId = "123";
             var instrumentationProvider = "TestInstrumentationProvider";
 
-            var spanBatch = SpanBatchBuilder.Create()
+            var spanBatch = SpanBatch.Create()
                 .WithTraceId(traceId)
-                .WithSpan(SpanBuilder.Create("TestSpan").Build())
-                .Build();
+                .WithSpan(Span.Create("TestSpan"));
 
             var dataSender = new SpanDataSender(new TelemetryConfiguration()
                 .WithApiKey("123456")
                 .WithInstrumentationProviderName(instrumentationProvider));
 
-            SpanBatch capturedSpanbatch = null;
+            SpanBatch? capturedSpanbatch = null;
             dataSender.WithCaptureSendDataAsyncDelegate((spanBatch, attempt) =>
             {
                 capturedSpanbatch = spanBatch;
@@ -77,10 +74,10 @@ namespace NewRelic.Telemetry.Tests
             var response = dataSender.SendDataAsync(spanBatch).Result;
 
             Assert.IsNotNull(spanBatch);
-            Assert.AreEqual(1, spanBatch.Spans.Count);
-            Assert.IsNotNull(spanBatch.Spans[0].Attributes);
-            Assert.IsTrue(spanBatch.Spans[0].Attributes.ContainsKey("instrumentation.provider"));
-            Assert.AreEqual(instrumentationProvider,spanBatch.Spans[0].Attributes["instrumentation.provider"]);
+            Assert.AreEqual(1, spanBatch?.Spans?.Count);
+            Assert.IsNotNull(spanBatch?.Spans?[0].Attributes);
+            Assert.IsTrue(spanBatch?.Spans?[0].Attributes?.ContainsKey("instrumentation.provider"));
+            Assert.AreEqual(instrumentationProvider,spanBatch?.Spans?[0].Attributes?["instrumentation.provider"]);
         }
     }
 }

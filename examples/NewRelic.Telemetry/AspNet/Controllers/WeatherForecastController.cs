@@ -60,11 +60,11 @@ namespace ASPNetFrameworkApiApplication.Controllers
             // a unique identifier.  In this example, we are using a Guid.
             var spanId = Guid.NewGuid().ToString();
 
-            var spanBuilder = SpanBuilder.Create(spanId);
+            var span = Span.Create(spanId);
 
             // We can add additional attribution to a span using helper functions.
             // In this case a timestamp and the controller action name are recorded
-            spanBuilder.WithTimestamp(DateTimeOffset.UtcNow)
+            span.WithTimestamp(DateTimeOffset.UtcNow)
                 .WithName("WeatherForecast/Get");
 
             // Wrapping the unit of work inside a try/catch is helpful to ensure that
@@ -88,8 +88,8 @@ namespace ASPNetFrameworkApiApplication.Controllers
             catch (Exception ex)
             {
                 // In the event of an exception
-                spanBuilder.HasError(true);
-                spanBuilder.WithAttribute("Exception", ex);
+                span.HasError(true);
+                span.WithAttribute("Exception", ex);
 
                 //This ensures that tracking of spans doesn't interfere with the normal execution flow
                 throw;
@@ -97,20 +97,13 @@ namespace ASPNetFrameworkApiApplication.Controllers
             // In all cases, the span is sent up to the New Relic endpoint.
             finally
             {
-                // Obtain the span from the SpanBuilder.
-                var span = spanBuilder.Build();
-
-                // The SpanBatchBuilder is a tool to help create SpanBatches
-                // Create a new SpanBatchBuilder and associate the span to it.
-                var spanBatchBuilder = SpanBatchBuilder.Create()
+                // Create a new SpanBatch and associate the span to it.
+                var spanBatch = SpanBatch.Create()
                     .WithSpan(span);
 
                 // Since this SpanBatch represents a single trace, identify
                 // the TraceId for the entire batch.
-                spanBatchBuilder.WithTraceId(Guid.NewGuid().ToString());
-
-                // Obtain the spanBatch from the builder
-                var spanBatch = spanBatchBuilder.Build();
+                spanBatch.WithTraceId(Guid.NewGuid().ToString());
 
                 // Send it to the New Relic endpoint.
                 var newRelicResult = await _spanDataSender.SendDataAsync(spanBatch);

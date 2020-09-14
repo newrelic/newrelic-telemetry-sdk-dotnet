@@ -27,7 +27,7 @@ namespace OpenTelemetry.Exporter.NewRelic
 
         private const string _attribName_url = "http.url";
 
-        private readonly ILogger _logger;
+        private readonly ILogger? _logger;
         private readonly TelemetryConfiguration _config;
         private readonly string[] _nrEndpoints;
 
@@ -46,7 +46,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// </summary>
         /// <param name="configProvider"></param>
         /// <param name="loggerFactory"></param>
-        public NewRelicTraceExporter(IConfiguration configProvider, ILoggerFactory loggerFactory) : this(new TelemetryConfiguration(configProvider), loggerFactory)
+        public NewRelicTraceExporter(IConfiguration configProvider, ILoggerFactory? loggerFactory) : this(new TelemetryConfiguration(configProvider), loggerFactory)
         {
         }
 
@@ -63,11 +63,11 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// accepts a logger factory supported by Microsoft.Extensions.Logging.
         /// </summary>
         /// <param name="config"></param>
-        public NewRelicTraceExporter(TelemetryConfiguration config, ILoggerFactory loggerFactory) : this(new SpanDataSender(config, loggerFactory),config,loggerFactory)
+        public NewRelicTraceExporter(TelemetryConfiguration config, ILoggerFactory? loggerFactory) : this(new SpanDataSender(config, loggerFactory),config,loggerFactory)
         {
         }
 
-        internal NewRelicTraceExporter(SpanDataSender spanDataSender, TelemetryConfiguration config, ILoggerFactory loggerFactory)
+        internal NewRelicTraceExporter(SpanDataSender spanDataSender, TelemetryConfiguration config, ILoggerFactory? loggerFactory)
         {
             _spanDataSender = spanDataSender;
             spanDataSender.AddVersionInfo(_productName, _productVersion);
@@ -97,10 +97,10 @@ namespace OpenTelemetry.Exporter.NewRelic
                 return ExportResult.Success;
             }
 
-            Response response = null;
+            Response? response = null;
             Task.Run(async () => response = await _spanDataSender.SendDataAsync(nrSpanBatch)).GetAwaiter().GetResult();
 
-            switch (response.ResponseStatus)
+            switch (response?.ResponseStatus)
             {
                 case NewRelicResponseStatus.DidNotSend_NoData:
                 case NewRelicResponseStatus.Success:
@@ -155,11 +155,9 @@ namespace OpenTelemetry.Exporter.NewRelic
 
             nrSpans = FilterSpans(nrSpans, spanIdsToFilter);
 
-            var spanBatchBuilder = SpanBatchBuilder.Create();
+            var nrSpanBatch = SpanBatch.Create();
 
-            spanBatchBuilder.WithSpans(nrSpans);
-
-            var nrSpanBatch = spanBatchBuilder.Build();
+            nrSpanBatch.WithSpans(nrSpans);
 
             return nrSpanBatch;
         }
@@ -171,7 +169,7 @@ namespace OpenTelemetry.Exporter.NewRelic
                 return spans;
             }
 
-            var newSpansToFilter = spans.Where(x => spanIdsToFilter.Contains(x.ParentId)).ToArray();
+            var newSpansToFilter = spans.Where(x => x.ParentId != null && spanIdsToFilter.Contains(x.ParentId)).ToArray();
             
             if (newSpansToFilter.Length == 0)
             {
@@ -195,12 +193,12 @@ namespace OpenTelemetry.Exporter.NewRelic
             return FilterSpans(spans, spanIdsToFilter);
         }
 
-        private Span ToNewRelicSpan(Activity openTelemetrySpan)
+        private Span? ToNewRelicSpan(Activity openTelemetrySpan)
         {
             if (openTelemetrySpan == default) throw new ArgumentException(nameof(openTelemetrySpan));
             if (openTelemetrySpan.Context == default) throw new ArgumentException($"{nameof(openTelemetrySpan)}.Context");
 
-            var newRelicSpanBuilder = SpanBuilder.Create(openTelemetrySpan.Context.SpanId.ToHexString())
+            var newRelicSpan = Span.Create(openTelemetrySpan.Context.SpanId.ToHexString())
                    .WithTraceId(openTelemetrySpan.Context.TraceId.ToHexString())
                    .WithExecutionTimeInfo(openTelemetrySpan.StartTimeUtc, openTelemetrySpan.Duration)
                    .WithName(openTelemetrySpan.DisplayName);
@@ -209,17 +207,17 @@ namespace OpenTelemetry.Exporter.NewRelic
             if (!status.IsOk)
             {
                 //this will set HasError = true and the description if available
-                newRelicSpanBuilder.HasError(status.Description);
+                newRelicSpan.HasError(status.Description);
             }
 
-            if (!string.IsNullOrWhiteSpace(_config.ServiceName))
+            if (_config.ServiceName != null && !string.IsNullOrWhiteSpace(_config.ServiceName))
             {
-                newRelicSpanBuilder.WithServiceName(_config.ServiceName);
+                newRelicSpan.WithServiceName(_config.ServiceName);
             }
 
             if (openTelemetrySpan.ParentSpanId != EmptyActivitySpanId)
             {
-                newRelicSpanBuilder.WithParentId(openTelemetrySpan.ParentSpanId.ToHexString());
+                newRelicSpan.WithParentId(openTelemetrySpan.ParentSpanId.ToHexString());
             }
 
             if (openTelemetrySpan.Tags != null)
@@ -234,13 +232,16 @@ namespace OpenTelemetry.Exporter.NewRelic
                         return null;
                     }
 
-                    newRelicSpanBuilder.WithAttribute(spanAttrib.Key, spanAttrib.Value);
+                    if (spanAttrib.Value == null)
+                    {
+                        continue;
+                    }
+
+                    newRelicSpan.WithAttribute(spanAttrib.Key, spanAttrib.Value);
                 }
             }
-
             
-
-            return newRelicSpanBuilder.Build();
+            return newRelicSpan;
         }
     }
 }

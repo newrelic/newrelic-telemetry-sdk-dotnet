@@ -57,7 +57,7 @@ namespace NewRelic.Telemetry.Tests
             {
                 actualCountCallsSendData++;
 
-                if (spanBatch.Spans.Count < 4)
+                if (spanBatch.Spans?.Count < 4)
                 {
                     okJsons.Add(spanBatch.ToJson());
                     successfulSpanBatches.Add(spanBatch);
@@ -78,16 +78,15 @@ namespace NewRelic.Telemetry.Tests
                 {"testAttrib1", "testAttribValue1" }
             };
 
-            var spanBatchBuilder = SpanBatchBuilder.Create()
+            var spanBatch = SpanBatch.Create()
                 .WithTraceId(expectedTraceID)
                 .WithAttributes(attribs);
 
             for (var i = 0; i < expectedCountSpans; i++)
             {
-                spanBatchBuilder.WithSpan(SpanBuilder.Create(i.ToString()).Build());
+                spanBatch.WithSpan(Span.Create(i.ToString()));
             }
 
-            var spanBatch = spanBatchBuilder.Build();
 
             // Act
             await dataSender.SendDataAsync(spanBatch);
@@ -167,14 +166,12 @@ namespace NewRelic.Telemetry.Tests
                 return Task.FromResult(response);
             });
 
-            var spanBatchBuilder = SpanBatchBuilder.Create();
+            var spanBatch = SpanBatch.Create();
 
-            spanBatchBuilder.WithSpan(SpanBuilder.Create($"{traceID_SplitBatch_Prefix}1").Build());
-            spanBatchBuilder.WithSpan(SpanBuilder.Create($"{traceID_SplitBatch_Prefix}2").Build());
-            spanBatchBuilder.WithSpan(SpanBuilder.Create($"{traceID_SplitBatch_Prefix}3").Build());
-            spanBatchBuilder.WithSpan(SpanBuilder.Create(traceID_Success).Build());
-
-            var spanBatch = spanBatchBuilder.Build();
+            spanBatch.WithSpan(Span.Create($"{traceID_SplitBatch_Prefix}1"));
+            spanBatch.WithSpan(Span.Create($"{traceID_SplitBatch_Prefix}2"));
+            spanBatch.WithSpan(Span.Create($"{traceID_SplitBatch_Prefix}3"));
+            spanBatch.WithSpan(Span.Create(traceID_Success));
 
             // Act
             var result = await dataSender.SendDataAsync(spanBatch);
@@ -223,9 +220,8 @@ namespace NewRelic.Telemetry.Tests
                 return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.RequestTimeout));
             });
 
-            var spanBatch = SpanBatchBuilder.Create()
-                .WithSpan(SpanBuilder.Create("Test Span").Build())
-                .Build();
+            var spanBatch = SpanBatch.Create()
+                .WithSpan(Span.Create("Test Span"));
 
             var result = await dataSender.SendDataAsync(spanBatch);
 
@@ -274,9 +270,9 @@ namespace NewRelic.Telemetry.Tests
                 return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK));
             });
 
-            var spanBatch = SpanBatchBuilder.Create()
-               .WithSpan(SpanBuilder.Create("Test Span").Build())
-               .Build();
+            var spanBatch = SpanBatch.Create()
+               .WithSpan(Span.Create("Test Span"))
+               ;
 
             var result = await dataSender.SendDataAsync(spanBatch);
 
@@ -326,9 +322,8 @@ namespace NewRelic.Telemetry.Tests
                 return Task.FromResult(httpResponse);
             });
 
-            var spanBatch = SpanBatchBuilder.Create()
-               .WithSpan(SpanBuilder.Create("Test Span").Build())
-               .Build();
+            var spanBatch = SpanBatch.Create()
+               .WithSpan(Span.Create("Test Span"));
 
             var result = await dataSender.SendDataAsync(spanBatch);
 
@@ -377,9 +372,9 @@ namespace NewRelic.Telemetry.Tests
                 return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK));
             });
 
-            var spanBatch = SpanBatchBuilder.Create()
-               .WithSpan(SpanBuilder.Create("Test Span").Build())
-               .Build();
+            var spanBatch = SpanBatch.Create()
+               .WithSpan(Span.Create("Test Span"))
+               ;
 
             var result = await dataSender.SendDataAsync(spanBatch);
 
@@ -416,9 +411,9 @@ namespace NewRelic.Telemetry.Tests
                 return Task.FromResult(httpResponse);
             });
 
-            var spanBatch = SpanBatchBuilder.Create()
-               .WithSpan(SpanBuilder.Create("Test Span").Build())
-               .Build();
+            var spanBatch = SpanBatch.Create()
+               .WithSpan(Span.Create("Test Span"))
+               ;
 
             var response = await dataSender.SendDataAsync(spanBatch);
 
@@ -449,9 +444,9 @@ namespace NewRelic.Telemetry.Tests
                 throw new Exception("Server Error", new Exception("Inner exception message"));
             });
 
-            var spanBatch = SpanBatchBuilder.Create()
-               .WithSpan(SpanBuilder.Create("Test Span").Build())
-               .Build();
+            var spanBatch = SpanBatch.Create()
+               .WithSpan(Span.Create("Test Span"))
+               ;
 
             var result = await dataSender.SendDataAsync(spanBatch);
 
@@ -491,9 +486,9 @@ namespace NewRelic.Telemetry.Tests
             });
 
 
-            var spanBatch = SpanBatchBuilder.Create()
-               .WithSpan(SpanBuilder.Create("Test Span").Build())
-               .Build();
+            var spanBatch = SpanBatch.Create()
+               .WithSpan(Span.Create("Test Span"))
+               ;
 
             var result = await dataSender.SendDataAsync(spanBatch);
 

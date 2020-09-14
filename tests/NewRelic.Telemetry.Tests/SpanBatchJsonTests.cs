@@ -10,9 +10,8 @@ namespace NewRelic.Telemetry.Tests
         public void ToJson_EmptySpanBatch() 
         {
             // Arrange
-            var spanBatch = SpanBatchBuilder.Create()
-                .WithTraceId("traceId")
-                .Build();
+            var spanBatch = SpanBatch.Create()
+                .WithTraceId("traceId");
             
             // Act
             var jsonString = spanBatch.ToJson();
@@ -28,17 +27,16 @@ namespace NewRelic.Telemetry.Tests
         public void ToJson_NonEmptySpanBatch()
         {
             // Arrange
-            var spanBatch = SpanBatchBuilder.Create()
+            var spanBatch = SpanBatch.Create()
                 .WithTraceId("traceId")
-                .WithSpan(SpanBuilder.Create("span1")
+                .WithSpan(Span.Create("span1")
                     .WithTraceId("traceId")
                     .WithTimestamp(1L)
                     .WithServiceName("serviceName")
                     .WithDurationMs(67)
                     .WithName("name")
                     .WithParentId("parentId")
-                    .HasError(true).Build())
-                .Build();
+                    .HasError(true));
 
             // Act
             var jsonString = spanBatch.ToJson();
@@ -80,7 +78,7 @@ namespace NewRelic.Telemetry.Tests
         public void ToJson_SpanBatchWithMultipleSpans()
         {
             // Arrange
-            var spanBatchBuilder = SpanBatchBuilder.Create()
+            var spanBatch = SpanBatch.Create()
                .WithTraceId("traceId")
                .WithAttribute("customAtt1", "hello")
                .WithAttribute("customAtt2", 1)
@@ -89,27 +87,23 @@ namespace NewRelic.Telemetry.Tests
 
 
 
-            spanBatchBuilder.WithSpan(SpanBuilder.Create("span1")
+            spanBatch.WithSpan(Span.Create("span1")
                    .WithTraceId("traceId1")
                    .WithTimestamp(1)
                    .WithServiceName("serviceName1")
                    .WithDurationMs(100)
                    .WithName("name1")
                    .WithParentId("parentId1")
-                   .HasError(true)
-                   .Build());
+                   .HasError(true));
 
-            spanBatchBuilder.WithSpan(SpanBuilder.Create("span2")
+            spanBatch.WithSpan(Span.Create("span2")
                    .WithTraceId("traceId2")
                    .WithTimestamp(2)
                    .WithServiceName("serviceName2")
                    .WithDurationMs(200)
                    .WithName("name2")
                    .WithParentId("parentId2")
-                   .HasError(false)
-                   .Build());
-
-            var spanBatch = spanBatchBuilder.Build();
+                   .HasError(false));
 
             // Act
             var jsonString = spanBatch.ToJson();
@@ -174,23 +168,20 @@ namespace NewRelic.Telemetry.Tests
         public void ToJson_SpanBatchWithAttributes()
         {
             // Arrange
-            var spanBatch = SpanBatchBuilder.Create()
+            var spanBatch = SpanBatch.Create()
                 .WithTraceId("traceId")
                 .WithAttribute("customAtt1", "hello")
                 .WithAttribute("customAtt2", 1)
                 .WithAttribute("customAtt3", (decimal)1.2)
                 .WithAttribute("customAtt4", true)
-                .WithSpan(SpanBuilder.Create("span1")
+                .WithSpan(Span.Create("span1")
                     .WithTraceId("traceId")
                     .WithTimestamp(1)
                     .WithServiceName("serviceName")
                     .WithDurationMs(67)
                     .WithName("name")
                     .WithParentId("parentId")
-                    .HasError(true)
-                    .Build())
-                .Build();
-
+                    .HasError(true));
 
             // Act
             var jsonString = spanBatch.ToJson();
@@ -240,14 +231,14 @@ namespace NewRelic.Telemetry.Tests
         public void ToJson_DuplicatePropertyValuesKeepsLast()
         {
             //Arrange
-            var spanBatch = SpanBatchBuilder.Create()
+            var spanBatch = SpanBatch.Create()
                 .WithTraceId("BadTraceID")
                 .WithTraceId("GoodTraceID")
                 .WithAttribute("customAtt1", "BadAttr1")
                 .WithAttribute("customAtt1", "GoodAttr1")
                 .WithAttribute("customAtt2", -1000)
                 .WithAttribute("customAtt2", 1000)
-                .WithSpan(SpanBuilder.Create("span1")
+                .WithSpan(Span.Create("span1")
                     .WithTraceId("BadTraceID")
                     .WithTraceId("GoodTraceID")
                     .WithTimestamp(-100)
@@ -262,9 +253,7 @@ namespace NewRelic.Telemetry.Tests
                     .WithParentId("GoodParentId")
                     .HasError(true)
                     .HasError(false)
-                    .HasError(true)
-                    .Build())
-                .Build();
+                    .HasError(true));
 
             // Act
             var jsonString = spanBatch.ToJson();

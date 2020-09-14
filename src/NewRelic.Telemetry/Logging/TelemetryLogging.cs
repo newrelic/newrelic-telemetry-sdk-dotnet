@@ -11,14 +11,14 @@ namespace NewRelic.Telemetry
         private const string _prefix = "NewRelic Telemetry:";
         private const string _category = "NewRelic.Telemetry";
 
-        private readonly ILogger _logger;
+        private readonly ILogger? _logger;
 
         private static string MessageFormatter(object state, Exception error)
         {
             return $"{_prefix} {state} {error}".Trim();
         }
 
-        internal TelemetryLogging(ILoggerFactory loggerFactory)
+        internal TelemetryLogging(ILoggerFactory? loggerFactory)
         {
             if (loggerFactory != null)
             {
@@ -26,12 +26,12 @@ namespace NewRelic.Telemetry
             }
         }
 
-        internal void Debug(string message, Exception exception = null)
+        internal void Debug(string message, Exception? exception = null)
         {
             _logger?.Log(LogLevel.Debug, 0, message, exception, MessageFormatter);
         }
 
-        internal void Error(string message, Exception exception = null)
+        internal void Error(string message, Exception? exception = null)
         {
             _logger?.Log(LogLevel.Error, 0, message, exception, MessageFormatter);
         }
@@ -41,12 +41,12 @@ namespace NewRelic.Telemetry
             _logger?.Log(LogLevel.Error, 0, ex.GetType().Name, ex, MessageFormatter);
         }
 
-        internal void Info(string message, Exception exception = null)
+        internal void Info(string message, Exception? exception = null)
         {
             _logger?.Log(LogLevel.Information, 0, message, exception, MessageFormatter);
         }
 
-        internal void Warning(string message, Exception exception = null)
+        internal void Warning(string message, Exception? exception = null)
         {
             _logger?.Log(LogLevel.Warning, 0, message, exception, MessageFormatter);
         }

@@ -30,7 +30,7 @@ namespace NewRelic.Telemetry.Spans
         /// </summary>
         /// <param name="configOptions"></param>
         /// <param name="loggerFactory"></param>
-        public SpanDataSender(TelemetryConfiguration configOptions, ILoggerFactory loggerFactory) : base(configOptions, loggerFactory)
+        public SpanDataSender(TelemetryConfiguration configOptions, ILoggerFactory? loggerFactory) : base(configOptions, loggerFactory)
         {
         }
 
@@ -60,41 +60,20 @@ namespace NewRelic.Telemetry.Spans
         {
             base.BeforeDataSend(dataToSend);
 
-            if (!string.IsNullOrWhiteSpace(_config.InstrumentationProvider))
+            if(_config.InstrumentationProvider == null || string.IsNullOrWhiteSpace(_config.InstrumentationProvider) || dataToSend.Spans == null)
             {
+                return;
+            }
 
-                foreach (var span in dataToSend.Spans)
-                {
-                    if(span.Attributes == null)
-                    {
-                        span.Attributes = new Dictionary<string, object>();
-                    }
-                    span.Attributes[SpanBuilder.attribName_InstrumentationProvider] = _config.InstrumentationProvider;
-                }
+            foreach (var span in dataToSend.Spans)
+            {
+                span.WithAttribute(Span.attribName_InstrumentationProvider, _config.InstrumentationProvider);
             }
         }
 
         protected override bool ContainsNoData(SpanBatch dataToCheck)
         {
             return (dataToCheck?.Spans?.Count).GetValueOrDefault(0) == 0;
-        }
-
-        protected override SpanBatch[] Split(SpanBatch dataToSplit)
-        {
-            var countSpans = dataToSplit.Spans.Count;
-            if (countSpans <= 1)
-            {
-                return null;
-            }
-
-            var targetSpanCount = countSpans / 2;
-            var batch0Spans = dataToSplit.Spans.Take(targetSpanCount).ToList();
-            var batch1Spans = dataToSplit.Spans.Skip(targetSpanCount).ToList();
-
-            var batch0 = new SpanBatch(dataToSplit.CommonProperties, batch0Spans);
-            var batch1 = new SpanBatch(dataToSplit.CommonProperties, batch1Spans);
-
-            return new[] { batch0, batch1 };
         }
     }
 }

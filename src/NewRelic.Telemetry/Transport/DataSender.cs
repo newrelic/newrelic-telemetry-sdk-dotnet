@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace NewRelic.Telemetry.Transport
 {
-    public abstract class DataSender<TData> where TData : ITelemetryDataType
+    public abstract class DataSender<TData> where TData : ITelemetryDataType<TData>
     {
         private readonly string _telemetrySdkVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
 
@@ -27,11 +27,11 @@ namespace NewRelic.Telemetry.Transport
         //Delegate functions in support of unit testing
         private Func<string, Task<HttpResponseMessage>> _httpHandlerImpl;
         private Func<uint, Task> _delayerImpl = new Func<uint, Task>(async (uint milliseconds) => await Task.Delay((int)milliseconds));
-        private Action<TData, int> _captureSendDataAsyncCallDelegate = null;
+        private Action<TData, int>? _captureSendDataAsyncCallDelegate = null;
 
         protected abstract string EndpointUrl { get; }
 
-        protected abstract TData[] Split(TData dataToSplit);
+        //protected abstract TData[] Split(TData dataToSplit);
 
         protected abstract bool ContainsNoData(TData dataToCheck);
 
@@ -39,7 +39,7 @@ namespace NewRelic.Telemetry.Transport
         {
         }
 
-        protected DataSender(IConfiguration configProvider, ILoggerFactory loggerFactory) : this(new TelemetryConfiguration(configProvider), loggerFactory)
+        protected DataSender(IConfiguration configProvider, ILoggerFactory? loggerFactory) : this(new TelemetryConfiguration(configProvider), loggerFactory)
         {
         }
         
@@ -47,7 +47,7 @@ namespace NewRelic.Telemetry.Transport
         {
         }
 
-        protected DataSender(TelemetryConfiguration config, ILoggerFactory loggerFactory)
+        protected DataSender(TelemetryConfiguration config, ILoggerFactory? loggerFactory)
         {
             _userAgentBase = "NewRelic-Dotnet-TelemetrySDK/" + _telemetrySdkVersion;
             UserAgent = _userAgentBase;
@@ -83,9 +83,9 @@ namespace NewRelic.Telemetry.Transport
 
         private async Task<Response> RetryWithSplit(TData data)
         {
-            var newBatches = Split(data);
+            var newBatches = data.Split();
 
-            if (newBatches == null)
+            if (newBatches.Count == 0)
             {
                 _logger.Error($@"Cannot send data because it exceeds the size limit and cannot be split.");
                 return Response.Failure(HttpStatusCode.RequestEntityTooLarge,"Cannot send data because it exceeds size limit and cannot be further split.");
@@ -93,9 +93,9 @@ namespace NewRelic.Telemetry.Transport
 
             _logger.Warning("Splitting the data and retrying.");
 
-            var taskList = new Task<Response>[newBatches.Length];
+            var taskList = new Task<Response>[newBatches.Count];
 
-            for (var i = 0; i < newBatches.Length; i++)
+            for (var i = 0; i < newBatches.Count; i++)
             {
                 taskList[i] = SendDataAsync(newBatches[i]);
             }
@@ -206,7 +206,7 @@ namespace NewRelic.Telemetry.Transport
                 //Anything else is interpreted as a failure condition.  No further attempts are made.
                 default:
                     _logger.Error($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
-                    return Response.Failure(httpResponse.StatusCode, httpResponse.Content?.ToString());
+                    return Response.Failure(httpResponse.StatusCode, httpResponse.Content.ToString());
             }
         }
 

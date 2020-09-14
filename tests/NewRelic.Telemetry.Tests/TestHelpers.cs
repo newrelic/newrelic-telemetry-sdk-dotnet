@@ -107,7 +107,7 @@ namespace NewRelic.Telemetry.Tests
 
             if (expectedValueObj is MetricSummaryValue)
             {
-                var expectedVal = expectedValueObj as MetricSummaryValue;
+                var expectedVal = (MetricSummaryValue)expectedValueObj;
 
                 foreach (var actualValProp in actualValJson.EnumerateObject())
                 {

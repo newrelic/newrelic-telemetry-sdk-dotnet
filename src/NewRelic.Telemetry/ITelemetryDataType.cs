@@ -1,10 +1,13 @@
-﻿namespace NewRelic.Telemetry
+﻿using System.Collections.Generic;
+
+namespace NewRelic.Telemetry
 {
     /// <summary>
     /// Interface used to identify a data type to be sent to a New Relic endpoint.
     /// </summary>
-    public interface ITelemetryDataType
+    public interface ITelemetryDataType<T> where T:ITelemetryDataType<T>
     {
         string ToJson();
+        List<T> Split();
     }
 }

@@ -10,17 +10,17 @@ namespace NewRelic.Telemetry.Tests
         public void TraceIdIsSet()
         {
             var traceId = "myId";
-            var spanBatch = SpanBatchBuilder.Create()
-                .WithTraceId(traceId)
-                .Build();
+            var spanBatch = SpanBatch.Create()
+                .WithTraceId(traceId);
             
-            Assert.AreEqual(traceId, spanBatch.CommonProperties.TraceId);
+            Assert.AreEqual(traceId, spanBatch.CommonProperties?.TraceId);
         }
 
         [Test]
         public void TraceIdIsNotSet()
         {
-            var spanBatch = SpanBatchBuilder.Create().Build();
+            var spanBatch = SpanBatch.Create();
+
             Assert.Null(spanBatch.CommonProperties?.TraceId);
         }
     }

@@ -69,7 +69,7 @@ namespace NewRelic.Telemetry.Transport
         /// <summary>
         /// Provides additional contextual information about the outcome.
         /// </summary>
-        public string Message { get; private set; }
+        public string? Message { get; private set; }
 
         internal Response(NewRelicResponseStatus responseStatus)
         {

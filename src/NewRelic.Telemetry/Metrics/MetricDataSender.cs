@@ -58,23 +58,5 @@ namespace NewRelic.Telemetry.Metrics
         {
             return (dataToCheck?.Metrics?.Count).GetValueOrDefault(0) == 0;
         }
-
-        protected override MetricBatch[] Split(MetricBatch dataToSplit)
-        {
-            var countMetrics = dataToSplit.Metrics.Count;
-            if (countMetrics <= 1)
-            {
-                return null;
-            }
-
-            var targetMetricCount = countMetrics / 2;
-            var batch0Metrics = dataToSplit.Metrics.Take(targetMetricCount).ToList();
-            var batch1Metrics = dataToSplit.Metrics.Skip(targetMetricCount).ToList();
-
-            var batch0 = new MetricBatch(dataToSplit.CommonProperties, batch0Metrics);
-            var batch1 = new MetricBatch(dataToSplit.CommonProperties, batch1Metrics);
-
-            return new[] { batch0, batch1 };
-        }
     }
 }

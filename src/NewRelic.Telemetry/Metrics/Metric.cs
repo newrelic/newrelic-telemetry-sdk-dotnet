@@ -1,71 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using NewRelic.Telemetry.Extensions;
+using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace NewRelic.Telemetry.Metrics
 {
-    /// <summary>
-    /// Represents the aggregation values for a Summary Metric.
-    /// </summary>
-    public class MetricSummaryValue
-    {
-        /// <summary>
-        /// The number of observations that were aggregated.
-        /// Must be a positive number.
-        /// </summary>
-        public double Count { get; private set; }
-
-        /// <summary>
-        /// The sum of the values that were observed.
-        /// </summary>
-        public double Sum { get; private set; }
-
-        /// <summary>
-        /// The lowest value observed.
-        /// </summary>
-        public double? Min { get; private set; }
-
-        /// <summary>
-        /// The highest value observed.
-        /// </summary>
-        public double? Max { get; private set; }
-
-        private MetricSummaryValue()
-        {
-        }
-
-        /// <summary>
-        /// Creates a summary value.
-        /// </summary>
-        /// <param name="count"></param>
-        /// <param name="sum"></param>
-        /// <param name="min"></param>
-        /// <param name="max"></param>
-        public static MetricSummaryValue Create(double count, double sum, double min, double max)
-        {
-            var result = Create(count, sum);
-
-            result.Min = min;
-            result.Max = max;
-
-            return result;
-        }
-
-
-        /// <summary>
-        /// Creates a summary value.
-        /// </summary>
-        /// <param name="count"></param>
-        /// <param name="sum"></param>
-        public static MetricSummaryValue Create(double count, double sum)
-        {
-            return new MetricSummaryValue()
-            {
-                Count = count,
-                Sum = sum,
-            };
-        }
-    }
-
     /// <summary>
     /// A metric represents the value of a measurement.
     /// </summary>
@@ -98,27 +37,117 @@ namespace NewRelic.Telemetry.Metrics
         public long? IntervalMs { get; internal set; }
 
         /// <summary>
-        /// The value being reported for this metric.  The layout of this value will
-        /// vary depending on the implementation: count, summary, or gauge
-        /// </summary>
-        [DataMember(Name = "value")]
-        public abstract object MetricValue { get; }
-
-        /// <summary>
         /// A map of Key Value pairs identifying the dimensions of this metric.
         /// Keys are case sensitive and must be less than 255 characters.  Values may be
         /// strings, numbers, or booleans.
         /// </summary>
-        public Dictionary<string, object> Attributes { get; internal set; }
+        public Dictionary<string, object>? Attributes { get; private set; }
+
+        private Dictionary<string,object> EnsureAttributes()
+        {
+            return Attributes ??= new Dictionary<string, object>();
+        }
+
+        public abstract object Value { get; }
+
+        protected Metric(string name)
+        {
+            Name = name;
+        }
+
+        /// <summary>
+        /// Identifies the metrics start time for all of the metrics that are part 
+        /// of this batch.
+        /// </summary>
+        /// <param name="timestamp">Should be reported in UTC.</param>
+        public Metric WithTimestamp(DateTime timestamp)
+        {
+            if (timestamp == default)
+            {
+                return this;
+            }
+
+            Timestamp = DateTimeExtensions.ToUnixTimeMilliseconds(timestamp);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Used in conjunction with <see cref="WithTimestamp(DateTime)"/>, identifies the duration of 
+        /// the observation window for this metric batch.
+        /// </summary>
+        /// <param name="intervalMs">The number of milliseconds</param>
+        public Metric WithIntervalMs(long intervalMs)
+        {
+            if (intervalMs == default)
+            {
+                return this;
+            }
+
+            IntervalMs = intervalMs;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Used to set the value of a custom attribute that is common to all metrics being reported 
+        /// as part of this MetricBatch.
+        /// </summary>
+        /// <param name="attribName">Required: The name of the attribute.  If the name is already used, this operation will overwrite any existing value.</param>
+        /// <param name="attribValue">The value of the attribute.  A NULL value will NOT be reported to the New Relic endpoint.</param>
+        public Metric WithAttribute(string attribName, object attribValue)
+        {
+            if (string.IsNullOrWhiteSpace(attribName))
+            {
+                throw new InvalidOperationException($"{nameof(attribName)} cannot be empty.");
+            }
+
+            EnsureAttributes()[attribName] = attribValue;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Used to apply a set of custom attribute values that are common to all metrics being reported
+        /// as part of this MetricBatch.
+        /// </summary>
+        /// <param name="attributes">Collection of Key/Value pairs of attributes.  The keys should be unique.  
+        /// In the event of duplicate keys, the last value will be accepted.</param>
+        /// <returns></returns>
+        public Metric WithAttributes(ICollection<KeyValuePair<string, object>> attributes)
+        {
+            if (attributes == null)
+            {
+                return this;
+            }
+
+            foreach (var attrib in attributes)
+            {
+                WithAttribute(attrib.Key, attrib.Value);
+            }
+
+            return this;
+        }
     }
 
-    public abstract class Metric<T> : Metric
+    public abstract class Metric<T> : Metric where T:struct
     {
-        [IgnoreDataMember]
-        public T Value { get; internal set; }
+        /// <summary>
+        /// The value being reported for this metric.  The layout of this value will
+        /// vary depending on the implementation: count, summary, or gauge
+        /// </summary>
+        [DataMember(Name = "value")]
+        public readonly T MetricValue;
 
-        public override object MetricValue => Value;
+        protected Metric(string name, T value) : base(name)
+        {
+            this.MetricValue = value;
+        }
+
+        [IgnoreDataMember]
+        public override object Value => MetricValue;
     }
+
 
     /// <summary>
     /// Count Metrics measure the number of occurrences of an event within 
@@ -131,6 +160,15 @@ namespace NewRelic.Telemetry.Metrics
     /// <example>Number of threads created per reporting interval.</example>
     public class CountMetric : Metric<double>
     {
+        public static CountMetric Create(string name, double value)
+        {
+            return new CountMetric(name, value);
+        }
+
+        private CountMetric(string name, double value) : base(name,value)
+        {
+        }
+
         public override string Type => "count";
     }
 
@@ -140,6 +178,15 @@ namespace NewRelic.Telemetry.Metrics
     /// <example>The temperature, CPU usage, and memory.</example>
     public class GaugeMetric : Metric<double>
     {
+        public static GaugeMetric Create(string name, double value)
+        {
+            return new GaugeMetric(name, value);
+        }
+
+        private GaugeMetric(string name, double value) : base(name, value)
+        {
+        }
+
         public override string Type => "gauge";
     }
 
@@ -150,6 +197,36 @@ namespace NewRelic.Telemetry.Metrics
     /// </summary>
     public class SummaryMetric : Metric<MetricSummaryValue>
     {
+        public static SummaryMetric Create(string name, double count, double sum, double min, double max)
+        {
+            return new SummaryMetric(name, count, sum, min, max);
+        }
+
+        private SummaryMetric(string name, double count, double sum, double min, double max)
+            : this(name, new MetricSummaryValue(count, sum, min, max))
+        {
+        }
+
+        public static SummaryMetric Create(string name, double count, double sum)
+        {
+            return new SummaryMetric(name, count, sum);
+        }
+
+        private SummaryMetric(string name, double count, double sum)
+            : this(name, new MetricSummaryValue(count, sum))
+        {
+        }
+
+        public static SummaryMetric Create(string name, MetricSummaryValue value)
+        {
+            return new SummaryMetric(name, value);
+        }
+
+        private SummaryMetric(string name, MetricSummaryValue value) : base(name, value)
+        {
+            Name = name;
+        }
+
         public override string Type => "summary";
     }
 }

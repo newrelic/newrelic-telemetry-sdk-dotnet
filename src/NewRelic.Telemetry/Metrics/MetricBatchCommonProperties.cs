@@ -28,7 +28,12 @@ namespace NewRelic.Telemetry.Metrics
         /// Provides additional contextual information that is common to all of the
         /// Metrics being reported in this Batch.
         /// </summary>
-        public Dictionary<string, object> Attributes { get; internal set; }
+        public Dictionary<string, object>? Attributes { get; private set; }
+
+        internal Dictionary<string,object> EnsureAttributes()
+        {
+            return Attributes ?? (Attributes = new Dictionary<string, object>());
+        }
 
         internal MetricBatchCommonProperties()
         {

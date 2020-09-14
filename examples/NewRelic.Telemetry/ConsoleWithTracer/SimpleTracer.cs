@@ -15,8 +15,8 @@ namespace ConsoleApplicationWithTracer
     /// </summary>
     public static class SimpleTracer
     {
-        private static ThreadLocal<SpanBatchBuilder> _currentSpanBatch = new ThreadLocal<SpanBatchBuilder>(NewTrace);
-        private static ThreadLocal<SpanBuilder> _currentSpan = new ThreadLocal<SpanBuilder>();
+        private static ThreadLocal<SpanBatch> _currentSpanBatch = new ThreadLocal<SpanBatch>(NewTrace);
+        private static ThreadLocal<Span> _currentSpan = new ThreadLocal<Span>();
         private static SpanDataSender _dataSender;
         private static TelemetryConfiguration _currentConfig;
         private static ILoggerFactory _loggerFactory;
@@ -79,13 +79,13 @@ namespace ConsoleApplicationWithTracer
         /// Creates a new Trace (SpanBatch) and sets the TraceId
         /// to a Guid
         /// </summary>
-        private static SpanBatchBuilder NewTrace()
+        private static SpanBatch NewTrace()
         {
             var traceId = Guid.NewGuid().ToString();
 
             Console.WriteLine($"{"SIMPLE TRACER: Trace Started",-30}: {traceId}");
 
-            return SpanBatchBuilder.Create()
+            return SpanBatch.Create()
                 .WithTraceId(traceId);
         }
 
@@ -119,7 +119,7 @@ namespace ConsoleApplicationWithTracer
             
             var newSpanId = Guid.NewGuid().ToString();
 
-            var thisSpan = SpanBuilder.Create(newSpanId);
+            var thisSpan = Span.Create(newSpanId);
 
             if(!string.IsNullOrWhiteSpace(name))
             {
@@ -128,13 +128,13 @@ namespace ConsoleApplicationWithTracer
 
             _currentSpan.Value = thisSpan;
 
-            Console.WriteLine($"{"SIMPLE TRACER: Span Started",-30}: Span={newSpanId}, Parent={(parentSpan == null ? "<TOPMOST ITEM>": parentSpan.SpanId)} - {name??"No Name"}");
+            Console.WriteLine($"{"SIMPLE TRACER: Span Started",-30}: Span={newSpanId}, Parent={(parentSpan == null ? "<TOPMOST ITEM>": parentSpan.Id)} - {name??"No Name"}");
 
             // If this unit of work is part of a larger unit of work,
             // this will associate it as a child span of the larger span.
             if (parentSpan != null)
             {
-                thisSpan.WithParentId(parentSpan.SpanId);
+                thisSpan.WithParentId(parentSpan.Id);
             }
 
             // collect the start timestamp
@@ -146,7 +146,7 @@ namespace ConsoleApplicationWithTracer
             }
             catch(Exception ex)
             {
-                Console.WriteLine($"{"SIMPLE TRACER: Error Detected",-30}: Span={newSpanId}, Parent={(parentSpan == null ? "<TOPMOST ITEM>" : parentSpan.SpanId)} - {name ?? "No Name"} - {ex.Message}");
+                Console.WriteLine($"{"SIMPLE TRACER: Error Detected",-30}: Span={newSpanId}, Parent={(parentSpan == null ? "<TOPMOST ITEM>" : parentSpan.Id)} - {name ?? "No Name"} - {ex.Message}");
 
                 // In the event an unhandled exception occurs, mark the span as "HasError"
                 // and record the exception.
@@ -162,9 +162,9 @@ namespace ConsoleApplicationWithTracer
                 thisSpan.WithExecutionTimeInfo(startTime, TimeSpan.FromMilliseconds(100));
              
                 // Attach the span to the SpanBatch (Trace).
-                var spanBatch = _currentSpanBatch.Value.WithSpan(thisSpan.Build());
+                var spanBatch = _currentSpanBatch.Value.WithSpan(thisSpan);
 
-                Console.WriteLine($"{"SIMPLE TRACER: Span Completed",-30}: Span={newSpanId}, Parent={(parentSpan == null ? "<TOPMOST ITEM>" : parentSpan.SpanId)} - {name ?? "No Name"}");
+                Console.WriteLine($"{"SIMPLE TRACER: Span Completed",-30}: Span={newSpanId}, Parent={(parentSpan == null ? "<TOPMOST ITEM>" : parentSpan.Id)} - {name ?? "No Name"}");
 
                 // If this is a topmost unit of work, send the trace to the New Relic endpoint.
                 if (parentSpan == null)
@@ -172,11 +172,9 @@ namespace ConsoleApplicationWithTracer
                     _currentSpan.Value = null;
                     _currentSpanBatch.Value = null;
 
-                    var sb = spanBatch.Build();
+                    Console.WriteLine($"{"SIMPLE TRACER: Trace Completed",-30}: {spanBatch.CommonProperties.TraceId}");
 
-                    Console.WriteLine($"{"SIMPLE TRACER: Trace Completed",-30}: {sb.CommonProperties.TraceId}");
-
-                    SendDataToNewRelic(sb).Wait();
+                    SendDataToNewRelic(spanBatch).Wait();
 
                 }
                 else
@@ -205,7 +203,7 @@ namespace ConsoleApplicationWithTracer
         /// <example>This method could be used to denote a url on a web request</example>
         /// <example>This method could be used to record the object name and operation for a database call</example>
         /// <param name="action">the code that requires access to the current span.  Keeping in mind that it may be null</param>
-        public static void CurrentSpan(Action<SpanBuilder> action)
+        public static void CurrentSpan(Action<Span> action)
         {
             //If Tracing is not enabled, just invoke action and return
             if (!_isTracingEnabled)
