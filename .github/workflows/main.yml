@@ -3,11 +3,12 @@ name: New Relic Telemetry SDK for .NET
 on:
   pull_request:
     branches: [ master ]
-  tags:
-    - refs/tags/v*.*.*      # v1.0.0
-    - refs/tags/v*.*.*-*    # v1.0.0-alpha
-    - refs/tags/*_v*.*.*    # SomePrefix_v1.0.0
-    - refs/tags/*_v*.*.*-*  # SomePrefix_v1.0.0-alpha
+  push:
+    tags:
+      - refs/tags/v*.*.*      # v1.0.0
+      - refs/tags/v*.*.*-*    # v1.0.0-alpha
+      - refs/tags/*_v*.*.*    # SomePrefix_v1.0.0
+      - refs/tags/*_v*.*.*-*  # SomePrefix_v1.0.0-alpha
   workflow_dispatch: # Allows team members to manually kick off a build
 
 jobs:
