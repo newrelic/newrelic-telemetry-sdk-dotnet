@@ -19,8 +19,8 @@ jobs:
     env:
       artifact_staging_path: ${{ github.workspace }}\artifactstaging
       solution_file_path: ${{ github.workspace }}\NewRelic.sln
-      telemetrysdk_path: {{ github.workspace }}\src\NewRelic.Telemetry\bin\Release\
-      exporter_path: {{ github.workspace }}\src\OpenTelemetry.Exporter.NewRelic\bin\Release\
+      telemetrysdk_path: ${{ github.workspace }}\src\NewRelic.Telemetry\bin\Release\
+      exporter_path: ${{ github.workspace }}\src\OpenTelemetry.Exporter.NewRelic\bin\Release\
       DOTNET_NOLOGO: true
       #<other env vars here>
 
