@@ -14,6 +14,7 @@ on:
 jobs:
 
   build-test:
+    name: Build Test Deploy
 
     runs-on: windows-2019
 
@@ -23,7 +24,6 @@ jobs:
       telemetrysdk_path: ${{ github.workspace }}\src\NewRelic.Telemetry\bin\Release\
       exporter_path: ${{ github.workspace }}\src\OpenTelemetry.Exporter.NewRelic\bin\Release\
       DOTNET_NOLOGO: true
-      #<other env vars here>
 
     steps:
     - name: Checkout
@@ -33,6 +33,11 @@ jobs:
 
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.1
+
+    - name: Setup Nuget Add to Path
+      uses: nuget/setup-nuget@v1
+      with:
+        nuget-version: '5.x'  
     
     - name: Restore
       run:  dotnet restore ${{ env.solution_file_path }}
@@ -58,12 +63,7 @@ jobs:
           ${{ env.telemetrysdk_path }}
           ${{ env.exporter_path }}
 
-    - name: Setup Nuget with API Key and Add to Path
-      uses: nuget/setup-nuget@v1
-      with:
-        nuget-version: '5.x'  
-
-      # This step will only run on a buld of master or a tag is created.
+      # These two steps will only run on a build of master or a tag is created.
     - name: Publish Packages to MyGet
       if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags') }}
       run: |
