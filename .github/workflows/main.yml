@@ -35,19 +35,19 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.1
     
     - name: Restore
-      run:  dotnet restore {{ env.solution_file_path }}
+      run:  dotnet restore ${{ env.solution_file_path }}
       shell: powershell
 
     - name: Build
-      run:  dotnet build {{ env.solution_file_path }} --configuration Release
+      run:  dotnet build ${{ env.solution_file_path }} --configuration Release
       shell: powershell
 
     - name: Unit Tests - TelemetrySDK
-      run:  dotnet test {{ github.workspace }}\tests\NewRelic.Telemetry.Tests --no-build --no-restore --configuration Release --logger trx
+      run:  dotnet test ${{ github.workspace }}\tests\NewRelic.Telemetry.Tests --no-build --no-restore --configuration Release --logger trx
       shell: powershell
 
     - name: Unit Tests - OpenTelemetry
-      run:  dotnet test {{ github.workspace }}\tests\OpenTelemetry.Exporter.NewRelic.Tests --no-build --no-restore --configuration Release --logger trx
+      run:  dotnet test ${{ github.workspace }}\tests\OpenTelemetry.Exporter.NewRelic.Tests --no-build --no-restore --configuration Release --logger trx
       shell: powershell
          
     - name: Archive the artifacts
@@ -55,8 +55,8 @@ jobs:
       with:
         name: my-artifact-${{ github.run_id }}
         path: |
-          {{ env.telemetrysdk_path }}
-          {{ env.exporter_path }}
+          ${{ env.telemetrysdk_path }}
+          ${{ env.exporter_path }}
 
     - name: Setup Nuget with API Key and Add to Path
       uses: nuget/setup-nuget@v1
@@ -67,19 +67,19 @@ jobs:
     - name: Publish Packages to MyGet
       if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags') }}
       run: |
-        nuget setapikey {{ secrets.MYGET_APIKEY }} -source {{ secrets.MYGET_URL }}
+        nuget setapikey ${{ secrets.MYGET_APIKEY }} -source {{ secrets.MYGET_URL }}
         foreach ($file in Get-ChildItem -Path "${{ env.telemetrysdk_path }}\*" -File -Include *.nupkg) {
-          nuget push $file.name -Source {{ secrets.MYGET_URL }} }
+          nuget push $file.name -Source ${{ secrets.MYGET_URL }} }
         foreach ($file in Get-ChildItem -Path "${{ env.exporter_path }}\*" -File -Include *.nupkg) {
-          nuget push $file.name -Source {{ secrets.MYGET_URL }} }
+          nuget push $file.name -Source ${{ secrets.MYGET_URL }} }
       shell: powershell
 
     - name: Publish Symbols to MyGet
       if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags') }}
       run: |
-        nuget setapikey {{ secrets.MYGET_APIKEY }} -source {{ secrets.MYGET_URL_SYMBOLS }}
+        nuget setapikey ${{ secrets.MYGET_APIKEY }} -source {{ secrets.MYGET_URL_SYMBOLS }}
         foreach ($file in Get-ChildItem -Path "${{ env.telemetrysdk_path }}\*" -File -Include *.snupkg) {
-          nuget push $file.name -Source {{ secrets.MYGET_URL_SYMBOLS }} }
+          nuget push $file.name -Source ${{ secrets.MYGET_URL_SYMBOLS }} }
         foreach ($file in Get-ChildItem -Path "${{ env.exporter_path }}\*" -File -Include *.snupkg) {
-          nuget push $file.name -Source {{ secrets.MYGET_URL_SYMBOLS }} }
+          nuget push $file.name -Source ${{ secrets.MYGET_URL_SYMBOLS }} }
       shell: powershell
