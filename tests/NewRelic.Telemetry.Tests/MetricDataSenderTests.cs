@@ -33,7 +33,6 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         public void SendANonEmptyMetricBatch()
         {
-
             var metricBatch = MetricBatchBuilder.Create()
                 .WithMetric(MetricBuilder.CreateGaugeMetric("TestMetric").Build())
                 .Build();

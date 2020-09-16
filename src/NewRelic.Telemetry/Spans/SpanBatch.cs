@@ -11,7 +11,6 @@ namespace NewRelic.Telemetry.Spans
 {
     public class SpanBatch : ITelemetryDataType
     {
-
         /// <summary>
         /// Properties that are common to all spans being submitted as part of this SpanBatch.
         /// </summary>
@@ -38,6 +37,4 @@ namespace NewRelic.Telemetry.Spans
             return JsonSerializer.ToJsonString(new[] { this }, StandardResolver.ExcludeNullCamelCase);
         }
     }
-
-
 }

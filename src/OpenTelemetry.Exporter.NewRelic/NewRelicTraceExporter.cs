@@ -33,13 +33,13 @@ namespace OpenTelemetry.Exporter.NewRelic
         private readonly TelemetryConfiguration _config;
         private readonly string[] _nrEndpoints;
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="NewRelicTraceExporter"/> class.
         /// Configures the Trace Exporter accepting settings from any configuration provider supported by Microsoft.Extensions.Configuration.
         /// </summary>
         /// <param name="configProvider"></param>
-        public NewRelicTraceExporter(IConfiguration configProvider) : this(configProvider, null)
+        public NewRelicTraceExporter(IConfiguration configProvider)
+            : this(configProvider, null)
         {
         }
 
@@ -50,7 +50,8 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// </summary>
         /// <param name="configProvider"></param>
         /// <param name="loggerFactory"></param>
-        public NewRelicTraceExporter(IConfiguration configProvider, ILoggerFactory loggerFactory) : this(new TelemetryConfiguration(configProvider), loggerFactory)
+        public NewRelicTraceExporter(IConfiguration configProvider, ILoggerFactory loggerFactory)
+            : this(new TelemetryConfiguration(configProvider), loggerFactory)
         {
         }
 
@@ -59,7 +60,8 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// Configures the Trace Exporter accepting configuration settings from an instance of the New Relic Telemetry SDK configuration object.
         /// </summary>
         /// <param name="config"></param>
-        public NewRelicTraceExporter(TelemetryConfiguration config) : this(config, null)
+        public NewRelicTraceExporter(TelemetryConfiguration config)
+            : this(config, null)
         {
         }
 
@@ -69,7 +71,8 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// accepts a logger factory supported by Microsoft.Extensions.Logging.
         /// </summary>
         /// <param name="config"></param>
-        public NewRelicTraceExporter(TelemetryConfiguration config, ILoggerFactory loggerFactory) : this(new SpanDataSender(config, loggerFactory),config,loggerFactory)
+        public NewRelicTraceExporter(TelemetryConfiguration config, ILoggerFactory loggerFactory)
+            : this(new SpanDataSender(config, loggerFactory), config, loggerFactory)
         {
         }
 
@@ -214,7 +217,7 @@ namespace OpenTelemetry.Exporter.NewRelic
             var status = openTelemetrySpan.GetStatus();
             if (!status.IsOk)
             {
-                //this will set HasError = true and the description if available
+                // this will set HasError = true and the description if available
                 newRelicSpanBuilder.HasError(status.Description);
             }
 
@@ -232,7 +235,7 @@ namespace OpenTelemetry.Exporter.NewRelic
             {
                 foreach (var spanAttrib in openTelemetrySpan.Tags)
                 {
-                    //Filter out calls to New Relic endpoint as these will cause an infinite loop
+                    // Filter out calls to New Relic endpoint as these will cause an infinite loop
                     if (string.Equals(spanAttrib.Key, _attribName_url, StringComparison.OrdinalIgnoreCase) && _nrEndpoints.Contains(spanAttrib.Value?.ToString().ToLower()))
                     {
                         _logger?.LogDebug(null, $"The following span was filtered because it was identified as communication with a New Relic endpoint: Trace={openTelemetrySpan.Context.TraceId}, Span={openTelemetrySpan.Context.SpanId}, ParentSpan={openTelemetrySpan.ParentSpanId}. url={spanAttrib.Value}");
@@ -243,8 +246,6 @@ namespace OpenTelemetry.Exporter.NewRelic
                     newRelicSpanBuilder.WithAttribute(spanAttrib.Key, spanAttrib.Value);
                 }
             }
-
-            
 
             return newRelicSpanBuilder.Build();
         }

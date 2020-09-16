@@ -33,7 +33,7 @@ namespace NewRelic.Telemetry.Tests
         ///             F.  1/2 of Request C                    2 spans         --> OK
         ///             G.  1/2 of Request C                    2 spans         --> OK
         ///         --------------------------------------------------------------------------
-        ///             Total = 7 Requests/Batches              9 spans
+        ///             Total = 7 Requests/Batches              9 spans.
         /// </summary>
         [Test]
         async public Task RequestTooLarge_SplitSuccess()
@@ -98,12 +98,12 @@ namespace NewRelic.Telemetry.Tests
             // Assert
             Assert.AreEqual(expectedCountCallsSendData, actualCountCallsSendData);
 
-            //Test the Spans
+            // Test the Spans
             Assert.AreEqual(expectedCountSuccessfulSpanBatches, successfulSpanBatches.Count, "Unexpected number of calls");
             Assert.AreEqual(expectedCountSpans, successfulSpanBatches.SelectMany(x => x.Spans).Count(), "Unexpected number of successful Spans");
             Assert.AreEqual(expectedCountSpans, successfulSpanBatches.SelectMany(x => x.Spans).Select(x => x.Id).Distinct().Count(), "All Spans should be unique (spanId)");
 
-            //Test the attributes on the spanbatch
+            // Test the attributes on the spanbatch
             Assert.AreEqual(expectedCountDistinctTraceIds, successfulSpanBatches.Select(x => x.CommonProperties.TraceId).Distinct().Count(), "The traceId on split batches are not the same");
             Assert.AreEqual(expectedTraceID, successfulSpanBatches.FirstOrDefault().CommonProperties.TraceId, "The traceId on split batches does not match the original traceId");
             Assert.AreEqual(expectedCountSpanBatchAttribSets, successfulSpanBatches.Select(x => x.CommonProperties.Attributes).Distinct().Count(), "The attributes on all span batches should be the same");
@@ -128,7 +128,7 @@ namespace NewRelic.Telemetry.Tests
         ///             F.  1/2 of Request C            TooLarge3                                   -->  Too Large (Can't Split)
         ///             G.  1/2 of Request C            OK                                          -->  Success
         ///         ----------------------------------------------------------------------------------------------------------------------
-        ///             Total = 7 Requests/Batches      4 spans requested, 1 span successful
+        ///             Total = 7 Requests/Batches      4 spans requested, 1 span successful.
         /// </summary>
         [Test]
         async public Task RequestTooLarge_SplitFail()
@@ -192,7 +192,7 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         async public Task RetryBackoffSequence_RetriesExceeded()
         {
-            var expectedNumSendBatchAsyncCall = 9; //1 first call + 8 calls from retries
+            var expectedNumSendBatchAsyncCall = 9; // 1 first call + 8 calls from retries
             var expectedBackoffSequenceFromTestRun = new List<int>()
             {
                 5000,
@@ -425,7 +425,7 @@ namespace NewRelic.Telemetry.Tests
 
             var response = await dataSender.SendDataAsync(spanBatch);
 
-            Assert.IsTrue(actualDelayFromTestRun >= delayMs - errorMargin && actualDelayFromTestRun <= delayMs + errorMargin,$"Expected delay: {delayMs}, margin: +/-{errorMargin}, actual delay: {actualDelayFromTestRun}");
+            Assert.IsTrue(actualDelayFromTestRun >= delayMs - errorMargin && actualDelayFromTestRun <= delayMs + errorMargin, $"Expected delay: {delayMs}, margin: +/-{errorMargin}, actual delay: {actualDelayFromTestRun}");
         }
 
         [Test]
@@ -464,7 +464,6 @@ namespace NewRelic.Telemetry.Tests
             Assert.AreEqual(expectedNumSendBatchAsyncCall, actualCountCallsSendData, "Unexpected Number of SendDataAsync calls");
         }
 
-
         [Test]
         async public Task SendDataAsyncThrowsNonHttpException()
         {
@@ -493,7 +492,6 @@ namespace NewRelic.Telemetry.Tests
                 return Task.FromResult(new HttpResponseMessage() { StatusCode = HttpStatusCode.OK });
             });
 
-
             var spanBatch = SpanBatchBuilder.Create()
                .WithSpan(SpanBuilder.Create("Test Span").Build())
                .Build();
@@ -519,7 +517,7 @@ namespace NewRelic.Telemetry.Tests
         {
             var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
 
-            var expectedUserAgentValue = dataSender.UserAgent;
+            var expectedUserAgentValue = dataSender._userAgent;
 
             if (!string.IsNullOrEmpty(productName) && !string.IsNullOrEmpty(productVersion)) 
             {
@@ -528,7 +526,7 @@ namespace NewRelic.Telemetry.Tests
 
             dataSender.AddVersionInfo(productName, productVersion);
 
-            var userAgentValueAfter = dataSender.UserAgent;
+            var userAgentValueAfter = dataSender._userAgent;
 
             Assert.AreEqual(expectedUserAgentValue, userAgentValueAfter);
         }

@@ -7,7 +7,7 @@ namespace NewRelic.Telemetry.Extensions
 {
     /// <summary>
     /// Provides DateTime conversions to Unix Timestamps.
-    /// This supports backwards compatibility with .NET v4.5
+    /// This supports backwards compatibility with .NET v4.5.
     /// </summary>
     internal static class DateTimeExtensions
     {
@@ -30,6 +30,5 @@ namespace NewRelic.Telemetry.Extensions
         {
             return (dateTime.ToUniversalTime().Ticks / TicksPerMillisecond) - UnixEpochMilliseconds;
         }
-
     }
 }

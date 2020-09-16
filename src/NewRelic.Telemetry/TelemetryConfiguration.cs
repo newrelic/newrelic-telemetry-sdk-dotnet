@@ -14,7 +14,7 @@ namespace NewRelic.Telemetry
         /// REQUIRED: Your Insights Insert API Key.  This value is required in order to communicate with the
         /// New Relic Endpoint. 
         /// </summary>
-        /// <see cref="https://docs.newrelic.com/docs/insights/insights-data-sources/custom-data/introduction-event-api#register">for more information</see>
+        /// <see cref="https://docs.newrelic.com/docs/insights/insights-data-sources/custom-data/introduction-event-api#register">for more information.</see>
         public string ApiKey { get; private set; }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace NewRelic.Telemetry
         /// A list of the New Relic endpoints where information is sent.  This collection may be used
         /// to filter out communications with New Relic endpoints during analysis.
         /// </summary>
-        public string[] NewRelicEndpoints => new []
+        public string[] NewRelicEndpoints => new[]
         {
             TraceUrl,
             MetricUrl
@@ -98,7 +98,8 @@ namespace NewRelic.Telemetry
         /// by <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration</see>.
         /// </summary>
         /// <param name="configProvider"></param>
-        public TelemetryConfiguration(IConfiguration configProvider) : this(configProvider, null)
+        public TelemetryConfiguration(IConfiguration configProvider)
+            : this(configProvider, null)
         { 
         }
 
@@ -192,7 +193,7 @@ namespace NewRelic.Telemetry
         /// with the New Relic endpoints.
         /// </summary>
         /// <param name="apiKey"></param>
-        /// <see cref="https://docs.newrelic.com/docs/insights/insights-data-sources/custom-data/introduction-event-api#register">for more information</see>
+        /// <see cref="https://docs.newrelic.com/docs/insights/insights-data-sources/custom-data/introduction-event-api#register">for more information.</see>
         public TelemetryConfiguration WithApiKey(string apiKey)
         {
             ApiKey = apiKey;
@@ -247,7 +248,6 @@ namespace NewRelic.Telemetry
             InstrumentationProvider = providerName?.Trim();
             return this;
         }
-
 
         /// <summary>
         /// Each time the DataSender retries, it backs-off and waits for a longer period of time.

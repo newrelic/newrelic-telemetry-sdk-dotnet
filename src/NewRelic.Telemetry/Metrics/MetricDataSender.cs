@@ -22,7 +22,8 @@ namespace NewRelic.Telemetry.Metrics
         /// to specify settings.
         /// </summary>
         /// <param name="configOptions"></param>
-        public MetricDataSender(TelemetryConfiguration configOptions) : base(configOptions)
+        public MetricDataSender(TelemetryConfiguration configOptions)
+            : base(configOptions)
         {
         }
 
@@ -34,17 +35,19 @@ namespace NewRelic.Telemetry.Metrics
         /// </summary>
         /// <param name="configOptions"></param>
         /// <param name="loggerFactory"></param>
-        public MetricDataSender(TelemetryConfiguration configOptions, ILoggerFactory loggerFactory) : base(configOptions, loggerFactory)
+        public MetricDataSender(TelemetryConfiguration configOptions, ILoggerFactory loggerFactory)
+            : base(configOptions, loggerFactory)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MetricDataSender"/> class.
         /// Creates new MetricDataSender obtaining configuration settings from a Configuration Provider 
-        /// that is compatible with <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration.</see>
+        /// that is compatible with <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration.</see>.
         /// </summary>
         /// <param name="configProvider"></param>
-        public MetricDataSender(IConfiguration configProvider) : base(configProvider)
+        public MetricDataSender(IConfiguration configProvider)
+            : base(configProvider)
         {
         }
 
@@ -57,7 +60,8 @@ namespace NewRelic.Telemetry.Metrics
         /// </summary>
         /// <param name="configProvider"></param>
         /// <param name="loggerFactory"></param>
-        public MetricDataSender(IConfiguration configProvider, ILoggerFactory loggerFactory) : base(configProvider, loggerFactory)
+        public MetricDataSender(IConfiguration configProvider, ILoggerFactory loggerFactory)
+            : base(configProvider, loggerFactory)
         {
         }
 

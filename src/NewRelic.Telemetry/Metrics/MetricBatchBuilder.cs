@@ -65,7 +65,7 @@ namespace NewRelic.Telemetry.Metrics
         /// Used in conjunction with <see cref="WithTimestamp(DateTime)"/>, identifies the duration of 
         /// the observation window for this metric batch.
         /// </summary>
-        /// <param name="intervalMs">The number of milliseconds</param>
+        /// <param name="intervalMs">The number of milliseconds.</param>
         public MetricBatchBuilder WithIntervalMs(long intervalMs)
         {
             if (intervalMs == default)

@@ -23,7 +23,8 @@ namespace NewRelic.Telemetry.Spans
         /// to specify settings.
         /// </summary>
         /// <param name="configOptions"></param>
-        public SpanDataSender(TelemetryConfiguration configOptions) : base(configOptions)
+        public SpanDataSender(TelemetryConfiguration configOptions)
+            : base(configOptions)
         {
         }
 
@@ -35,20 +36,21 @@ namespace NewRelic.Telemetry.Spans
         /// </summary>
         /// <param name="configOptions"></param>
         /// <param name="loggerFactory"></param>
-        public SpanDataSender(TelemetryConfiguration configOptions, ILoggerFactory loggerFactory) : base(configOptions, loggerFactory)
+        public SpanDataSender(TelemetryConfiguration configOptions, ILoggerFactory loggerFactory)
+            : base(configOptions, loggerFactory)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpanDataSender"/> class.
         /// Creates new SpanDataSender obtaining configuration settings from a Configuration Provider 
-        /// that is compatible with <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration.</see>
+        /// that is compatible with <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration.</see>.
         /// </summary>
         /// <param name="configProvider"></param>
-        public SpanDataSender(IConfiguration configProvider) : base(configProvider)
+        public SpanDataSender(IConfiguration configProvider)
+            : base(configProvider)
         {
         }
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpanDataSender"/> class.
@@ -59,7 +61,8 @@ namespace NewRelic.Telemetry.Spans
         /// </summary>
         /// <param name="configProvider"></param>
         /// <param name="loggerFactory"></param>
-        public SpanDataSender(IConfiguration configProvider, ILoggerFactory loggerFactory) : base(configProvider, loggerFactory)
+        public SpanDataSender(IConfiguration configProvider, ILoggerFactory loggerFactory)
+            : base(configProvider, loggerFactory)
         {
         }
 
@@ -69,7 +72,6 @@ namespace NewRelic.Telemetry.Spans
 
             if (!string.IsNullOrWhiteSpace(_config.InstrumentationProvider))
             {
-
                 foreach (var span in dataToSend.Spans)
                 {
                     if(span.Attributes == null)

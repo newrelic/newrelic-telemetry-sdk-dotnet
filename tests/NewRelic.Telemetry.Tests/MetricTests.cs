@@ -25,7 +25,7 @@ namespace NewRelic.Telemetry.Tests
                 .WithValue(value)
                 .WithTimestamp(timestamp)
                 .WithIntervalMs(interval)
-                .WithAttribute("adsfasdf",12)
+                .WithAttribute("adsfasdf", 12)
                 .WithAttributes(attributes);
 
             var metric = metricBuilder.Build();

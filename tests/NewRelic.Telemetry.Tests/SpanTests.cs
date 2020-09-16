@@ -24,7 +24,7 @@ namespace NewRelic.Telemetry.Tests
                 .WithName("name")
                 .WithParentId("parentId")
                 .HasError(true)
-                .WithAttribute("adsfasdf",12)
+                .WithAttribute("adsfasdf", 12)
                 .WithAttributes(attributes);
 
             var span = spanBuilder.Build();

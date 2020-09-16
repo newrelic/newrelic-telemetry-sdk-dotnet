@@ -17,17 +17,17 @@ namespace NewRelic.Telemetry.Transport
 {
     public abstract class DataSender<TData> where TData : ITelemetryDataType
     {
+        internal string _userAgent;
+
         private readonly string _telemetrySdkVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
 
         private readonly string _userAgentBase;
-
-        internal string UserAgent;
 
         protected readonly TelemetryConfiguration _config;
         protected readonly TelemetryLogging _logger;
         private readonly HttpClient _httpClient;
 
-        //Delegate functions in support of unit testing
+        // Delegate functions in support of unit testing
         private Func<string, Task<HttpResponseMessage>> _httpHandlerImpl;
         private Func<uint, Task> _delayerImpl = new Func<uint, Task>(async (uint milliseconds) => await Task.Delay((int)milliseconds));
         private Action<TData, int> _captureSendDataAsyncCallDelegate = null;
@@ -38,22 +38,25 @@ namespace NewRelic.Telemetry.Transport
 
         protected abstract bool ContainsNoData(TData dataToCheck);
 
-        protected DataSender(IConfiguration configProvider) : this(configProvider, null)
+        protected DataSender(IConfiguration configProvider)
+            : this(configProvider, null)
         {
         }
 
-        protected DataSender(IConfiguration configProvider, ILoggerFactory loggerFactory) : this(new TelemetryConfiguration(configProvider), loggerFactory)
+        protected DataSender(IConfiguration configProvider, ILoggerFactory loggerFactory)
+            : this(new TelemetryConfiguration(configProvider), loggerFactory)
         {
         }
         
-        protected DataSender(TelemetryConfiguration config) : this(config, null)
+        protected DataSender(TelemetryConfiguration config)
+            : this(config, null)
         {
         }
 
         protected DataSender(TelemetryConfiguration config, ILoggerFactory loggerFactory)
         {
             _userAgentBase = "NewRelic-Dotnet-TelemetrySDK/" + _telemetrySdkVersion;
-            UserAgent = _userAgentBase;
+            _userAgent = _userAgentBase;
 
             _config = config;
             _logger = new TelemetryLogging(loggerFactory);
@@ -61,7 +64,7 @@ namespace NewRelic.Telemetry.Transport
             _httpClient = new HttpClient();
             _httpClient.Timeout = TimeSpan.FromSeconds(_config.SendTimeout);
 
-            //Ensures that DNS expires regularly.
+            // Ensures that DNS expires regularly.
             var sp = ServicePointManager.FindServicePoint(new Uri(EndpointUrl));
             sp.ConnectionLeaseTimeout = 60000;  // 1 minute
 
@@ -91,7 +94,7 @@ namespace NewRelic.Telemetry.Transport
             if (newBatches == null)
             {
                 _logger.Error($@"Cannot send data because it exceeds the size limit and cannot be split.");
-                return Response.Failure(HttpStatusCode.RequestEntityTooLarge,"Cannot send data because it exceeds size limit and cannot be further split.");
+                return Response.Failure(HttpStatusCode.RequestEntityTooLarge, "Cannot send data because it exceeds size limit and cannot be further split.");
             }
 
             _logger.Warning("Splitting the data and retrying.");
@@ -149,7 +152,7 @@ namespace NewRelic.Telemetry.Transport
                 retryAfterDelay = retryAtSpecificDate - DateTimeOffset.UtcNow;
             }
 
-            //If the retryAfterDelay is still null, just do a standard retry
+            // If the retryAfterDelay is still null, just do a standard retry
             if(!retryAfterDelay.HasValue)
             {
                 return await RetryWithDelay(dataToSend, retryNum);
@@ -157,7 +160,7 @@ namespace NewRelic.Telemetry.Transport
 
             var delayMs = (uint)retryAfterDelay.Value.TotalMilliseconds;
 
-            //Perform the delay using the waiter delegate
+            // Perform the delay using the waiter delegate
             await _delayerImpl(delayMs);
 
             return await SendDataAsync(dataToSend, retryNum + 1);
@@ -165,7 +168,6 @@ namespace NewRelic.Telemetry.Transport
 
         private async Task<Response> SendDataAsync(TData dataToSend, int retryNum)
         {
-
             HttpResponseMessage httpResponse;
 
             try
@@ -189,7 +191,7 @@ namespace NewRelic.Telemetry.Transport
 
             switch (httpResponse.StatusCode)
             {
-                //Success is any 2xx response
+                // Success is any 2xx response
                 case HttpStatusCode code when code >= HttpStatusCode.OK && code <= (HttpStatusCode)299:
                     _logger.Debug($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
                     return Response.Success;
@@ -206,7 +208,7 @@ namespace NewRelic.Telemetry.Transport
                     _logger.Warning($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}. ");
                     return await RetryWithServerDelay(dataToSend, retryNum, httpResponse);
 
-                //Anything else is interpreted as a failure condition.  No further attempts are made.
+                // Anything else is interpreted as a failure condition.  No further attempts are made.
                 default:
                     _logger.Error($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
                     return Response.Failure(httpResponse.StatusCode, httpResponse.Content?.ToString());
@@ -234,7 +236,7 @@ namespace NewRelic.Telemetry.Transport
                 var requestMessage = new HttpRequestMessage(HttpMethod.Post, EndpointUrl);
                 requestMessage.Content = streamContent;
 
-                requestMessage.Headers.Add("User-Agent", UserAgent);
+                requestMessage.Headers.Add("User-Agent", _userAgent);
 
                 requestMessage.Headers.Add("Api-Key", _config.ApiKey);
                 requestMessage.Method = HttpMethod.Post;
@@ -253,7 +255,7 @@ namespace NewRelic.Telemetry.Transport
         /// <summary>
         /// Method used to send a data to New Relic endpoint.  Handles the communication with the New Relic endpoints.
         /// </summary>
-        /// <param name="dataToSend">The data to send to New Relic</param>
+        /// <param name="dataToSend">The data to send to New Relic.</param>
         /// <returns>New Relic response indicating the outcome and additional information about the interaction with the New Relic endpoint.</returns>
         public async Task<Response> SendDataAsync(TData dataToSend)
         {
@@ -270,7 +272,7 @@ namespace NewRelic.Telemetry.Transport
 
         /// <summary>
         /// Provides a place to do any pre-work on the data to send
-        /// For example, allows updating of the instrumentation provider for spans
+        /// For example, allows updating of the instrumentation provider for spans.
         /// </summary>
         /// <param name="dataToSend"></param>
         protected virtual void BeforeDataSend(TData dataToSend)
@@ -288,7 +290,7 @@ namespace NewRelic.Telemetry.Transport
             if (!string.IsNullOrEmpty(productName) && !string.IsNullOrEmpty(productVersion))
             {
                 var productIdentifier = string.Join("/", productName, productVersion);
-                UserAgent = string.Join(" ", _userAgentBase, productIdentifier);
+                _userAgent = string.Join(" ", _userAgentBase, productIdentifier);
             }
         }
     }

@@ -13,14 +13,13 @@ namespace OpenTelemetry.Trace
     /// </summary>
     public static class OpenTelemetryBuilderExtensions
     {
-
         /// <summary>
         /// Advanced Configuration the New Relic Data Exporter providing configuration provider and a logger factory
         /// factory.
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="configProvider"></param>
-        /// <param name="loggerFactory">Logger Factory supported by Microsoft.Extensions.Logging</param>
+        /// <param name="loggerFactory">Logger Factory supported by Microsoft.Extensions.Logging.</param>
         /// <returns></returns>
         public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, IConfiguration configProvider, ILoggerFactory loggerFactory)
         {
@@ -41,11 +40,11 @@ namespace OpenTelemetry.Trace
         }
 
         /// <summary>
-        /// Advanced Configuration the New Relic Data Exporter that is configured using an instance of TelemetryConfiguration and a Logger Factory
+        /// Advanced Configuration the New Relic Data Exporter that is configured using an instance of TelemetryConfiguration and a Logger Factory.
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="config"></param>
-        /// <param name="loggerFactory">Logger Factory supported by Microsoft.Extensions.Logging</param>
+        /// <param name="loggerFactory">Logger Factory supported by Microsoft.Extensions.Logging.</param>
         /// <returns></returns>
         public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, TelemetryConfiguration config, ILoggerFactory loggerFactory)
         {

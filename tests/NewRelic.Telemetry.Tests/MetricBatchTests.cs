@@ -108,6 +108,5 @@ namespace NewRelic.Telemetry.Tests
             Assert.AreEqual(2, metricBatch.Metrics.Count, $"MetricBatch Metrics count - expected: 2, actual: {metricBatch.Metrics.Count}");
             Assert.IsNull(metricBatch.CommonProperties, $"MetricBatch CommonProperties - expected: null, actual: not null");
         }
-
     }
 }

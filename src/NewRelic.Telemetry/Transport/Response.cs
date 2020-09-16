@@ -57,7 +57,6 @@ namespace NewRelic.Telemetry.Transport
             return result;
         }
 
-
         /// <summary>
         /// Summarizes the outcome of the request.  See <see cref="NewRelicResponseStatus"/> for the possible outcomes.
         /// </summary>

@@ -33,7 +33,8 @@ namespace NewRelic.Telemetry.Metrics
 
         public string ToJson()
         {
-            return Utf8Json.JsonSerializer.ToJsonString(new[] { this },
+            return Utf8Json.JsonSerializer.ToJsonString(
+                new[] { this },
                 StandardResolver.ExcludeNullCamelCase);
         }
     }

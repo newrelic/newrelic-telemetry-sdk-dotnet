@@ -26,7 +26,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 
         private Dictionary<string, Span> resultNRSpansDic => _resultNRSpans.ToDictionary(x => x.Id);
 
-        //  Creating the following spans                        Trace       Expected Outcome
+        // Creating the following spans                        Trace       Expected Outcome
         //  -----------------------------------------------------------------------------------
         //  0   Test Span 1                                     Trace 1     Included
         //  1       Test Span 2                                 Trace 1     Included
@@ -51,13 +51,13 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             var config = new TelemetryConfiguration().WithApiKey("123456").WithServiceName(TestServiceName);
             var mockDataSender = new SpanDataSender(config);
 
-            //Capture the spans that were requested to be sent to New Relic.
+            // Capture the spans that were requested to be sent to New Relic.
             mockDataSender.WithCaptureSendDataAsyncDelegate((sb, retryId) =>
             {
                 _resultNRSpans.AddRange(sb.Spans);
             });
 
-            //Prevent actually sending those spans to New Relic.
+            // Prevent actually sending those spans to New Relic.
             mockDataSender.WithHttpHandlerImpl((json) =>
             {
                 return Task.FromResult(new System.Net.Http.HttpResponseMessage(System.Net.HttpStatusCode.OK));
@@ -145,7 +145,6 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             Assert.NotEqual(resultNRSpan0.TraceId, resultNRSpan2.TraceId);
             Assert.NotEqual(resultNRSpan0.TraceId, resultNRSpan3.TraceId);
             Assert.NotEqual(resultNRSpan2.TraceId, resultNRSpan3.TraceId);
-
         }
 
         [Fact]
@@ -201,9 +200,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
                 Assert.NotNull(nrSpan.Attributes);
                 Assert.True(nrSpan.Attributes.ContainsKey("instrumentation.provider"));
                 Assert.Equal("opentelemetry", nrSpan.Attributes["instrumentation.provider"]);
-
             }
-
         }
     }
 }

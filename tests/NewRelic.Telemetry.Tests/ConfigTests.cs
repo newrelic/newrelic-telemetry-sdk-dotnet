@@ -43,18 +43,17 @@ namespace NewRelic.Telemetry.Tests
         [SetUp]
         public void Setup()
         {
-            
         }
 
         /// <summary>
         /// Uses a dictionary to produce an example appsettings.json configuration.  This 
         /// scenraio does NOT contain a New Relic Config Section.  Although the attribute values, 
-        /// such as ApiKey, match the New Relic Config spec, they should be ignored because they
-        //  are not part of a New Relic Config section.
+        /// such as ApiKey, match the New Relic Config spec, they should be ignored because they.
+        // are not part of a New Relic Config section.
         /// </summary>
         public IConfiguration ConfigExample_NewRelicConfigMissing
         {
-            //  {
+            // {
             //      "NotNewRelic": {
             //          "ApiKey": "DifferentProductAPIKey",
             //          "ServiceName": "DifferentProductServiceName",
@@ -86,7 +85,7 @@ namespace NewRelic.Telemetry.Tests
 
                 var configObj = new Dictionary<string, object>()
                 {
-                    { "NotNewRelic" , nonNewRelicConfigSection }
+                    { "NotNewRelic", nonNewRelicConfigSection }
                 };
                 #endregion
 
@@ -110,14 +109,14 @@ namespace NewRelic.Telemetry.Tests
 
         /// <summary>
         /// Uses a dictionary to produce an example appsettings.json configuration.  This 
-        /// scenraio contains a New Relic Config Section and the config sections for two 
-        //  example products, "TestProduct" and "DifferentProduct".  Various assertions
+        /// scenraio contains a New Relic Config Section and the config sections for two. 
+        // example products, "TestProduct" and "DifferentProduct".  Various assertions
         /// will be made testing for a product specific configuration and/or a general New
         /// Relic configuration.
         /// </summary>
         public IConfiguration ConfigExample_NewRelicConfig
         {
-            //  {
+            // {
             //      "NewRelic": {
             //      "ApiKey": "123456",
             //      "ServiceName": "NewRelicService",

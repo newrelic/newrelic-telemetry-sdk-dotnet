@@ -20,7 +20,7 @@ namespace NewRelic.Telemetry.Tests
             // Act
             var jsonString = spanBatch.ToJson();
 
-            //Assert
+            // Assert
             var resultSpanBatch = TestHelpers.DeserializeArrayFirstOrDefault(jsonString);
             var resultCommonProps = TestHelpers.DeserializeObject(resultSpanBatch["common"]);
 
@@ -78,7 +78,6 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribCount(resultSpanAttribs, 5);
         }
 
-
         [Test]
         public void ToJson_SpanBatchWithMultipleSpans()
         {
@@ -89,8 +88,6 @@ namespace NewRelic.Telemetry.Tests
                .WithAttribute("customAtt2", 1)
                .WithAttribute("customAtt3", (decimal)1.2)
                .WithAttribute("customAtt4", true);
-
-
 
             spanBatchBuilder.WithSpan(SpanBuilder.Create("span1")
                    .WithTraceId("traceId1")
@@ -117,7 +114,7 @@ namespace NewRelic.Telemetry.Tests
             // Act
             var jsonString = spanBatch.ToJson();
 
-            //Assert
+            // Assert
             var resultSpanBatches = TestHelpers.DeserializeArray(jsonString);
 
             TestHelpers.AssertForCollectionLength(resultSpanBatches, 1);
@@ -194,7 +191,6 @@ namespace NewRelic.Telemetry.Tests
                     .Build())
                 .Build();
 
-
             // Act
             var jsonString = spanBatch.ToJson();
 
@@ -238,11 +234,10 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribCount(resultSpanAttribs, 5);
         }
 
-
         [Test]
         public void ToJson_DuplicatePropertyValuesKeepsLast()
         {
-            //Arrange
+            // Arrange
             var spanBatch = SpanBatchBuilder.Create()
                 .WithTraceId("BadTraceID")
                 .WithTraceId("GoodTraceID")
@@ -308,9 +303,6 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "parent.id", "GoodParentId");
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "error", true);
             TestHelpers.AssertForAttribCount(resultSpanAttribs, 5);
-
-
-
         }
     }
 }

@@ -44,7 +44,7 @@ namespace NewRelic.Telemetry.Spans
         }
 
         /// <summary>
-        /// The Unique identifier for a span
+        /// The Unique identifier for a span.
         /// </summary>
         public string SpanId => _span.Id;
 
@@ -192,7 +192,7 @@ namespace NewRelic.Telemetry.Spans
         /// Identifies this Span as a sub-operation of another span.  Used to measure inner-work as part of 
         /// a larger operation.
         /// </summary>
-        /// <param name="parentId">The Id of the Span which launched this Span.  <see cref="Span.Id>">See SpanId</see></param>
+        /// <param name="parentId">The Id of the Span which launched this Span.  <see cref="Span.Id>">See SpanId</see>.</param>
         public SpanBuilder WithParentId(string parentId)
         {
             WithAttribute(AttribName_ParentID, parentId);
@@ -214,7 +214,7 @@ namespace NewRelic.Telemetry.Spans
         /// information for later analysis.  
         /// </summary>
         /// <param name="attributes">Key/Value pairs representing the custom attributes.  In the event of a duplicate key, the last value will be used.</param>
-        public SpanBuilder WithAttributes<T>(IEnumerable<KeyValuePair<string,T>> attributes)
+        public SpanBuilder WithAttributes<T>(IEnumerable<KeyValuePair<string, T>> attributes)
         {
             if (attributes == null)
             {
@@ -227,7 +227,6 @@ namespace NewRelic.Telemetry.Spans
             }
 
             return this;
-
         }
     
         /// <summary>

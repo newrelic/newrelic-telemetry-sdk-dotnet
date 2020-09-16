@@ -37,6 +37,7 @@ namespace NewRelic.Telemetry.Metrics
     /// </summary>
     /// <typeparam name="TMetric">The type of metric being built (Count, Gauge, Summary).</typeparam>
     /// <typeparam name="TValue">The value of the type of metric being reported.</typeparam>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "Having this class in teh same file improves readability.")]
     public class MetricBuilder<TMetric, TValue> : MetricBuilder
         where TMetric : Metric<TValue>, new()
     {

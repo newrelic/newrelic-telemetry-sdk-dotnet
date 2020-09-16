@@ -76,14 +76,13 @@ namespace NewRelic.Telemetry.Tests
                 capturedSpanbatch = spanBatch;
             });
 
-
             var response = dataSender.SendDataAsync(spanBatch).Result;
 
             Assert.IsNotNull(spanBatch);
             Assert.AreEqual(1, spanBatch.Spans.Count);
             Assert.IsNotNull(spanBatch.Spans[0].Attributes);
             Assert.IsTrue(spanBatch.Spans[0].Attributes.ContainsKey("instrumentation.provider"));
-            Assert.AreEqual(instrumentationProvider,spanBatch.Spans[0].Attributes["instrumentation.provider"]);
+            Assert.AreEqual(instrumentationProvider, spanBatch.Spans[0].Attributes["instrumentation.provider"]);
         }
     }
 }

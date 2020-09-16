@@ -29,7 +29,7 @@ namespace NewRelic.Telemetry.Tests
             // Act
             var jsonString = metricBatch.ToJson();
 
-            //Assert
+            // Assert
             var resultMetricBatch = TestHelpers.DeserializeArrayFirstOrDefault(jsonString);
             var resultCommonProps = TestHelpers.DeserializeObject(resultMetricBatch["common"]);
 
@@ -39,7 +39,6 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         public void ToJson_NonEmptyMetricBatch()
         {
-
             // Arrange
             var metricBatch = MetricBatchBuilder.Create()
                 .WithIntervalMs(_interval)
@@ -83,7 +82,6 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribValue(countMetric, "type", "count");
             TestHelpers.AssertForAttribValue(countMetric, "value", _countValue);
             TestHelpers.AssertForAttribValue(countMetric, "interval.ms", _interval);
-
 
             var countMetricAttribs = TestHelpers.DeserializeObject(countMetric["attributes"]);
             TestHelpers.AssertForAttribCount(countMetricAttribs, 1);
