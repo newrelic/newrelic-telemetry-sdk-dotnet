@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿// Copyright 2020 New Relic, Inc. All rights reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NewRelic.Telemetry.Transport;
 using System.Linq;

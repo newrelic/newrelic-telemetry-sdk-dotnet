@@ -1,3 +1,4 @@
 <Project>
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), 'NewRelic.sln'))\build\Common.prod.props" />
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), 'NewRelic.sln'))\build\StyleCop.props" />
 </Project>

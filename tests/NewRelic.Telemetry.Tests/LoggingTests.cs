@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿// Copyright 2020 New Relic, Inc. All rights reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using System;
 using System.Collections.Concurrent;
