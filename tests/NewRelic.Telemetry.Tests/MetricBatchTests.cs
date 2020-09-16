@@ -15,7 +15,7 @@ namespace NewRelic.Telemetry.Tests
             var metricBatch = MetricBatch.Create()
                 .WithTimestamp(timestamp);
             
-            Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(timestamp), metricBatch.CommonProperties.Timestamp, $"MetricBatch CommonProperties [Timestamp] - expected: {timestamp}, actual: {metricBatch.CommonProperties.Timestamp}");
+            Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(timestamp), metricBatch.CommonProperties?.Timestamp, $"MetricBatch CommonProperties [Timestamp] - expected: {timestamp}, actual: {metricBatch.CommonProperties?.Timestamp}");
             Assert.IsNull(metricBatch.Metrics, $"MetricBatch Metrics - expected: null, actual: not null");
         }
 
@@ -35,12 +35,12 @@ namespace NewRelic.Telemetry.Tests
                 .WithMetric(CountMetric.Create("CountMetric", countValue))
                 .WithMetric(GaugeMetric.Create("GaugeMetric", gaugeValue));
 
-            Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(timestamp), metricBatch.CommonProperties.Timestamp, $"MetricBatch CommonProperties [Timestamp] - expected: {timestamp}, actual: {metricBatch.CommonProperties.Timestamp}");
-            Assert.AreEqual(interval, metricBatch.CommonProperties.IntervalMs, $"MetricBatch CommonProperties [IntervalMs] - expected: {interval}, actual: {metricBatch.CommonProperties.IntervalMs}");
+            Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(timestamp), metricBatch.CommonProperties?.Timestamp, $"MetricBatch CommonProperties [Timestamp] - expected: {timestamp}, actual: {metricBatch.CommonProperties?.Timestamp}");
+            Assert.AreEqual(interval, metricBatch.CommonProperties?.IntervalMs, $"MetricBatch CommonProperties [IntervalMs] - expected: {interval}, actual: {metricBatch.CommonProperties?.IntervalMs}");
 
-            Assert.AreEqual(2, metricBatch.Metrics.Count, $"MetricBatch Metrics count - expected: 2, actual: {metricBatch.Metrics.Count}");
-            Assert.AreEqual("count", metricBatch.Metrics[0].Type, $"MetricBatch Metrics[0].Type - expected: count, actual: {metricBatch.Metrics[0].Type}");
-            Assert.AreEqual("gauge", metricBatch.Metrics[1].Type, $"MetricBatch Metrics[1].Type - expected: gauge, actual: {metricBatch.Metrics[1].Type}");
+            Assert.AreEqual(2, metricBatch.Metrics?.Count, $"MetricBatch Metrics count - expected: 2, actual: {metricBatch.Metrics?.Count}");
+            Assert.AreEqual("count", metricBatch.Metrics?[0].Type, $"MetricBatch Metrics[0].Type - expected: count, actual: {metricBatch.Metrics?[0].Type}");
+            Assert.AreEqual("gauge", metricBatch.Metrics?[1].Type, $"MetricBatch Metrics[1].Type - expected: gauge, actual: {metricBatch.Metrics?[1].Type}");
         }
 
         [Test]
@@ -63,13 +63,13 @@ namespace NewRelic.Telemetry.Tests
                     .WithIntervalMs(metricInterval)
                     .WithAttribute("Attr1Key", "metAttr1Value"));
 
-            Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(commonTimestamp), metricBatch.CommonProperties.Timestamp, $"MetricBatch CommonProperties [Timestamp] - expected: {commonTimestamp}, actual: {metricBatch.CommonProperties.Timestamp}");
-            Assert.AreEqual(commonInterval, metricBatch.CommonProperties.IntervalMs, $"MetricBatch CommonProperties [IntervalMs] - expected: {commonInterval}, actual: {metricBatch.CommonProperties.IntervalMs}");
-            Assert.AreEqual("comAttr1Value", metricBatch.CommonProperties.Attributes["Attr1Key"], $"MetricBatch CommonProperties Attributes value - expected: comAttr1Value, actual: {metricBatch.CommonProperties.Attributes["Attr1Key"]}");
+            Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(commonTimestamp), metricBatch.CommonProperties?.Timestamp, $"MetricBatch CommonProperties [Timestamp] - expected: {commonTimestamp}, actual: {metricBatch.CommonProperties?.Timestamp}");
+            Assert.AreEqual(commonInterval, metricBatch.CommonProperties?.IntervalMs, $"MetricBatch CommonProperties [IntervalMs] - expected: {commonInterval}, actual: {metricBatch.CommonProperties?.IntervalMs}");
+            Assert.AreEqual("comAttr1Value", metricBatch.CommonProperties?.Attributes?["Attr1Key"], $"MetricBatch CommonProperties Attributes value - expected: comAttr1Value, actual: {metricBatch.CommonProperties?.Attributes?["Attr1Key"]}");
 
-            Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(metricTimestamp), metricBatch.Metrics[0].Timestamp, $"MetricBatch Metric [Timestamp] - expected: {DateTimeExtensions.ToUnixTimeMilliseconds(metricTimestamp)}, actual: {metricBatch.Metrics[0].Timestamp}");
-            Assert.AreEqual(metricInterval, metricBatch.Metrics[0].IntervalMs, $"MetricBatch Metric [IntervalMs] - expected: {metricInterval}, actual: {metricBatch.Metrics[0].IntervalMs}");
-            Assert.AreEqual("metAttr1Value", metricBatch.Metrics[0].Attributes["Attr1Key"], $"MetricBatch Metric Attributes value - expected: metAttr1Value, actual: {metricBatch.Metrics[0].Attributes["Attr1Key"]}");
+            Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(metricTimestamp), metricBatch.Metrics?[0].Timestamp, $"MetricBatch Metric [Timestamp] - expected: {DateTimeExtensions.ToUnixTimeMilliseconds(metricTimestamp)}, actual: {metricBatch.Metrics?[0].Timestamp}");
+            Assert.AreEqual(metricInterval, metricBatch.Metrics?[0].IntervalMs, $"MetricBatch Metric [IntervalMs] - expected: {metricInterval}, actual: {metricBatch.Metrics?[0].IntervalMs}");
+            Assert.AreEqual("metAttr1Value", metricBatch.Metrics?[0].Attributes?["Attr1Key"], $"MetricBatch Metric Attributes value - expected: metAttr1Value, actual: {metricBatch.Metrics?[0].Attributes?["Attr1Key"]}");
         }
 
         [Test]
@@ -88,7 +88,7 @@ namespace NewRelic.Telemetry.Tests
                     .WithTimestamp(timestamp)
                     .WithIntervalMs(interval));
 
-            Assert.AreEqual(2, metricBatch.Metrics.Count, $"MetricBatch Metrics count - expected: 2, actual: {metricBatch.Metrics.Count}");
+            Assert.AreEqual(2, metricBatch.Metrics?.Count, $"MetricBatch Metrics count - expected: 2, actual: {metricBatch.Metrics?.Count}");
             Assert.IsNull(metricBatch.CommonProperties, $"MetricBatch CommonProperties - expected: null, actual: not null");
         }
 

@@ -51,6 +51,11 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             //Capture the spans that were requested to be sent to New Relic.
             mockDataSender.WithCaptureSendDataAsyncDelegate((sb, retryId) =>
             {
+                if(sb.Spans == null)
+                {
+                    return;
+                }
+
                 _resultNRSpans.AddRange(sb.Spans);
             });
 
@@ -76,6 +81,11 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
                     var parentContext = spanDefinition.Parent.HasValue ? _otSpans[spanDefinition.Parent.Value].Context : default(ActivityContext);
                     var activity = source.StartActivity(spanDefinition.Name, ActivityKind.Server, parentContext);
 
+                    if(activity == null)
+                    {
+                        continue;
+                    }
+
                     activity.SetStartTime(spanDefinition.Start.UtcDateTime);
                     if (spanDefinition.IsCallToNewRelic)
                     {
@@ -83,7 +93,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
                     }
                     activity.SetEndTime(spanDefinition.End.UtcDateTime);
                     activity.SetStatus(spanDefinition.Status);
-                    activity?.Stop();
+                    activity.Stop();
 
                     _otSpans.Add(activity);
                 }
@@ -120,11 +130,11 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             var resultSpan2 = resultNRSpansDic[_otSpans[2].Context.SpanId.ToHexString()];
             var resultSpan3 = resultNRSpansDic[_otSpans[3].Context.SpanId.ToHexString()];
 
-            Assert.False(resultSpan0.Attributes.ContainsKey("error"));
-            Assert.True((bool)resultSpan1.Attributes["error"]);
-            Assert.Equal(errorMessage, resultSpan1.Attributes["error.message"]);
-            Assert.False(resultSpan2.Attributes.ContainsKey("error"));
-            Assert.False(resultSpan3.Attributes.ContainsKey("error"));
+            Assert.False(resultSpan0.Attributes?.ContainsKey("error"));
+            Assert.True((bool?)resultSpan1.Attributes?["error"]);
+            Assert.Equal(errorMessage, resultSpan1.Attributes?["error.message"]);
+            Assert.False(resultSpan2.Attributes?.ContainsKey("error"));
+            Assert.False(resultSpan3.Attributes?.ContainsKey("error"));
         }
 
         [Fact]
@@ -181,7 +191,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
                 var expectedDurationMs = expectedEndTimestampUnixMs - expectedStartTimestampUnixMs;
 
                 Assert.Equal(expectedStartTimestampUnixMs, nrSpan.Timestamp);
-                Assert.Equal((double)expectedDurationMs, nrSpan.Attributes["duration.ms"]);
+                Assert.Equal((double)expectedDurationMs, nrSpan.Attributes?["duration.ms"]);
             }
         }
 
@@ -196,8 +206,8 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
                 }
 
                 Assert.NotNull(nrSpan.Attributes);
-                Assert.True(nrSpan.Attributes.ContainsKey("instrumentation.provider"));
-                Assert.Equal("opentelemetry", nrSpan.Attributes["instrumentation.provider"]);
+                Assert.True(nrSpan.Attributes?.ContainsKey("instrumentation.provider"));
+                Assert.Equal("opentelemetry", nrSpan.Attributes?["instrumentation.provider"]);
 
             }
 

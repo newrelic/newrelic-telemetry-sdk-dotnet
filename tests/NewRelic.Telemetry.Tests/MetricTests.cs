@@ -54,7 +54,7 @@ namespace NewRelic.Telemetry.Tests
             Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(timestamp), metric.Timestamp);
             Assert.AreEqual(interval, metric.IntervalMs);
             Assert.AreEqual(12, metric.Attributes?["adsfasdf"]);
-            Assert.AreEqual("attrValue", metric.Attributes["attrKey"]);
+            Assert.AreEqual("attrValue", metric.Attributes?["attrKey"]);
         }
 
         [Test]

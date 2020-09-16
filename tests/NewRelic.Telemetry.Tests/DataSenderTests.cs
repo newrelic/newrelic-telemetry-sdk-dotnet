@@ -100,10 +100,10 @@ namespace NewRelic.Telemetry.Tests
             Assert.AreEqual(expectedCountSpans, successfulSpanBatches.SelectMany(x => x.Spans).Select(x => x.Id).Distinct().Count(), "All Spans should be unique (spanId)");
 
             //Test the attributes on the spanbatch
-            Assert.AreEqual(expectedCountDistinctTraceIds, successfulSpanBatches.Select(x => x.CommonProperties.TraceId).Distinct().Count(), "The traceId on split batches are not the same");
-            Assert.AreEqual(expectedTraceID, successfulSpanBatches.FirstOrDefault().CommonProperties.TraceId, "The traceId on split batches does not match the original traceId");
-            Assert.AreEqual(expectedCountSpanBatchAttribSets, successfulSpanBatches.Select(x => x.CommonProperties.Attributes).Distinct().Count(), "The attributes on all span batches should be the same");
-            Assert.AreEqual(attribs, successfulSpanBatches.Select(x => x.CommonProperties.Attributes).FirstOrDefault(), "The Span Batch attribute values on split batches do not match the attributes of the original span batch.");
+            Assert.AreEqual(expectedCountDistinctTraceIds, successfulSpanBatches.Select(x => x.CommonProperties?.TraceId).Distinct().Count(), "The traceId on split batches are not the same");
+            Assert.AreEqual(expectedTraceID, successfulSpanBatches.FirstOrDefault().CommonProperties?.TraceId, "The traceId on split batches does not match the original traceId");
+            Assert.AreEqual(expectedCountSpanBatchAttribSets, successfulSpanBatches.Select(x => x.CommonProperties?.Attributes).Distinct().Count(), "The attributes on all span batches should be the same");
+            Assert.AreEqual(attribs, successfulSpanBatches.Select(x => x.CommonProperties?.Attributes).FirstOrDefault(), "The Span Batch attribute values on split batches do not match the attributes of the original span batch.");
         }
 
         /// <summary>
@@ -146,6 +146,11 @@ namespace NewRelic.Telemetry.Tests
             dataSender.WithCaptureSendDataAsyncDelegate((spanBatch, retryNum) =>
             {
                 actualCountCallsSendData++;
+
+                if(spanBatch.Spans == null)
+                {
+                    return;
+                }
 
                 if (spanBatch.Spans.Any(x => x.Id.StartsWith(traceID_SplitBatch_Prefix)))
                 {

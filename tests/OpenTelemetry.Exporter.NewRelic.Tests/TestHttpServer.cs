@@ -9,11 +9,11 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
     {
         private static readonly Random GlobalRandom = new Random();
 
-        public static IDisposable RunServer(Action<HttpListenerContext> action, out string host, out int port)
+        public static IDisposable? RunServer(Action<HttpListenerContext> action, out string host, out int port)
         {
             host = "localhost";
             port = 0;
-            RunningServer server = null;
+            RunningServer? server = null;
 
             var retryCount = 5;
             while (retryCount > 0)

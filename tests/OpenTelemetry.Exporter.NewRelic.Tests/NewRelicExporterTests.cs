@@ -16,7 +16,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
     {
         private static readonly ConcurrentDictionary<Guid, string> Responses = new ConcurrentDictionary<Guid, string>();
 
-        private readonly IDisposable testServer;
+        private readonly IDisposable? testServer;
         private readonly string testServerHost;
         private readonly int testServerPort;
 
@@ -60,7 +60,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 
         public void Dispose()
         {
-            this.testServer.Dispose();
+            this.testServer?.Dispose();
         }
 
         [Fact]

@@ -42,20 +42,9 @@ namespace NewRelic.Telemetry.Tests
     {
         private readonly ConcurrentDictionary<string, ILogger> _loggers = new ConcurrentDictionary<string, ILogger>();
 
-        private ConcurrentDictionary<string, List<string>> _logOutput;
+        private ConcurrentDictionary<string, List<string>>? _logOutput;
 
-        public ConcurrentDictionary<string, List<string>> LogOutput
-        {
-            get
-            {
-                if (_logOutput == null)
-                {
-                    _logOutput = new ConcurrentDictionary<string, List<string>>();
-                }
-
-                return _logOutput;
-            }
-        }
+        public ConcurrentDictionary<string, List<string>> LogOutput => _logOutput ??= new ConcurrentDictionary<string, List<string>>();
 
         public ILogger CreateLogger(string categoryName)
         {
