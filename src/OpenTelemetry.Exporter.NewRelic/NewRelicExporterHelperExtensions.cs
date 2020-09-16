@@ -18,7 +18,7 @@ namespace OpenTelemetry.Trace
         /// <param name="builder"><see cref="TracerProviderBuilder"/> builder to use.</param>
         /// <param name="configure">Exporter configuration options.</param>
         /// <returns>The instance of <see cref="TracerProviderBuilder"/> to chain the calls.</returns>
-        public static TracerProviderBuilder AddNewRelicExporter(this TracerProviderBuilder builder, Action<NewRelicExporterOptions> configure = null)
+        public static TracerProviderBuilder AddNewRelicExporter(this TracerProviderBuilder builder, Action<NewRelicExporterOptions>? configure = null)
         {
             if (builder == null)
             {

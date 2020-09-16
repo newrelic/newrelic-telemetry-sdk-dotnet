@@ -27,7 +27,7 @@ namespace OpenTelemetry.Exporter.NewRelic
 
         private readonly NewRelicExporterOptions _options;
         private readonly SpanDataSender _spanDataSender;
-        private readonly ILogger _logger;
+        private readonly ILogger? _logger;
         private readonly string[] _nrEndpoints;
 
         /// <summary>
@@ -85,10 +85,10 @@ namespace OpenTelemetry.Exporter.NewRelic
                 return ExportResult.Success;
             }
 
-            Response response = null;
+            Response? response = null;
             Task.Run(async () => response = await _spanDataSender.SendDataAsync(nrSpanBatch)).GetAwaiter().GetResult();
 
-            switch (response.ResponseStatus)
+            switch (response?.ResponseStatus)
             {
                 case NewRelicResponseStatus.DidNotSend_NoData:
                 case NewRelicResponseStatus.Success:
@@ -183,7 +183,7 @@ namespace OpenTelemetry.Exporter.NewRelic
             return FilterSpans(spans, spanIdsToFilter);
         }
 
-        private Span ToNewRelicSpan(Activity openTelemetrySpan)
+        private Span? ToNewRelicSpan(Activity openTelemetrySpan)
         {
             if (openTelemetrySpan == default) throw new ArgumentException(nameof(openTelemetrySpan));
             if (openTelemetrySpan.Context == default) throw new ArgumentException($"{nameof(openTelemetrySpan)}.Context");
