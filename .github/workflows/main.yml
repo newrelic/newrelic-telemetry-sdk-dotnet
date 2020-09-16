@@ -1,0 +1,85 @@
+name: New Relic Telemetry SDK for .NET
+
+on:
+  pull_request:
+    branches: [ master ]
+  push:
+    tags:
+      - refs/tags/v*.*.*      # v1.0.0
+      - refs/tags/v*.*.*-*    # v1.0.0-alpha
+      - refs/tags/*_v*.*.*    # SomePrefix_v1.0.0
+      - refs/tags/*_v*.*.*-*  # SomePrefix_v1.0.0-alpha
+  workflow_dispatch: # Allows team members to manually kick off a build
+
+jobs:
+
+  build-test:
+    name: Build Test Deploy
+
+    runs-on: windows-2019
+
+    env:
+      artifact_staging_path: ${{ github.workspace }}\artifactstaging
+      solution_file_path: ${{ github.workspace }}\NewRelic.sln
+      telemetrysdk_path: ${{ github.workspace }}\src\NewRelic.Telemetry\bin\Release\
+      exporter_path: ${{ github.workspace }}\src\OpenTelemetry.Exporter.NewRelic\bin\Release\
+      DOTNET_NOLOGO: true
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.1
+
+    - name: Setup Nuget Add to Path
+      uses: nuget/setup-nuget@v1
+      with:
+        nuget-version: '5.x'  
+    
+    - name: Restore
+      run:  dotnet restore ${{ env.solution_file_path }}
+      shell: powershell
+
+    - name: Build
+      run:  dotnet build ${{ env.solution_file_path }} --configuration Release
+      shell: powershell
+
+    - name: Unit Tests - TelemetrySDK
+      run:  dotnet test ${{ github.workspace }}\tests\NewRelic.Telemetry.Tests --no-build --no-restore --configuration Release --logger trx
+      shell: powershell
+
+    - name: Unit Tests - OpenTelemetry
+      run:  dotnet test ${{ github.workspace }}\tests\OpenTelemetry.Exporter.NewRelic.Tests --no-build --no-restore --configuration Release --logger trx
+      shell: powershell
+         
+    - name: Archive the artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: my-artifact-${{ github.run_id }}
+        path: |
+          ${{ env.telemetrysdk_path }}
+          ${{ env.exporter_path }}
+
+      # These two steps will only run on a build of master or a tag is created.
+    - name: Publish Packages to MyGet
+      if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags') }}
+      run: |
+        nuget setapikey ${{ secrets.MYGET_APIKEY }} -source {{ secrets.MYGET_URL }}
+        foreach ($file in Get-ChildItem -Path "${{ env.telemetrysdk_path }}\*" -File -Include *.nupkg) {
+          nuget push $file.name -Source ${{ secrets.MYGET_URL }} }
+        foreach ($file in Get-ChildItem -Path "${{ env.exporter_path }}\*" -File -Include *.nupkg) {
+          nuget push $file.name -Source ${{ secrets.MYGET_URL }} }
+      shell: powershell
+
+    - name: Publish Symbols to MyGet
+      if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags') }}
+      run: |
+        nuget setapikey ${{ secrets.MYGET_APIKEY }} -source {{ secrets.MYGET_URL_SYMBOLS }}
+        foreach ($file in Get-ChildItem -Path "${{ env.telemetrysdk_path }}\*" -File -Include *.snupkg) {
+          nuget push $file.name -Source ${{ secrets.MYGET_URL_SYMBOLS }} }
+        foreach ($file in Get-ChildItem -Path "${{ env.exporter_path }}\*" -File -Include *.snupkg) {
+          nuget push $file.name -Source ${{ secrets.MYGET_URL_SYMBOLS }} }
+      shell: powershell
