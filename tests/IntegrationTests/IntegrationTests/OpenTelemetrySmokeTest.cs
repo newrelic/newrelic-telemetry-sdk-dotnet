@@ -12,11 +12,11 @@ namespace IntegrationTests
 {
     public class OpenTelemetrySmokeTest : IClassFixture<OpenTelemetryUsageApplicationFixture>
     {
-        private readonly string _insightsQueryApiKey;
+        private readonly string? _insightsQueryApiKey;
 
         private readonly string _insightsQueryApiEndpoint = "https://insights-api.newrelic.com";
 
-        private readonly string _accountNumber;
+        private readonly string? _accountNumber;
 
         public OpenTelemetrySmokeTest(OpenTelemetryUsageApplicationFixture fixture, ITestOutputHelper output)
         {
@@ -70,23 +70,28 @@ namespace IntegrationTests
 
             Assert.NotNull(response);
             Assert.Single(response.Results);
-            Assert.Equal(2, response.Results.FirstOrDefault().Events.Count);
+            Assert.Equal(2, response?.Results?.FirstOrDefault()?.Events?.Count);
 
-            response.Results.FirstOrDefault().Events.ForEach(item =>
+            var events = response?.Results?.FirstOrDefault()?.Events;
+
+            if (events != null)
             {
-                Assert.NotNull(item.Guid);
-                Assert.NotNull(item.TraceId);
-                Assert.NotNull(item.Name);
-                Assert.Equal("SampleAspNetCoreApp", item.ServiceName);
-                Assert.Equal("SampleAspNetCoreApp", item.EntityName);
-            });
+                events.ForEach(item =>
+                {
+                    Assert.NotNull(item.Guid);
+                    Assert.NotNull(item.TraceId);
+                    Assert.NotNull(item.Name);
+                    Assert.Equal("SampleAspNetCoreApp", item.ServiceName);
+                    Assert.Equal("SampleAspNetCoreApp", item.EntityName);
+                });
 
-            var traceId = response.Results.FirstOrDefault().Events.FirstOrDefault().TraceId;
+                var traceId = events.FirstOrDefault()?.TraceId;
 
-            response.Results.FirstOrDefault().Events.ForEach(item =>
-            {
-                Assert.Equal(traceId, item.TraceId);
-            });
+                events.ForEach(item =>
+                {
+                    Assert.Equal(traceId, item.TraceId);
+                });
+            }
 
         }
 
@@ -106,13 +111,13 @@ namespace IntegrationTests
             var response = JsonConvert.DeserializeObject<NewRelicInsightsResponse<NewRelicMetricEvent>>(body);
 
             Assert.NotNull(response);
-            Assert.Single(response.Results);
-            Assert.Single(response.Results.FirstOrDefault().Events);
+            Assert.Single(response?.Results);
+            Assert.Single(response?.Results?.FirstOrDefault()?.Events);
 
-            var metric = response.Results.FirstOrDefault().Events.FirstOrDefault();
-            Assert.True(metric.TimeStamp > 0);
-            Assert.Equal("metricAPI", metric.NewRelicSource);
-            Assert.Equal("WeatherForecast/Get", metric.MetricName);
+            var metric = response?.Results?.FirstOrDefault()?.Events?.FirstOrDefault();
+            Assert.True(metric?.TimeStamp > 0);
+            Assert.Equal("metricAPI", metric?.NewRelicSource);
+            Assert.Equal("WeatherForecast/Get", metric?.MetricName);
         }
     }
 }

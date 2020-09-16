@@ -8,13 +8,13 @@ namespace IntegrationTests.Fixtures
 {
     public abstract class BaseApplication
     {
-        protected Process _applicationProcess;
+        protected Process? _applicationProcess;
 
         public string ApplicationName { get; }
 
         public string[] ServiceNames { get; }
 
-        public ITestOutputHelper TestLogger { get; set; }
+        public ITestOutputHelper? TestLogger { get; set; }
 
         protected BaseApplication(string applicationName, string[] serviceNames)
         {
@@ -77,7 +77,7 @@ namespace IntegrationTests.Fixtures
 
         private async void LogProcessOutput(TextReader reader)
         {
-            string line;
+            string? line;
 
             while ((line = await reader.ReadLineAsync()) != null)
             {

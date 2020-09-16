@@ -4,7 +4,7 @@ namespace IntegrationTests.Fixtures
 {
     public class OpenTelemetryUsageApplicationFixture : BaseFixture
     {
-        public OpenTelemetryUsageApplicationFixture():base(new OpenTelemetryUsageApplication("SampleAspNetCoreApp", null))
+        public OpenTelemetryUsageApplicationFixture():base(new OpenTelemetryUsageApplication("SampleAspNetCoreApp"))
         {
         }
 

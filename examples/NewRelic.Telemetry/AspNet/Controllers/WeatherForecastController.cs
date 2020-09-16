@@ -56,8 +56,7 @@ namespace ASPNetFrameworkApiApplication.Controllers
         public async Task<IEnumerable<WeatherForecast>> Get()
         {
 
-            // The SpanBuilder is a tool to help Build spans.  Each span must have 
-            // a unique identifier.  In this example, we are using a Guid.
+            // Each span must have a unique identifier.  In this example, we are using a Guid.
             var spanId = Guid.NewGuid().ToString();
 
             var span = Span.Create(spanId);

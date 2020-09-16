@@ -17,7 +17,7 @@ namespace IntegrationTests.Fixtures
 
         public string ApplicationOutputPath { get; private set; }
 
-        public OpenTelemetryUsageApplication(string applicationName, string[] serviceNames) : base(applicationName, serviceNames)
+        public OpenTelemetryUsageApplication(string applicationName) : base(applicationName, new string[0])
         {
             SolutionConfiguration = "Release";
 #if DEBUG

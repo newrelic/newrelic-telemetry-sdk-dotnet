@@ -38,8 +38,7 @@ namespace AspNetCoreWebApiApplication.Controllers
         public async Task<IEnumerable<WeatherForecast>> Get()
         {
 
-            // The SpanBuilder is a tool to help Build spans.  Each span must have 
-            // a unique identifier.  In this example, we are using a Guid.
+            // Each span must have a unique identifier.  In this example, we are using a Guid.
             var spanId = Guid.NewGuid().ToString();
 
             var span = Span.Create(spanId);
@@ -79,8 +78,7 @@ namespace AspNetCoreWebApiApplication.Controllers
             // In all cases, the span is sent up to the New Relic endpoint.
             finally
             {
-                // The SpanBatchBuilder is a tool to help create SpanBatches
-                // Create a new SpanBatchBuilder and associate the span to it.
+                // Create a new SpanBatch and associate the span to it.
                 var spanBatch = SpanBatch.Create()
                     .WithSpan(span);
 

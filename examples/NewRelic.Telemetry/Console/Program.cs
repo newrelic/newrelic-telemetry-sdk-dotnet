@@ -53,13 +53,13 @@ namespace BasicConsoleApplication
 
         /// <summary>
         /// In this example, all of the spans are for the same trace.  Accordingly, the
-        /// TraceId is set in the SpanBatchBuilder.
+        /// TraceId is set in the SpanBatch.
         /// </summary>
         private static async Task Example_SpanBatchForSingleTrace()
         {
             var traceId = System.Guid.NewGuid().ToString();
 
-            // The SpanBatchBuilder manages a collection of Spans
+            // The SpanBatch manages a collection of Spans
             var spanBatch = SpanBatch.Create();
 
             // Since all of the spans in this batch represent a single
@@ -70,8 +70,7 @@ namespace BasicConsoleApplication
             // Perform 10 units of work as part of this trace/spanBatch
             for (var spanIdx = 0; spanIdx < 5; spanIdx++)
             {
-                // The SpanBuilder is used to crate a new span.
-                // Create a new SpanBuilder assigning it a random guid as the spanId
+                // Create a new Span assigning it a random guid as the spanId
                 var span = Span.Create(Guid.NewGuid().ToString());
 
                 //Add a name to the span to better understand it in the New Relic UI.

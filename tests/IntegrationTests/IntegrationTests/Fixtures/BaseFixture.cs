@@ -7,7 +7,7 @@ namespace IntegrationTests.Fixtures
     public class BaseFixture : IDisposable
     {
         public BaseApplication Application { get; }
-        public ITestOutputHelper TestLogger { get; set; }
+        public ITestOutputHelper? TestLogger { get; set; }
 
         private bool _initialized;
         public bool Initialized => _initialized;
@@ -17,7 +17,7 @@ namespace IntegrationTests.Fixtures
             Application = application;
         }
 
-        public Action Exercise { get; set; }
+        public Action? Exercise { get; set; }
 
         public void Initialize()
         {
@@ -31,6 +31,11 @@ namespace IntegrationTests.Fixtures
             Thread.Sleep(5000);
 
             TestLogger?.WriteLine($@"[{DateTime.Now}] ... Testing");
+
+            if(Exercise == null)
+            {
+                throw new Exception("Exercise delegate is null");
+            }
 
             Exercise.Invoke();
 
