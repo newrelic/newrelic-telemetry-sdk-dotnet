@@ -10,20 +10,26 @@
     <Rule Id="CS8019" Action="Error" />
   </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="SA1028" Action="Info" />
     <Rule Id="SA1101" Action="None" />
     <Rule Id="SA1200" Action="None" />
     <Rule Id="SA1201" Action="None" />
     <Rule Id="SA1208" Action="None" />
     <Rule Id="SA1210" Action="Error" />
+    <Rule Id="SA1303" Action="Error" />
     <Rule Id="SA1309" Action="None" />
+    <Rule Id="SA1400" Action="Error" />
     <Rule Id="SA1407" Action="None" />
+    <Rule Id="SA1516" Action="Error" />
     <Rule Id="SA1600" Action="None" />
+    <Rule Id="SA1623" Action="Info" />
     <Rule Id="SA1633" Action="Error" />
     <Rule Id="SA1634" Action="Error" />
     <Rule Id="SA1635" Action="Error" />
     <Rule Id="SA1636" Action="Error" />
     <Rule Id="SA1640" Action="Error" />
     <Rule Id="SA1641" Action="Error" />
+    <Rule Id="SA1642" Action="Error" />
     <Rule Id="SX1101" Action="Warning" />
     <Rule Id="SX1309" Action="Error" />
     <Rule Id="SX1309S" Action="Error" />

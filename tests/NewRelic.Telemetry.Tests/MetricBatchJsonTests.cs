@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 namespace NewRelic.Telemetry.Tests
 { 
-    class MetricBatchJsonTests
+    internal class MetricBatchJsonTests
     {
         private static DateTime _timestamp = DateTime.UtcNow;
         private long _timestampL = DateTimeExtensions.ToUnixTimeMilliseconds(_timestamp);

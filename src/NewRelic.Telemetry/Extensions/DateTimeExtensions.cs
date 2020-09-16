@@ -5,7 +5,6 @@ using System;
 
 namespace NewRelic.Telemetry.Extensions
 {
-
     /// <summary>
     /// Provides DateTime conversions to Unix Timestamps.
     /// This supports backwards compatibility with .NET v4.5

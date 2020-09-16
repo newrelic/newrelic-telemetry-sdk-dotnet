@@ -17,6 +17,7 @@ namespace NewRelic.Telemetry.Metrics
         protected override string EndpointUrl => _config.MetricUrl;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="MetricDataSender"/> class.
         /// Creates new MetricDataSender setting the options using an instance of TelemetryConfiguration
         /// to specify settings.
         /// </summary>
@@ -26,6 +27,7 @@ namespace NewRelic.Telemetry.Metrics
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="MetricDataSender"/> class.
         /// Creates new MetricDataSender setting the options using an instance of TelemetryConfiguration
         /// to specify settings and a Logger Factory that will be used to log information about the
         /// interactions with New Relic endpoints.
@@ -37,6 +39,7 @@ namespace NewRelic.Telemetry.Metrics
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="MetricDataSender"/> class.
         /// Creates new MetricDataSender obtaining configuration settings from a Configuration Provider 
         /// that is compatible with <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration.</see>
         /// </summary>
@@ -46,6 +49,7 @@ namespace NewRelic.Telemetry.Metrics
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="MetricDataSender"/> class.
         /// Creates new MetricDataSender obtaining configuration settings from a Configuration Provider 
         /// that is compatible with <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration.</see>
         /// It also accepts a <see cref="Microsoft.Extensions.Logging.ILoggerFactory">logger factory</see> 

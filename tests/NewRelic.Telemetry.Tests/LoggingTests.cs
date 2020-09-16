@@ -90,6 +90,7 @@ namespace NewRelic.Telemetry.Tests
     public class CustomLogger : ILogger
     {
         public CustomLoggerProvider Provider { get; private set; }
+
         public string Category { get; private set; }
 
         public CustomLogger(CustomLoggerProvider Provider, string Category)

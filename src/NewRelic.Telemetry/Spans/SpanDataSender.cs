@@ -18,6 +18,7 @@ namespace NewRelic.Telemetry.Spans
         protected override string EndpointUrl => _config.TraceUrl;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="SpanDataSender"/> class.
         /// Creates new SpanDataSender setting the options using an instance of TelemetryConfiguration
         /// to specify settings.
         /// </summary>
@@ -27,6 +28,7 @@ namespace NewRelic.Telemetry.Spans
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="SpanDataSender"/> class.
         /// Creates new SpanDataSender setting the options using an instance of TelemetryConfiguration
         /// to specify settings and a Logger Factory that will be used to log information about the
         /// interactions with New Relic endpoints.
@@ -38,6 +40,7 @@ namespace NewRelic.Telemetry.Spans
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="SpanDataSender"/> class.
         /// Creates new SpanDataSender obtaining configuration settings from a Configuration Provider 
         /// that is compatible with <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration.</see>
         /// </summary>
@@ -48,6 +51,7 @@ namespace NewRelic.Telemetry.Spans
 
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="SpanDataSender"/> class.
         /// Creates new SpanDataSender obtaining configuration settings from a Configuration Provider 
         /// that is compatible with <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration.</see>
         /// It also accepts a <see cref="Microsoft.Extensions.Logging.ILoggerFactory">logger factory</see> 
@@ -72,7 +76,7 @@ namespace NewRelic.Telemetry.Spans
                     {
                         span.Attributes = new Dictionary<string, object>();
                     }
-                    span.Attributes[SpanBuilder.attribName_InstrumentationProvider] = _config.InstrumentationProvider;
+                    span.Attributes[SpanBuilder.AttribName_InstrumentationProvider] = _config.InstrumentationProvider;
                 }
             }
         }

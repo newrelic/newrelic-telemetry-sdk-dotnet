@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace NewRelic.Telemetry.Tests
 { 
-    class SpanBatchJsonTests
+    internal class SpanBatchJsonTests
     {
         [Test]
         public void ToJson_EmptySpanBatch() 

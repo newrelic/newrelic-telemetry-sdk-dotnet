@@ -84,6 +84,7 @@ namespace NewRelic.Telemetry
         };
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="TelemetryConfiguration"/> class.
         /// Creates the Configuration object accepting all default settings.
         /// </summary>
         public TelemetryConfiguration()
@@ -91,6 +92,7 @@ namespace NewRelic.Telemetry
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="TelemetryConfiguration"/> class.
         /// Constructs a new configuration object using a configuration provider. Allows for an overall
         /// New Relic Value
         /// by <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration</see>.
@@ -101,6 +103,7 @@ namespace NewRelic.Telemetry
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="TelemetryConfiguration"/> class.
         /// Constructs a new configuration object using a configuration provider. Allows for an overall
         /// New Relic Value and can be overriden with a Product Specific Value.
         /// by <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration</see>.

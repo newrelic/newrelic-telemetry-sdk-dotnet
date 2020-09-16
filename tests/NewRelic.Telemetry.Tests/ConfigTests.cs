@@ -17,28 +17,28 @@ namespace NewRelic.Telemetry.Tests
     /// </summary>
     public class ConfigTests
     {
-        const string NRConfigSection = "NewRelic";
-        const string ProductName = "TestProduct";
-        const string AltProductName = "DifferentProduct";
-        const string MissingProductName = "MissingProduct";
+        private const string NRConfigSection = "NewRelic";
+        private const string ProductName = "TestProduct";
+        private const string AltProductName = "DifferentProduct";
+        private const string MissingProductName = "MissingProduct";
 
-        const string ApiKey_ProdValue = "987654";
-        const string ApiKey_NewRelicValue = "123456";
-        const string ApiKey_DiffProductvalue = "ABCDEFG";
-        const string ApiKey_DefaultValue = null;
+        private const string ApiKey_ProdValue = "987654";
+        private const string ApiKey_NewRelicValue = "123456";
+        private const string ApiKey_DiffProductvalue = "ABCDEFG";
+        private const string ApiKey_DefaultValue = null;
 
-        const int SendTimeoutSeconds_ProdValue = 124;
-        const int SendTimeoutSeconds_DefaultValue = 5;
-        const int SendTimeoutSeconds_DiffProdValue = 500;
+        private const int SendTimeoutSeconds_ProdValue = 124;
+        private const int SendTimeoutSeconds_DefaultValue = 5;
+        private const int SendTimeoutSeconds_DiffProdValue = 500;
 
-        const bool AuditLoggingEnabled_ProdValue = true;
-        const bool AuditLoggingEnabled_NewRelicValue = false;
-        const bool AuditLoggingEnabled_DiffProdValue = true;
+        private const bool AuditLoggingEnabled_ProdValue = true;
+        private const bool AuditLoggingEnabled_NewRelicValue = false;
+        private const bool AuditLoggingEnabled_DiffProdValue = true;
 
-        const string ServiceName_NewRelicValue = NRConfigSection + "Service";
-        const string ServiceName_DefaultValue = null;
+        private const string ServiceName_NewRelicValue = NRConfigSection + "Service";
+        private const string ServiceName_DefaultValue = null;
 
-        const int BackoffMaxSeconds_DefaultValue = 80;
+        private const int BackoffMaxSeconds_DefaultValue = 80;
 
         [SetUp]
         public void Setup()

@@ -9,6 +9,7 @@ namespace OpenTelemetry.Exporter.NewRelic
     public class PackageVersionAttribute : Attribute
     {
         public string PackageVersion { get; }
+
         public PackageVersionAttribute(string version) 
         {
             PackageVersion = version;

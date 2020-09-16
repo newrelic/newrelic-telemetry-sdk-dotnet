@@ -35,6 +35,7 @@ namespace OpenTelemetry.Exporter.NewRelic
 
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="NewRelicTraceExporter"/> class.
         /// Configures the Trace Exporter accepting settings from any configuration provider supported by Microsoft.Extensions.Configuration.
         /// </summary>
         /// <param name="configProvider"></param>
@@ -43,6 +44,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="NewRelicTraceExporter"/> class.
         /// Configures the Trace Exporter accepting settings from any configuration provider supported by Microsoft.Extensions.Configuration.
         /// Also accepts any logging infrastructure supported by Microsoft.Extensions.Logging.
         /// </summary>
@@ -53,6 +55,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="NewRelicTraceExporter"/> class.
         /// Configures the Trace Exporter accepting configuration settings from an instance of the New Relic Telemetry SDK configuration object.
         /// </summary>
         /// <param name="config"></param>
@@ -61,6 +64,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="NewRelicTraceExporter"/> class.
         /// Configures the Trace Exporter accepting configuration settings from an instance of the New Relic Telemetry SDK configuration object.  Also
         /// accepts a logger factory supported by Microsoft.Extensions.Logging.
         /// </summary>
