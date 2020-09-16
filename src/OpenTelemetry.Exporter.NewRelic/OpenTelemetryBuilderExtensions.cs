@@ -1,4 +1,7 @@
-﻿using NewRelic.Telemetry;
+﻿// Copyright 2020 New Relic, Inc. All rights reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+using NewRelic.Telemetry;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using OpenTelemetry.Exporter.NewRelic;
