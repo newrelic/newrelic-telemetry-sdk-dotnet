@@ -48,8 +48,11 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 
         public SpanConverterTests()
         {
-            var config = new TelemetryConfiguration().WithApiKey("123456").WithServiceName(testServiceName);
+            var config = new TelemetryConfiguration().WithApiKey("123456").WithServiceName(testServiceName).WithInstrumentationProviderName("opentelemetry");
             var mockDataSender = new SpanDataSender(config);
+            var options = new NewRelicExporterOptions();
+            options.ApiKey = "123456";
+            options.ServiceName = testServiceName;
 
             //Capture the spans that were requested to be sent to New Relic.
             mockDataSender.WithCaptureSendDataAsyncDelegate((sb, retryId) =>
@@ -63,7 +66,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
                 return Task.FromResult(new System.Net.Http.HttpResponseMessage(System.Net.HttpStatusCode.OK));
             });
 
-            var exporter = new NewRelicTraceExporter(mockDataSender, config, null);
+            var exporter = new NewRelicTraceExporter(options, mockDataSender);
             var source = new ActivitySource("newrelic.test");
 
             using (var openTelemetrySdk = Sdk.CreateTracerProviderBuilder()

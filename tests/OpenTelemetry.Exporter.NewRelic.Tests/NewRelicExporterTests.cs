@@ -3,12 +3,9 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using Microsoft.Extensions.Configuration;
-using NewRelic.Telemetry;
 using OpenTelemetry.Trace;
 using Xunit;
 
@@ -81,15 +78,10 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
                     endCalledCount++;
                 };
 
-            var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string> {
-                    { "NewRelic:ServiceName", "test-newrelic" },
-                    { "NewRelic:ApiKey", "my-apikey" },
-                    { "NewRelic:TraceUrlOverride", $"http://{this.testServerHost}:{this.testServerPort}/trace/v1?requestId={requestId}" },
-                })
-                .Build();
-
-            var exporterOptions = new TelemetryConfiguration(config);
+            var exporterOptions = new NewRelicExporterOptions();
+            exporterOptions.ServiceName = "test-newrelic";
+            exporterOptions.ApiKey = "my-apikey";
+            exporterOptions.TraceUrl = new Uri($"http://{this.testServerHost}:{this.testServerPort}/trace/v1?requestId={requestId}");
 
             var newRelicExporter = new NewRelicTraceExporter(exporterOptions);
             var exportActivityProcessor = new BatchExportActivityProcessor(newRelicExporter);
