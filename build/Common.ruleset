@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="New Relic .NET Agent Rules" Description="New Relic .NET Agent ruleset for src and tests directories." ToolsVersion="16.0">
+<RuleSet Name="New Relic Telemetry SDK for .NET Rules" Description="New Relic Telemetry SDK for .NET ruleset for src and tests directories." ToolsVersion="16.0">
     <Localization ResourceAssembly="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.dll" ResourceBaseName="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.Localized">
-        <Name Resource="NewRelicNETAgentRules_Name" />
-        <Description Resource="NewRelicNETAgentRules_Description" />
+        <Name Resource="NewRelicTelemetrySDKNETRules_Name" />
+        <Description Resource="NewRelicTelemetrySDKNETRules_Description" />
     </Localization>
     <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
         <Rule Id="CS1591" Action="None" />
