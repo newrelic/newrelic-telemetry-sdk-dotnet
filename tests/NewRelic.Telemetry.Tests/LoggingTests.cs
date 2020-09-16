@@ -1,11 +1,11 @@
 ﻿// Copyright 2020 New Relic, Inc. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-using Microsoft.Extensions.Logging;
-using NUnit.Framework;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+using NUnit.Framework;
 
 namespace NewRelic.Telemetry.Tests
 {
@@ -66,17 +66,17 @@ namespace NewRelic.Telemetry.Tests
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool _disposedValue = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
                 }
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 

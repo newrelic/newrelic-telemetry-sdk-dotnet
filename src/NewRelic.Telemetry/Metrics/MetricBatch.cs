@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using Utf8Json.Resolvers;
-using System.Linq;
-
 
 namespace NewRelic.Telemetry.Metrics
 {

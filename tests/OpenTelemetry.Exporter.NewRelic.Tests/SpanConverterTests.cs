@@ -1,14 +1,14 @@
 // Copyright 2020 New Relic, Inc. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-using OpenTelemetry.Trace;
-using System.Linq;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using NewRelic.Telemetry;
 using NewRelic.Telemetry.Spans;
-using System;
-using System.Diagnostics;
+using OpenTelemetry.Trace;
 using Xunit;
 
 namespace OpenTelemetry.Exporter.NewRelic.Tests
@@ -36,7 +36,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         //  5           Should be filtered - Child of HTTP      Trace 3     Excluded
 
         private static DateTimeOffset _traceStartTime = DateTime.UtcNow;
-        private (int? Parent, string Name, DateTimeOffset Start, DateTimeOffset End, Status Status, bool IsCallToNewRelic)[] spanDefinitions = new (int?, string, DateTimeOffset, DateTimeOffset, Status, bool)[]
+        private (int? Parent, string Name, DateTimeOffset Start, DateTimeOffset End, Status Status, bool IsCallToNewRelic)[] _spanDefinitions = new (int?, string, DateTimeOffset, DateTimeOffset, Status, bool)[]
         {
             (null, "Test Span 1", _traceStartTime, _traceStartTime.AddMilliseconds(225), Status.Ok, false ),
             (0, "Test Span 2", _traceStartTime.AddMilliseconds(1), _traceStartTime.AddMilliseconds(100), Status.Aborted.WithDescription(errorMessage), false ),
@@ -73,9 +73,9 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             {
                 var tracer = openTelemetrySdk.GetTracer("TestTracer");
 
-                for (var i = 0; i < spanDefinitions.Length; ++i)
+                for (var i = 0; i < _spanDefinitions.Length; ++i)
                 {
-                    var spanDefinition = spanDefinitions[i];
+                    var spanDefinition = _spanDefinitions[i];
                     var parentContext = spanDefinition.Parent.HasValue ? _otSpans[spanDefinition.Parent.Value].Context : default(ActivityContext);
                     var activity = source.StartActivity(spanDefinition.Name, ActivityKind.Server, parentContext);
 
@@ -179,8 +179,8 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
                     continue;
                 }
 
-                var expectedStartTimestampUnixMs = spanDefinitions[i].Start.ToUnixTimeMilliseconds();
-                var expectedEndTimestampUnixMs = spanDefinitions[i].End.ToUnixTimeMilliseconds();
+                var expectedStartTimestampUnixMs = _spanDefinitions[i].Start.ToUnixTimeMilliseconds();
+                var expectedEndTimestampUnixMs = _spanDefinitions[i].End.ToUnixTimeMilliseconds();
                 var expectedDurationMs = expectedEndTimestampUnixMs - expectedStartTimestampUnixMs;
 
                 Assert.Equal(expectedStartTimestampUnixMs, nrSpan.Timestamp);

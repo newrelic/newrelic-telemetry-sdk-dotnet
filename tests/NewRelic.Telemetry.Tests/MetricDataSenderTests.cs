@@ -1,11 +1,11 @@
 ﻿// Copyright 2020 New Relic, Inc. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
 using NewRelic.Telemetry.Metrics;
 using NewRelic.Telemetry.Transport;
+using NUnit.Framework;
 
 namespace NewRelic.Telemetry.Tests
 {

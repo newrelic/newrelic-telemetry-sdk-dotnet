@@ -1,19 +1,18 @@
 ﻿// Copyright 2020 New Relic, Inc. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-using NewRelic.Telemetry;
-using NewRelic.Telemetry.Transport;
-using NewRelic.Telemetry.Spans;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using System;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
-using System.Linq;
-using OpenTelemetry.Trace;
-using System.Reflection;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using NewRelic.Telemetry;
+using NewRelic.Telemetry.Spans;
+using NewRelic.Telemetry.Transport;
+using OpenTelemetry.Trace;
 
 namespace OpenTelemetry.Exporter.NewRelic
 {

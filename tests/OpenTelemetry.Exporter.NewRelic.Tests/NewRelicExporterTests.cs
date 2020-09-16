@@ -17,11 +17,11 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
     [Collection("newrelic-exporter")]
     public class NewRelicExporterTests : IDisposable
     {
-        private static readonly ConcurrentDictionary<Guid, string> Responses = new ConcurrentDictionary<Guid, string>();
+        private static readonly ConcurrentDictionary<Guid, string> _responses = new ConcurrentDictionary<Guid, string>();
 
-        private readonly IDisposable testServer;
-        private readonly string testServerHost;
-        private readonly int testServerPort;
+        private readonly IDisposable _testServer;
+        private readonly string _testServerHost;
+        private readonly int _testServerPort;
 
         static NewRelicExporterTests()
         {
@@ -40,10 +40,10 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 
         public NewRelicExporterTests()
         {
-            this.testServer = TestHttpServer.RunServer(
+            _testServer = TestHttpServer.RunServer(
                 ctx => ProcessServerRequest(ctx),
-                out this.testServerHost,
-                out this.testServerPort);
+                out _testServerHost,
+                out _testServerPort);
 
             static void ProcessServerRequest(HttpListenerContext context)
             {
@@ -53,7 +53,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 
                 string requestContent = readStream.ReadToEnd();
 
-                Responses.TryAdd(
+                _responses.TryAdd(
                     Guid.Parse(context.Request.QueryString["requestId"]),
                     requestContent);
 
@@ -63,7 +63,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 
         public void Dispose()
         {
-            this.testServer.Dispose();
+            _testServer.Dispose();
         }
 
         [Fact]
@@ -85,7 +85,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
                 .AddInMemoryCollection(new Dictionary<string, string> {
                     { "NewRelic:ServiceName", "test-newrelic" },
                     { "NewRelic:ApiKey", "my-apikey" },
-                    { "NewRelic:TraceUrlOverride", $"http://{this.testServerHost}:{this.testServerPort}/trace/v1?requestId={requestId}" },
+                    { "NewRelic:TraceUrlOverride", $"http://{_testServerHost}:{_testServerPort}/trace/v1?requestId={requestId}" },
                 })
                 .Build();
 
