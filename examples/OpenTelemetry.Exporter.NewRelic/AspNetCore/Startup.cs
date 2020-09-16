@@ -34,6 +34,7 @@ namespace SampleAspNetCoreApp
                     {
                         options.ApiKey = this.Configuration.GetValue<string>("NewRelic:ApiKey");
                         options.ServiceName = this.Configuration.GetValue<string>("NewRelic:ServiceName");
+                        options.LoggerFactory = loggerFactory;
                     })
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation();
