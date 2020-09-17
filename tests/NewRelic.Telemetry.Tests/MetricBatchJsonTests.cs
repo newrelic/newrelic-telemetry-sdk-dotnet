@@ -1,57 +1,56 @@
 ﻿// Copyright 2020 New Relic, Inc. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-using NUnit.Framework;
-using NewRelic.Telemetry.Metrics;
-using System.Linq;
 using System;
-using NewRelic.Telemetry.Extensions;
 using System.Collections.Generic;
+using System.Linq;
+using NewRelic.Telemetry.Extensions;
+using NewRelic.Telemetry.Metrics;
+using NUnit.Framework;
 
 namespace NewRelic.Telemetry.Tests
 { 
-    class MetricBatchJsonTests
+    internal class MetricBatchJsonTests
     {
-        private static DateTime timestamp = DateTime.UtcNow;
-        private long timestampL = DateTimeExtensions.ToUnixTimeMilliseconds(timestamp);
-        private long interval = 250L;
-        private long countValue = 67;
-        private MetricSummaryValue summaryValue = MetricSummaryValue.Create(10, 64, 3, 15);
-        private Dictionary<string, object> CustomAttributes = new Dictionary<string, object>() { { "attr1Key", "attr1Value" } };
+        private static DateTime _timestamp = DateTime.UtcNow;
+        private long _timestampL = DateTimeExtensions.ToUnixTimeMilliseconds(_timestamp);
+        private long _interval = 250L;
+        private long _countValue = 67;
+        private MetricSummaryValue _summaryValue = MetricSummaryValue.Create(10, 64, 3, 15);
+        private Dictionary<string, object> _customAttributes = new Dictionary<string, object>() { { "attr1Key", "attr1Value" } };
 
         [Test]
         public void ToJson_EmptyMetricBatch() 
         {
             // Arrange
-            var metricBatch = MetricBatchBuilder.Create().WithTimestamp(timestamp)
+            var metricBatch = MetricBatchBuilder.Create().WithTimestamp(_timestamp)
                 .Build();
             
             // Act
             var jsonString = metricBatch.ToJson();
 
-            //Assert
+            // Assert
             var resultMetricBatch = TestHelpers.DeserializeArrayFirstOrDefault(jsonString);
             var resultCommonProps = TestHelpers.DeserializeObject(resultMetricBatch["common"]);
 
-            TestHelpers.AssertForAttribValue(resultCommonProps, "timestamp", timestampL);
+            TestHelpers.AssertForAttribValue(resultCommonProps, "timestamp", _timestampL);
        }
 
         [Test]
         public void ToJson_NonEmptyMetricBatch()
         {
-
             // Arrange
             var metricBatch = MetricBatchBuilder.Create()
-                .WithIntervalMs(interval)
-                .WithTimestamp(timestamp)
+                .WithIntervalMs(_interval)
+                .WithTimestamp(_timestamp)
                 .WithMetric(MetricBuilder.CreateCountMetric("metric1")
-                    .WithIntervalMs(interval)
-                    .WithValue(countValue)
-                    .WithAttributes(CustomAttributes)
+                    .WithIntervalMs(_interval)
+                    .WithValue(_countValue)
+                    .WithAttributes(_customAttributes)
                     .Build())
                 .WithMetric(MetricBuilder.CreateSummaryMetric("metric2")
-                    .WithIntervalMs(interval)
-                    .WithValue(summaryValue)
+                    .WithIntervalMs(_interval)
+                    .WithValue(_summaryValue)
                     .Build())
 
                 .Build();
@@ -68,8 +67,8 @@ namespace NewRelic.Telemetry.Tests
             var resultMetricBatch = resultMetricBatches.First();
             var resultCommonProps = TestHelpers.DeserializeObject(resultMetricBatch["common"]);
 
-            TestHelpers.AssertForAttribValue(resultCommonProps, "timestamp", timestampL);
-            TestHelpers.AssertForAttribValue(resultCommonProps, "interval.ms", interval);
+            TestHelpers.AssertForAttribValue(resultCommonProps, "timestamp", _timestampL);
+            TestHelpers.AssertForAttribValue(resultCommonProps, "interval.ms", _interval);
 
             var resultMetrics = TestHelpers.DeserializeArray(resultMetricBatch["metrics"]);
 
@@ -81,9 +80,8 @@ namespace NewRelic.Telemetry.Tests
 
             TestHelpers.AssertForAttribValue(countMetric, "name", "metric1");
             TestHelpers.AssertForAttribValue(countMetric, "type", "count");
-            TestHelpers.AssertForAttribValue(countMetric, "value", countValue);
-            TestHelpers.AssertForAttribValue(countMetric, "interval.ms", interval);
-
+            TestHelpers.AssertForAttribValue(countMetric, "value", _countValue);
+            TestHelpers.AssertForAttribValue(countMetric, "interval.ms", _interval);
 
             var countMetricAttribs = TestHelpers.DeserializeObject(countMetric["attributes"]);
             TestHelpers.AssertForAttribCount(countMetricAttribs, 1);
@@ -96,8 +94,8 @@ namespace NewRelic.Telemetry.Tests
 
             TestHelpers.AssertForAttribValue(summaryMetric, "name", "metric2");
             TestHelpers.AssertForAttribValue(summaryMetric, "type", "summary");
-            TestHelpers.AssertForAttribValue(summaryMetric, "value", summaryValue);
-            TestHelpers.AssertForAttribValue(countMetric, "interval.ms", interval);
+            TestHelpers.AssertForAttribValue(summaryMetric, "value", _summaryValue);
+            TestHelpers.AssertForAttribValue(countMetric, "interval.ms", _interval);
         }
     }
 }

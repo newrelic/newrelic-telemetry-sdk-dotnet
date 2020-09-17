@@ -37,12 +37,13 @@ namespace NewRelic.Telemetry.Metrics
     /// </summary>
     /// <typeparam name="TMetric">The type of metric being built (Count, Gauge, Summary).</typeparam>
     /// <typeparam name="TValue">The value of the type of metric being reported.</typeparam>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "Having this class in the same file improves readability.")]
     public class MetricBuilder<TMetric, TValue> : MetricBuilder
         where TMetric : Metric<TValue>, new()
     {
         private readonly TMetric _metric;
 
-        private Dictionary<string, object> _attributes => _metric.Attributes ?? (_metric.Attributes = new Dictionary<string, object>());
+        private Dictionary<string, object> Attributes => _metric.Attributes ?? (_metric.Attributes = new Dictionary<string, object>());
 
         internal MetricBuilder(string name)
         {
@@ -53,7 +54,7 @@ namespace NewRelic.Telemetry.Metrics
 
             _metric = new TMetric
             {
-                Name = name
+                Name = name,
             };
         }
 
@@ -124,7 +125,7 @@ namespace NewRelic.Telemetry.Metrics
                 throw new InvalidOperationException($"{nameof(attribName)} cannot be empty.");
             }
 
-            _attributes[attribName] = attribVal;
+            Attributes[attribName] = attribVal;
             return this;
         }
 

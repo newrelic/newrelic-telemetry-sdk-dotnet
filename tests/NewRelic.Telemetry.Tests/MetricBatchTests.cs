@@ -1,11 +1,11 @@
 // Copyright 2020 New Relic, Inc. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-using NUnit.Framework;
-using System.Collections.Generic;
-using NewRelic.Telemetry.Metrics;
 using System;
+using System.Collections.Generic;
 using NewRelic.Telemetry.Extensions;
+using NewRelic.Telemetry.Metrics;
+using NUnit.Framework;
 
 namespace NewRelic.Telemetry.Tests
 {
@@ -108,6 +108,5 @@ namespace NewRelic.Telemetry.Tests
             Assert.AreEqual(2, metricBatch.Metrics.Count, $"MetricBatch Metrics count - expected: 2, actual: {metricBatch.Metrics.Count}");
             Assert.IsNull(metricBatch.CommonProperties, $"MetricBatch CommonProperties - expected: null, actual: not null");
         }
-
     }
 }

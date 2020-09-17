@@ -1,11 +1,11 @@
 // Copyright 2020 New Relic, Inc. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using NewRelic.Telemetry.Metrics;
 using NewRelic.Telemetry.Extensions;
+using NewRelic.Telemetry.Metrics;
+using NUnit.Framework;
 
 namespace NewRelic.Telemetry.Tests
 {
@@ -25,7 +25,7 @@ namespace NewRelic.Telemetry.Tests
                 .WithValue(value)
                 .WithTimestamp(timestamp)
                 .WithIntervalMs(interval)
-                .WithAttribute("adsfasdf",12)
+                .WithAttribute("adsfasdf", 12)
                 .WithAttributes(attributes);
 
             var metric = metricBuilder.Build();

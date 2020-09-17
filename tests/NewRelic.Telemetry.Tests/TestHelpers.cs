@@ -1,12 +1,12 @@
 ﻿// Copyright 2020 New Relic, Inc. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-using NUnit.Framework;
-using System.Collections.Generic;
-using System.Text.Json;
-using System.Linq;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 using NewRelic.Telemetry.Metrics;
+using NUnit.Framework;
 
 namespace NewRelic.Telemetry.Tests
 {
@@ -70,7 +70,7 @@ namespace NewRelic.Telemetry.Tests
             {
                 if (expectedValueObj == null)
                 {
-                    return;     //This is OK
+                    return;     // This is OK
                 }
 
                 Assert.Fail($"Attribute {attribName}, expected {expectedValueObj}, actual NULL/missing");
@@ -143,6 +143,5 @@ namespace NewRelic.Telemetry.Tests
 
             Assert.Fail("Not Implemented");
         }
-
     }
 }

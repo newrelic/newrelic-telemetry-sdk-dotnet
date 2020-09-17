@@ -18,8 +18,8 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 
         public TestActivityProcessor(Action<Activity> onStart, Action<Activity> onEnd)
         {
-            this.StartAction = onStart;
-            this.EndAction = onEnd;
+            StartAction = onStart;
+            EndAction = onEnd;
         }
 
         public bool ShutdownCalled { get; private set; } = false;
@@ -30,28 +30,28 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 
         public override void OnStart(Activity span)
         {
-            this.StartAction?.Invoke(span);
+            StartAction?.Invoke(span);
         }
 
         public override void OnEnd(Activity span)
         {
-            this.EndAction?.Invoke(span);
+            EndAction?.Invoke(span);
         }
 
         protected override bool OnForceFlush(int timeoutMilliseconds)
         {
-            this.ForceFlushCalled = true;
+            ForceFlushCalled = true;
             return true;
         }
 
         protected override void OnShutdown(int timeoutMilliseconds)
         {
-            this.ShutdownCalled = true;
+            ShutdownCalled = true;
         }
 
         protected override void Dispose(bool disposing)
         {
-            this.DisposedCalled = true;
+            DisposedCalled = true;
         }
     }
 }

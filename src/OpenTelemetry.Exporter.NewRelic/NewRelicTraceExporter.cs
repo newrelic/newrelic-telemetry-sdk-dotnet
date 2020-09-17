@@ -1,19 +1,18 @@
 ﻿// Copyright 2020 New Relic, Inc. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-using NewRelic.Telemetry;
-using NewRelic.Telemetry.Transport;
-using NewRelic.Telemetry.Spans;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using System;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
-using System.Linq;
-using OpenTelemetry.Trace;
-using System.Reflection;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using NewRelic.Telemetry;
+using NewRelic.Telemetry.Spans;
+using NewRelic.Telemetry.Transport;
+using OpenTelemetry.Trace;
 
 namespace OpenTelemetry.Exporter.NewRelic
 {
@@ -22,58 +21,64 @@ namespace OpenTelemetry.Exporter.NewRelic
     /// </summary>
     public class NewRelicTraceExporter : ActivityExporter
     {
-        private readonly SpanDataSender _spanDataSender;
-        private const string _productName = "NewRelic-Dotnet-OpenTelemetry";
+        private const string ProductName = "NewRelic-Dotnet-OpenTelemetry";
+        private const string AttribNameUrl = "http.url";
 
-        private static readonly ActivitySpanId EmptyActivitySpanId = ActivitySpanId.CreateFromBytes(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, });
+        private static readonly ActivitySpanId _emptyActivitySpanId = ActivitySpanId.CreateFromBytes(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, });
         private static readonly string _productVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
 
-        private const string _attribName_url = "http.url";
-
+        private readonly SpanDataSender _spanDataSender;
         private readonly ILogger _logger;
         private readonly TelemetryConfiguration _config;
         private readonly string[] _nrEndpoints;
 
-
         /// <summary>
+        /// Initializes a new instance of the <see cref="NewRelicTraceExporter"/> class.
         /// Configures the Trace Exporter accepting settings from any configuration provider supported by Microsoft.Extensions.Configuration.
         /// </summary>
         /// <param name="configProvider"></param>
-        public NewRelicTraceExporter(IConfiguration configProvider) : this(configProvider, null)
+        public NewRelicTraceExporter(IConfiguration configProvider)
+            : this(configProvider, null)
         {
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="NewRelicTraceExporter"/> class.
         /// Configures the Trace Exporter accepting settings from any configuration provider supported by Microsoft.Extensions.Configuration.
         /// Also accepts any logging infrastructure supported by Microsoft.Extensions.Logging.
         /// </summary>
         /// <param name="configProvider"></param>
         /// <param name="loggerFactory"></param>
-        public NewRelicTraceExporter(IConfiguration configProvider, ILoggerFactory loggerFactory) : this(new TelemetryConfiguration(configProvider), loggerFactory)
+        public NewRelicTraceExporter(IConfiguration configProvider, ILoggerFactory loggerFactory)
+            : this(new TelemetryConfiguration(configProvider), loggerFactory)
         {
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="NewRelicTraceExporter"/> class.
         /// Configures the Trace Exporter accepting configuration settings from an instance of the New Relic Telemetry SDK configuration object.
         /// </summary>
         /// <param name="config"></param>
-        public NewRelicTraceExporter(TelemetryConfiguration config) : this(config, null)
+        public NewRelicTraceExporter(TelemetryConfiguration config)
+            : this(config, null)
         {
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="NewRelicTraceExporter"/> class.
         /// Configures the Trace Exporter accepting configuration settings from an instance of the New Relic Telemetry SDK configuration object.  Also
         /// accepts a logger factory supported by Microsoft.Extensions.Logging.
         /// </summary>
         /// <param name="config"></param>
-        public NewRelicTraceExporter(TelemetryConfiguration config, ILoggerFactory loggerFactory) : this(new SpanDataSender(config, loggerFactory),config,loggerFactory)
+        public NewRelicTraceExporter(TelemetryConfiguration config, ILoggerFactory loggerFactory)
+            : this(new SpanDataSender(config, loggerFactory), config, loggerFactory)
         {
         }
 
         internal NewRelicTraceExporter(SpanDataSender spanDataSender, TelemetryConfiguration config, ILoggerFactory loggerFactory)
         {
             _spanDataSender = spanDataSender;
-            spanDataSender.AddVersionInfo(_productName, _productVersion);
+            spanDataSender.AddVersionInfo(ProductName, _productVersion);
 
             _config = config;
 
@@ -122,7 +127,7 @@ namespace OpenTelemetry.Exporter.NewRelic
 
             foreach (var otSpan in otSpans)
             {
-                if(otSpan == null)
+                if (otSpan == null)
                 {
                     continue;
                 }
@@ -130,7 +135,7 @@ namespace OpenTelemetry.Exporter.NewRelic
                 try
                 {
                     var nrSpan = ToNewRelicSpan(otSpan);
-                    if(nrSpan == null)
+                    if (nrSpan == null)
                     {
                         spanIdsToFilter.Add(otSpan.Context.SpanId.ToHexString());
                         _logger?.LogDebug(null, $"The following span was filtered because it describes communication with a New Relic endpoint: Trace={otSpan.Context.TraceId}, Span={otSpan.Context.SpanId}, ParentSpan={otSpan.ParentSpanId}");
@@ -149,7 +154,9 @@ namespace OpenTelemetry.Exporter.NewRelic
                         {
                             otSpanId = otSpan.Context.SpanId.ToHexString();
                         }
-                        catch { }
+                        catch
+                        {
+                        }
 
                         _logger.LogError(null, ex, $"Error translating Open Telemetry Span {otSpanId} to New Relic Span.");
                     }
@@ -169,7 +176,7 @@ namespace OpenTelemetry.Exporter.NewRelic
 
         private List<Span> FilterSpans(List<Span> spans, List<string> spanIdsToFilter)
         {
-            if(spanIdsToFilter.Count == 0)
+            if (spanIdsToFilter.Count == 0)
             {
                 return spans;
             }
@@ -189,7 +196,7 @@ namespace OpenTelemetry.Exporter.NewRelic
                 }
             }
 
-            var newSpanIdsToFilter = newSpansToFilter.Select(x=>x.Id).ToArray();
+            var newSpanIdsToFilter = newSpansToFilter.Select(x => x.Id).ToArray();
 
             spanIdsToFilter = spanIdsToFilter.Union(newSpanIdsToFilter).ToList();
 
@@ -200,8 +207,15 @@ namespace OpenTelemetry.Exporter.NewRelic
 
         private Span ToNewRelicSpan(Activity openTelemetrySpan)
         {
-            if (openTelemetrySpan == default) throw new ArgumentException(nameof(openTelemetrySpan));
-            if (openTelemetrySpan.Context == default) throw new ArgumentException($"{nameof(openTelemetrySpan)}.Context");
+            if (openTelemetrySpan == default)
+            {
+                throw new ArgumentException(nameof(openTelemetrySpan));
+            }
+
+            if (openTelemetrySpan.Context == default)
+            {
+                throw new ArgumentException($"{nameof(openTelemetrySpan)}.Context");
+            }
 
             var newRelicSpanBuilder = SpanBuilder.Create(openTelemetrySpan.Context.SpanId.ToHexString())
                    .WithTraceId(openTelemetrySpan.Context.TraceId.ToHexString())
@@ -211,7 +225,7 @@ namespace OpenTelemetry.Exporter.NewRelic
             var status = openTelemetrySpan.GetStatus();
             if (!status.IsOk)
             {
-                //this will set HasError = true and the description if available
+                // this will set HasError = true and the description if available
                 newRelicSpanBuilder.HasError(status.Description);
             }
 
@@ -220,7 +234,7 @@ namespace OpenTelemetry.Exporter.NewRelic
                 newRelicSpanBuilder.WithServiceName(_config.ServiceName);
             }
 
-            if (openTelemetrySpan.ParentSpanId != EmptyActivitySpanId)
+            if (openTelemetrySpan.ParentSpanId != _emptyActivitySpanId)
             {
                 newRelicSpanBuilder.WithParentId(openTelemetrySpan.ParentSpanId.ToHexString());
             }
@@ -229,8 +243,8 @@ namespace OpenTelemetry.Exporter.NewRelic
             {
                 foreach (var spanAttrib in openTelemetrySpan.Tags)
                 {
-                    //Filter out calls to New Relic endpoint as these will cause an infinite loop
-                    if (string.Equals(spanAttrib.Key, _attribName_url, StringComparison.OrdinalIgnoreCase) && _nrEndpoints.Contains(spanAttrib.Value?.ToString().ToLower()))
+                    // Filter out calls to New Relic endpoint as these will cause an infinite loop
+                    if (string.Equals(spanAttrib.Key, AttribNameUrl, StringComparison.OrdinalIgnoreCase) && _nrEndpoints.Contains(spanAttrib.Value?.ToString().ToLower()))
                     {
                         _logger?.LogDebug(null, $"The following span was filtered because it was identified as communication with a New Relic endpoint: Trace={openTelemetrySpan.Context.TraceId}, Span={openTelemetrySpan.Context.SpanId}, ParentSpan={openTelemetrySpan.ParentSpanId}. url={spanAttrib.Value}");
 
@@ -240,8 +254,6 @@ namespace OpenTelemetry.Exporter.NewRelic
                     newRelicSpanBuilder.WithAttribute(spanAttrib.Key, spanAttrib.Value);
                 }
             }
-
-            
 
             return newRelicSpanBuilder.Build();
         }

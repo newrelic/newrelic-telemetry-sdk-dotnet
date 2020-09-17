@@ -2,17 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using Utf8Json;
 using Utf8Json.Resolvers;
-using System.Linq;
-using NewRelic.Telemetry.Transport;
 
 namespace NewRelic.Telemetry.Spans
 {
     public class SpanBatch : ITelemetryDataType
     {
-
         /// <summary>
         /// Properties that are common to all spans being submitted as part of this SpanBatch.
         /// </summary>
@@ -39,6 +37,4 @@ namespace NewRelic.Telemetry.Spans
             return JsonSerializer.ToJsonString(new[] { this }, StandardResolver.ExcludeNullCamelCase);
         }
     }
-
-
 }

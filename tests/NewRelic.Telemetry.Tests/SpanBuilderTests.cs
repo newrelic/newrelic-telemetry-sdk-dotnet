@@ -1,10 +1,10 @@
 // Copyright 2020 New Relic, Inc. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using NewRelic.Telemetry.Spans;
+using NUnit.Framework;
 
 namespace NewRelic.Telemetry.Tests
 {
@@ -24,7 +24,7 @@ namespace NewRelic.Telemetry.Tests
                 .WithName("name")
                 .WithParentId("parentId")
                 .HasError(true)
-                .WithAttribute("adsfasdf",12)
+                .WithAttribute("adsfasdf", 12)
                 .WithAttributes(attributes);
 
             var span = spanBuilder.Build();

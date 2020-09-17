@@ -10,7 +10,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 {
     internal class TestHttpServer
     {
-        private static readonly Random GlobalRandom = new Random();
+        private static readonly Random _globalRandom = new Random();
 
         public static IDisposable RunServer(Action<HttpListenerContext> action, out string host, out int port)
         {
@@ -23,7 +23,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             {
                 try
                 {
-                    port = GlobalRandom.Next(2000, 5000);
+                    port = _globalRandom.Next(2000, 5000);
                     server = new RunningServer(action, host, port);
                     server.Start();
                     break;
@@ -39,26 +39,26 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 
         private class RunningServer : IDisposable
         {
-            private readonly Task httpListenerTask;
-            private readonly HttpListener listener;
-            private readonly AutoResetEvent initialized = new AutoResetEvent(false);
+            private readonly Task _httpListenerTask;
+            private readonly HttpListener _listener;
+            private readonly AutoResetEvent _initialized = new AutoResetEvent(false);
 
             public RunningServer(Action<HttpListenerContext> action, string host, int port)
             {
-                this.listener = new HttpListener();
+                _listener = new HttpListener();
 
-                this.listener.Prefixes.Add($"http://{host}:{port}/");
-                this.listener.Start();
+                _listener.Prefixes.Add($"http://{host}:{port}/");
+                _listener.Start();
 
-                this.httpListenerTask = new Task(async () =>
+                _httpListenerTask = new Task(async () =>
                 {
                     while (true)
                     {
                         try
                         {
-                            var ctxTask = this.listener.GetContextAsync();
+                            var ctxTask = _listener.GetContextAsync();
 
-                            this.initialized.Set();
+                            _initialized.Set();
 
                             action(await ctxTask.ConfigureAwait(false));
                         }
@@ -80,15 +80,15 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 
             public void Start()
             {
-                this.httpListenerTask.Start();
-                this.initialized.WaitOne();
+                _httpListenerTask.Start();
+                _initialized.WaitOne();
             }
 
             public void Dispose()
             {
                 try
                 {
-                    this.listener?.Stop();
+                    _listener?.Stop();
                 }
                 catch (ObjectDisposedException)
                 {
