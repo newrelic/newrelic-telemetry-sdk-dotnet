@@ -54,7 +54,7 @@ namespace NewRelic.Telemetry.Metrics
 
             _metric = new TMetric
             {
-                Name = name
+                Name = name,
             };
         }
 

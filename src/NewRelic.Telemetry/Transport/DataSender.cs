@@ -15,16 +15,17 @@ using Microsoft.Extensions.Logging;
 
 namespace NewRelic.Telemetry.Transport
 {
-    public abstract class DataSender<TData> where TData : ITelemetryDataType
+    public abstract class DataSender<TData>
+        where TData : ITelemetryDataType
     {
         internal string _userAgent;
+
+        protected readonly TelemetryConfiguration _config;
+        protected readonly TelemetryLogging _logger;
 
         private readonly string _telemetrySdkVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
 
         private readonly string _userAgentBase;
-
-        protected readonly TelemetryConfiguration _config;
-        protected readonly TelemetryLogging _logger;
         private readonly HttpClient _httpClient;
 
         // Delegate functions in support of unit testing
@@ -71,6 +72,38 @@ namespace NewRelic.Telemetry.Transport
             _httpHandlerImpl = SendDataAsync;
         }
 
+        /// <summary>
+        /// Method used to send a data to New Relic endpoint.  Handles the communication with the New Relic endpoints.
+        /// </summary>
+        /// <param name="dataToSend">The data to send to New Relic.</param>
+        /// <returns>New Relic response indicating the outcome and additional information about the interaction with the New Relic endpoint.</returns>
+        public async Task<Response> SendDataAsync(TData dataToSend)
+        {
+            if (string.IsNullOrWhiteSpace(_config.ApiKey))
+            {
+                _logger.Exception(new ArgumentNullException("Configuration requires API key"));
+                return Response.Failure("API Key was not available");
+            }
+
+            BeforeDataSend(dataToSend);
+
+            return await SendDataAsync(dataToSend, 0);
+        }
+
+        /// <summary>
+        /// Method used to add product information including product name and version to the User-Agent HTTP header.
+        /// </summary>
+        /// <param name="productName">Name of the product uses the TelemetrySDK (e.g. "OpenTelemetry.Exporter.NewRelic"). This should not be null or empty.</param>
+        /// <param name="productVersion">Version of the product uses the TelemetrySDK (e.g. "1.0.0"). This should not be null or empty.</param>
+        public void AddVersionInfo(string productName, string productVersion)
+        {
+            if (!string.IsNullOrEmpty(productName) && !string.IsNullOrEmpty(productVersion))
+            {
+                var productIdentifier = string.Join("/", productName, productVersion);
+                _userAgent = string.Join(" ", _userAgentBase, productIdentifier);
+            }
+        }
+
         internal DataSender<TData> WithDelayFunction(Func<uint, Task> delayerImpl)
         {
             _delayerImpl = delayerImpl;
@@ -85,6 +118,15 @@ namespace NewRelic.Telemetry.Transport
         internal void WithCaptureSendDataAsyncDelegate(Action<TData, int> captureTestDataImpl)
         {
             _captureSendDataAsyncCallDelegate = captureTestDataImpl;
+        }
+
+        /// <summary>
+        /// Provides a place to do any pre-work on the data to send
+        /// For example, allows updating of the instrumentation provider for spans.
+        /// </summary>
+        /// <param name="dataToSend"></param>
+        protected virtual void BeforeDataSend(TData dataToSend)
+        {
         }
 
         private async Task<Response> RetryWithSplit(TData data)
@@ -108,12 +150,12 @@ namespace NewRelic.Telemetry.Transport
             
             var responses = await Task.WhenAll(taskList);
 
-            if(responses.All(x=>x.ResponseStatus == NewRelicResponseStatus.Success))
+            if (responses.All(x => x.ResponseStatus == NewRelicResponseStatus.Success))
             {
-                return Response.Success;
+                return Response._success;
             }
 
-            return Response.Failure(HttpStatusCode.Ambiguous, $"{responses.Count(x=>x.ResponseStatus != NewRelicResponseStatus.Success)} of {responses.Length} requests were NOT successful.");
+            return Response.Failure(HttpStatusCode.Ambiguous, $"{responses.Count(x => x.ResponseStatus != NewRelicResponseStatus.Success)} of {responses.Length} requests were NOT successful.");
         }
  
         private async Task<Response> RetryWithDelay(TData data, int retryNum, uint? waitTimeInSeconds = null)
@@ -153,7 +195,7 @@ namespace NewRelic.Telemetry.Transport
             }
 
             // If the retryAfterDelay is still null, just do a standard retry
-            if(!retryAfterDelay.HasValue)
+            if (!retryAfterDelay.HasValue)
             {
                 return await RetryWithDelay(dataToSend, retryNum);
             }
@@ -176,7 +218,7 @@ namespace NewRelic.Telemetry.Transport
 
                 if (ContainsNoData(dataToSend))
                 {
-                    return Response.DidNotSend;
+                    return Response._didNotSend;
                 }
 
                 var serializedPayload = dataToSend.ToJson();
@@ -194,7 +236,7 @@ namespace NewRelic.Telemetry.Transport
                 // Success is any 2xx response
                 case HttpStatusCode code when code >= HttpStatusCode.OK && code <= (HttpStatusCode)299:
                     _logger.Debug($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
-                    return Response.Success;
+                    return Response._success;
 
                 case HttpStatusCode.RequestEntityTooLarge:
                     _logger.Warning($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}. Response indicates payload is too large.");
@@ -249,48 +291,6 @@ namespace NewRelic.Telemetry.Transport
                 }
 
                 return response;
-            }
-        }
-
-        /// <summary>
-        /// Method used to send a data to New Relic endpoint.  Handles the communication with the New Relic endpoints.
-        /// </summary>
-        /// <param name="dataToSend">The data to send to New Relic.</param>
-        /// <returns>New Relic response indicating the outcome and additional information about the interaction with the New Relic endpoint.</returns>
-        public async Task<Response> SendDataAsync(TData dataToSend)
-        {
-            if (string.IsNullOrWhiteSpace(_config.ApiKey))
-            {
-                _logger.Exception(new ArgumentNullException("Configuration requires API key"));
-                return Response.Failure("API Key was not available");
-            }
-
-            BeforeDataSend(dataToSend);
-
-            return await SendDataAsync(dataToSend, 0);
-        }
-
-        /// <summary>
-        /// Provides a place to do any pre-work on the data to send
-        /// For example, allows updating of the instrumentation provider for spans.
-        /// </summary>
-        /// <param name="dataToSend"></param>
-        protected virtual void BeforeDataSend(TData dataToSend)
-        {
-        }
-
-        /// <summary>
-        /// Method used to add product information including product name and version to the User-Agent HTTP header.
-        /// </summary>
-        /// <param name="productName">Name of the product uses the TelemetrySDK (e.g. "OpenTelemetry.Exporter.NewRelic"). This should not be null or empty.</param>
-        /// <param name="productVersion">Version of the product uses the TelemetrySDK (e.g. "1.0.0"). This should not be null or empty.</param>
-        /// <returns></returns>
-        public void AddVersionInfo(string productName, string productVersion)
-        {
-            if (!string.IsNullOrEmpty(productName) && !string.IsNullOrEmpty(productVersion))
-            {
-                var productIdentifier = string.Join("/", productName, productVersion);
-                _userAgent = string.Join(" ", _userAgentBase, productIdentifier);
             }
         }
     }

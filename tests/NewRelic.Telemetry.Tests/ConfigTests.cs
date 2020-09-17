@@ -22,23 +22,23 @@ namespace NewRelic.Telemetry.Tests
         private const string AltProductName = "DifferentProduct";
         private const string MissingProductName = "MissingProduct";
 
-        private const string ApiKey_ProdValue = "987654";
-        private const string ApiKey_NewRelicValue = "123456";
-        private const string ApiKey_DiffProductvalue = "ABCDEFG";
-        private const string ApiKey_DefaultValue = null;
+        private const string ApiKeyProdValue = "987654";
+        private const string ApiKeyNewRelicValue = "123456";
+        private const string ApiKeyDiffProductvalue = "ABCDEFG";
+        private const string ApiKeyDefaultValue = null;
 
-        private const int SendTimeoutSeconds_ProdValue = 124;
-        private const int SendTimeoutSeconds_DefaultValue = 5;
-        private const int SendTimeoutSeconds_DiffProdValue = 500;
+        private const int SendTimeoutSecondsProdValue = 124;
+        private const int SendTimeoutSecondsDefaultValue = 5;
+        private const int SendTimeoutSecondsDiffProdValue = 500;
 
-        private const bool AuditLoggingEnabled_ProdValue = true;
-        private const bool AuditLoggingEnabled_NewRelicValue = false;
-        private const bool AuditLoggingEnabled_DiffProdValue = true;
+        private const bool AuditLoggingEnabledProdValue = true;
+        private const bool AuditLoggingEnabledNewRelicValue = false;
+        private const bool AuditLoggingEnabledDiffProdValue = true;
 
-        private const string ServiceName_NewRelicValue = NRConfigSection + "Service";
-        private const string ServiceName_DefaultValue = null;
+        private const string ServiceNameNewRelicValue = NRConfigSection + "Service";
+        private const string ServiceNameDefaultValue = null;
 
-        private const int BackoffMaxSeconds_DefaultValue = 80;
+        private const int BackoffMaxSecondsDefaultValue = 80;
 
         [SetUp]
         public void Setup()
@@ -49,7 +49,7 @@ namespace NewRelic.Telemetry.Tests
         /// Uses a dictionary to produce an example appsettings.json configuration.  This 
         /// scenraio does NOT contain a New Relic Config Section.  Although the attribute values, 
         /// such as ApiKey, match the New Relic Config spec, they should be ignored because they.
-        // are not part of a New Relic Config section.
+        /// are not part of a New Relic Config section.
         /// </summary>
         public IConfiguration ConfigExample_NewRelicConfigMissing
         {
@@ -70,9 +70,9 @@ namespace NewRelic.Telemetry.Tests
                 #region Build JSON
                 var productConfigSection = new Dictionary<string, object>()
                 {
-                    { "ApiKey", ApiKey_ProdValue },
-                    { "AuditLoggingEnabled", AuditLoggingEnabled_ProdValue },
-                    { "SendTimeoutSeconds", SendTimeoutSeconds_ProdValue }
+                    { "ApiKey", ApiKeyProdValue },
+                    { "AuditLoggingEnabled", AuditLoggingEnabledProdValue },
+                    { "SendTimeoutSeconds", SendTimeoutSecondsProdValue },
                 };
 
                 var nonNewRelicConfigSection = new Dictionary<string, object>()
@@ -80,12 +80,12 @@ namespace NewRelic.Telemetry.Tests
                     { "ApiKey", "DifferentProductAPIKey" },
                     { "ServiceName", "DifferentProductServiceName" },
                     { "AuditLoggingEnabled", false },
-                    { ProductName, productConfigSection }
+                    { ProductName, productConfigSection },
                 };
 
                 var configObj = new Dictionary<string, object>()
                 {
-                    { "NotNewRelic", nonNewRelicConfigSection }
+                    { "NotNewRelic", nonNewRelicConfigSection },
                 };
                 #endregion
 
@@ -110,7 +110,7 @@ namespace NewRelic.Telemetry.Tests
         /// <summary>
         /// Uses a dictionary to produce an example appsettings.json configuration.  This 
         /// scenraio contains a New Relic Config Section and the config sections for two. 
-        // example products, "TestProduct" and "DifferentProduct".  Various assertions
+        /// example products, "TestProduct" and "DifferentProduct".  Various assertions
         /// will be made testing for a product specific configuration and/or a general New
         /// Relic configuration.
         /// </summary>
@@ -133,37 +133,36 @@ namespace NewRelic.Telemetry.Tests
             //      }
             //      }
             //  }
-
             get
             {
                 #region build JSON
 
                 var productConfigSection = new Dictionary<string, object>()
                 {
-                    { "ApiKey", ApiKey_ProdValue },
-                    { "AuditLoggingEnabled", AuditLoggingEnabled_ProdValue },
-                    { "SendTimeoutSeconds", SendTimeoutSeconds_ProdValue }
+                    { "ApiKey", ApiKeyProdValue },
+                    { "AuditLoggingEnabled", AuditLoggingEnabledProdValue },
+                    { "SendTimeoutSeconds", SendTimeoutSecondsProdValue },
                 };
 
                 var altProductConfig = new Dictionary<string, object>()
                 {
-                    { "ApiKey", ApiKey_DiffProductvalue },
-                    { "AuditLoggingEnabled", AuditLoggingEnabled_DiffProdValue },
-                    { "SendTimeoutSeconds", SendTimeoutSeconds_DiffProdValue }
+                    { "ApiKey", ApiKeyDiffProductvalue },
+                    { "AuditLoggingEnabled", AuditLoggingEnabledDiffProdValue },
+                    { "SendTimeoutSeconds", SendTimeoutSecondsDiffProdValue },
                 };
 
                 var nrConfigSection = new Dictionary<string, object>()
                 {
-                    { "ApiKey", ApiKey_NewRelicValue },
-                    { "ServiceName", ServiceName_NewRelicValue },
-                    { "AuditLoggingEnabled", AuditLoggingEnabled_NewRelicValue },
+                    { "ApiKey", ApiKeyNewRelicValue },
+                    { "ServiceName", ServiceNameNewRelicValue },
+                    { "AuditLoggingEnabled", AuditLoggingEnabledNewRelicValue },
                     { ProductName, productConfigSection },
-                    { AltProductName, altProductConfig }
+                    { AltProductName, altProductConfig },
                 };
 
                 var configObj = new Dictionary<string, object>()
                 {
-                    { NRConfigSection, nrConfigSection }
+                    { NRConfigSection, nrConfigSection },
                 };
                 #endregion
 
@@ -195,10 +194,10 @@ namespace NewRelic.Telemetry.Tests
         public void ProductSpecificConfig()
         {
             var telemetryConfig = new TelemetryConfiguration(ConfigExample_NewRelicConfig, ProductName);
-            Assert.AreEqual(ApiKey_ProdValue, telemetryConfig.ApiKey);
-            Assert.AreEqual(SendTimeoutSeconds_ProdValue, telemetryConfig.SendTimeout);
-            Assert.AreEqual(ServiceName_NewRelicValue, telemetryConfig.ServiceName);
-            Assert.AreEqual(BackoffMaxSeconds_DefaultValue, telemetryConfig.BackoffMaxSeconds);
+            Assert.AreEqual(ApiKeyProdValue, telemetryConfig.ApiKey);
+            Assert.AreEqual(SendTimeoutSecondsProdValue, telemetryConfig.SendTimeout);
+            Assert.AreEqual(ServiceNameNewRelicValue, telemetryConfig.ServiceName);
+            Assert.AreEqual(BackoffMaxSecondsDefaultValue, telemetryConfig.BackoffMaxSeconds);
         }
 
         /// <summary>
@@ -211,10 +210,10 @@ namespace NewRelic.Telemetry.Tests
         {
             var telemetryConfig = new TelemetryConfiguration(ConfigExample_NewRelicConfig);
 
-            Assert.AreEqual(ApiKey_NewRelicValue, telemetryConfig.ApiKey);
-            Assert.AreEqual(SendTimeoutSeconds_DefaultValue, telemetryConfig.SendTimeout);
-            Assert.AreEqual(ServiceName_NewRelicValue, telemetryConfig.ServiceName);
-            Assert.AreEqual(BackoffMaxSeconds_DefaultValue, telemetryConfig.BackoffMaxSeconds);
+            Assert.AreEqual(ApiKeyNewRelicValue, telemetryConfig.ApiKey);
+            Assert.AreEqual(SendTimeoutSecondsDefaultValue, telemetryConfig.SendTimeout);
+            Assert.AreEqual(ServiceNameNewRelicValue, telemetryConfig.ServiceName);
+            Assert.AreEqual(BackoffMaxSecondsDefaultValue, telemetryConfig.BackoffMaxSeconds);
         }
 
         /// <summary>
@@ -228,10 +227,10 @@ namespace NewRelic.Telemetry.Tests
         {
             var telemetryConfig = new TelemetryConfiguration(ConfigExample_NewRelicConfig, MissingProductName);
 
-            Assert.AreEqual(ApiKey_NewRelicValue, telemetryConfig.ApiKey);
-            Assert.AreEqual(SendTimeoutSeconds_DefaultValue, telemetryConfig.SendTimeout);
-            Assert.AreEqual(ServiceName_NewRelicValue, telemetryConfig.ServiceName);
-            Assert.AreEqual(BackoffMaxSeconds_DefaultValue, telemetryConfig.BackoffMaxSeconds);
+            Assert.AreEqual(ApiKeyNewRelicValue, telemetryConfig.ApiKey);
+            Assert.AreEqual(SendTimeoutSecondsDefaultValue, telemetryConfig.SendTimeout);
+            Assert.AreEqual(ServiceNameNewRelicValue, telemetryConfig.ServiceName);
+            Assert.AreEqual(BackoffMaxSecondsDefaultValue, telemetryConfig.BackoffMaxSeconds);
         }
 
         /// <summary>
@@ -243,10 +242,10 @@ namespace NewRelic.Telemetry.Tests
         {
             var telemetryConfig = new TelemetryConfiguration(ConfigExample_NewRelicConfigMissing);
 
-            Assert.AreEqual(ApiKey_DefaultValue, telemetryConfig.ApiKey);
-            Assert.AreEqual(SendTimeoutSeconds_DefaultValue, telemetryConfig.SendTimeout);
-            Assert.AreEqual(ServiceName_DefaultValue, telemetryConfig.ServiceName);
-            Assert.AreEqual(BackoffMaxSeconds_DefaultValue, telemetryConfig.BackoffMaxSeconds);
+            Assert.AreEqual(ApiKeyDefaultValue, telemetryConfig.ApiKey);
+            Assert.AreEqual(SendTimeoutSecondsDefaultValue, telemetryConfig.SendTimeout);
+            Assert.AreEqual(ServiceNameDefaultValue, telemetryConfig.ServiceName);
+            Assert.AreEqual(BackoffMaxSecondsDefaultValue, telemetryConfig.BackoffMaxSeconds);
         }
     }
 }

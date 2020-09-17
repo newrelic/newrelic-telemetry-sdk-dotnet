@@ -74,11 +74,12 @@ namespace NewRelic.Telemetry.Spans
             {
                 foreach (var span in dataToSend.Spans)
                 {
-                    if(span.Attributes == null)
+                    if (span.Attributes == null)
                     {
                         span.Attributes = new Dictionary<string, object>();
                     }
-                    span.Attributes[SpanBuilder.AttribName_InstrumentationProvider] = _config.InstrumentationProvider;
+
+                    span.Attributes[SpanBuilder.AttribNameInstrumentationProvider] = _config.InstrumentationProvider;
                 }
             }
         }

@@ -27,7 +27,7 @@ namespace NewRelic.Telemetry.Spans
                     return null;
                 }
 
-                if (Attributes.TryGetValue(SpanBuilder.AttribName_ParentID, out var parentId))
+                if (Attributes.TryGetValue(SpanBuilder.AttribNameParentID, out var parentId))
                 {
                     return parentId?.ToString();
                 }

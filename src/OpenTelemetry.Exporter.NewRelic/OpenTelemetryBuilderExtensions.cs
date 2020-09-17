@@ -79,6 +79,7 @@ namespace OpenTelemetry.Trace
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="apiKey"></param>
+        /// <param name="loggerFactory"></param>
         /// <returns></returns>
         public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, string apiKey, ILoggerFactory loggerFactory)
         {

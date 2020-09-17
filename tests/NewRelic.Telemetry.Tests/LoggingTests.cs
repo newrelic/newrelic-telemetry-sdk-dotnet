@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 
@@ -38,82 +36,6 @@ namespace NewRelic.Telemetry.Tests
             Assert.Contains("NewRelic Telemetry: warning level logging message.", logs);
             Assert.Contains("NewRelic Telemetry: error level logging message.", logs);
             Assert.Contains($"NewRelic Telemetry: Exception {ex.GetType().FullName}: {ex.Message}", logs);
-        }
-    }
-
-    public class CustomLoggerProvider : ILoggerProvider
-    {
-        private readonly ConcurrentDictionary<string, ILogger> _loggers = new ConcurrentDictionary<string, ILogger>();
-
-        private ConcurrentDictionary<string, List<string>> _logOutput;
-
-        public ConcurrentDictionary<string, List<string>> LogOutput
-        {
-            get
-            {
-                if (_logOutput == null)
-                {
-                    _logOutput = new ConcurrentDictionary<string, List<string>>();
-                }
-
-                return _logOutput;
-            }
-        }
-
-        public ILogger CreateLogger(string categoryName)
-        {
-            return _loggers.GetOrAdd(categoryName, new CustomLogger(this, categoryName));
-        }
-
-        #region IDisposable Support
-        private bool _disposedValue = false; // To detect redundant calls
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposedValue)
-            {
-                if (disposing)
-                {
-                }
-
-                _disposedValue = true;
-            }
-        }
-
-        void IDisposable.Dispose()
-        {
-            Dispose(true);
-        }
-        #endregion
-    }
-
-    public class CustomLogger : ILogger
-    {
-        public CustomLoggerProvider Provider { get; private set; }
-
-        public string Category { get; private set; }
-
-        public CustomLogger(CustomLoggerProvider Provider, string Category)
-        {
-            this.Provider = Provider;
-            this.Category = Category;
-        }
-
-        IDisposable ILogger.BeginScope<TState>(TState state)
-        {
-            throw new NotImplementedException();
-        }
-
-        bool ILogger.IsEnabled(LogLevel logLevel)
-        {
-            throw new NotImplementedException();
-        }
-
-        void ILogger.Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
-        {
-            var message = formatter(state, exception);
-            var logs = Provider.LogOutput.GetOrAdd(Category, new List<string>());
-            logs.Add(message);
         }
     }
  }

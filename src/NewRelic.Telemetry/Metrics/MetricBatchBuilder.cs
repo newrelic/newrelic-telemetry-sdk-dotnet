@@ -145,7 +145,7 @@ namespace NewRelic.Telemetry.Metrics
         /// <summary>
         /// Adds a collection of spans to this batch.
         /// </summary>
-        /// <param name="spans"></param>
+        /// <param name="metrics"></param>
         public MetricBatchBuilder WithMetrics(IEnumerable<Metric> metrics)
         {
             if (metrics == null)

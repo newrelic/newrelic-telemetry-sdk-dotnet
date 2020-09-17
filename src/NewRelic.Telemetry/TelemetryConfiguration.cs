@@ -27,6 +27,7 @@ namespace NewRelic.Telemetry
         /// </summary>
         public string MetricUrl { get; private set; } = "https://metric-api.newrelic.com/metric/v1";
 
+        /// <summary>
         /// Logs messages sent-to and received-by the New Relic endpoints.  This setting
         /// is useful for troubleshooting, but is not recommended in production environments.
         /// </summary>
@@ -80,7 +81,7 @@ namespace NewRelic.Telemetry
         public string[] NewRelicEndpoints => new[]
         {
             TraceUrl,
-            MetricUrl
+            MetricUrl,
         };
 
         /// <summary>
@@ -115,7 +116,7 @@ namespace NewRelic.Telemetry
             var newRelicConfigSection = configProvider
                 .GetSection("NewRelic");
 
-            if(newRelicConfigSection == null)
+            if (newRelicConfigSection == null)
             {
                 return;
             }
@@ -135,33 +136,6 @@ namespace NewRelic.Telemetry
             MaxRetryAttempts = GetValue("MaxRetryAttempts", productConfigSection, newRelicConfigSection, MaxRetryAttempts);
             BackoffMaxSeconds = GetValue("BackoffMaxSeconds", productConfigSection, newRelicConfigSection, BackoffMaxSeconds);
             BackoffDelayFactorSeconds = GetValue("BackoffDelayFactorSeconds", productConfigSection, newRelicConfigSection, BackoffDelayFactorSeconds);
-        }
-
-        private string GetValue(string key, IConfigurationSection productConfigSection, IConfigurationSection newRelicConfigSection, string defaultValue)
-        {
-            return productConfigSection?[key] ?? newRelicConfigSection[key] ?? defaultValue;
-        }
-
-        private bool GetValue(string key, IConfigurationSection productConfigSection, IConfigurationSection newRelicConfigSection, bool defaultValue)
-        {
-            string valStr = productConfigSection?[key] ?? newRelicConfigSection[key];
-            if (!string.IsNullOrEmpty(valStr) && bool.TryParse(valStr, out var valBool))
-            {
-                return valBool;
-            }
-
-            return defaultValue;
-        }
-
-        private int GetValue(string key, IConfigurationSection productConfigSection, IConfigurationSection newRelicConfigSection, int defaultValue)
-        {
-            string valStr = productConfigSection?[key] ?? newRelicConfigSection[key];
-            if (!string.IsNullOrEmpty(valStr) && int.TryParse(valStr, out var valInt))
-            {
-                return valInt;
-            }
-
-            return defaultValue;
         }
 
         /// <summary>
@@ -258,6 +232,7 @@ namespace NewRelic.Telemetry
         /// With a BackOffDelayFactorSeconds of 5 and BackoffMaxSeconds of 80. 
         /// Backoffs would be 5s (5^1), 25s (5^2), 80s (2^3=125 -> 80), 80s (2^4 = 625 -> 80), etc. 
         /// </example>
+        /// <param name="delayFactorSeconds"></param>
         public TelemetryConfiguration WithBackoffDelayFactorSeconds(int delayFactorSeconds)
         {
             BackoffDelayFactorSeconds = delayFactorSeconds;
@@ -272,6 +247,33 @@ namespace NewRelic.Telemetry
         {
             ServiceName = serviceName;
             return this;
+        }
+
+        private string GetValue(string key, IConfigurationSection productConfigSection, IConfigurationSection newRelicConfigSection, string defaultValue)
+        {
+            return productConfigSection?[key] ?? newRelicConfigSection[key] ?? defaultValue;
+        }
+
+        private bool GetValue(string key, IConfigurationSection productConfigSection, IConfigurationSection newRelicConfigSection, bool defaultValue)
+        {
+            string valStr = productConfigSection?[key] ?? newRelicConfigSection[key];
+            if (!string.IsNullOrEmpty(valStr) && bool.TryParse(valStr, out var valBool))
+            {
+                return valBool;
+            }
+
+            return defaultValue;
+        }
+
+        private int GetValue(string key, IConfigurationSection productConfigSection, IConfigurationSection newRelicConfigSection, int defaultValue)
+        {
+            string valStr = productConfigSection?[key] ?? newRelicConfigSection[key];
+            if (!string.IsNullOrEmpty(valStr) && int.TryParse(valStr, out var valInt))
+            {
+                return valInt;
+            }
+
+            return defaultValue;
         }
     }
 }

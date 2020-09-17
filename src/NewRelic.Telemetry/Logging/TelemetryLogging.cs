@@ -11,21 +11,21 @@ namespace NewRelic.Telemetry
      /// </summary>
     public class TelemetryLogging
     {
-        private const string _prefix = "NewRelic Telemetry:";
-        private const string _category = "NewRelic.Telemetry";
+        private const string Prefix = "NewRelic Telemetry:";
+        private const string Category = "NewRelic.Telemetry";
 
         private readonly ILogger _logger;
 
         private static string MessageFormatter(object state, Exception error)
         {
-            return $"{_prefix} {state} {error}".Trim();
+            return $"{Prefix} {state} {error}".Trim();
         }
 
         internal TelemetryLogging(ILoggerFactory loggerFactory)
         {
             if (loggerFactory != null)
             {
-                _logger = loggerFactory.CreateLogger(_category);
+                _logger = loggerFactory.CreateLogger(Category);
             }
         }
 

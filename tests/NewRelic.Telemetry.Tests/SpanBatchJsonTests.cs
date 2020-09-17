@@ -86,7 +86,7 @@ namespace NewRelic.Telemetry.Tests
                .WithTraceId("traceId")
                .WithAttribute("customAtt1", "hello")
                .WithAttribute("customAtt2", 1)
-               .WithAttribute("customAtt3", (decimal)1.2)
+               .WithAttribute("customAtt3", 1.2M)
                .WithAttribute("customAtt4", true);
 
             spanBatchBuilder.WithSpan(SpanBuilder.Create("span1")
@@ -130,7 +130,7 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribCount(resultCommonPropAttribs, 4);
             TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt1", "hello");
             TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt2", 1);
-            TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt3", (decimal)1.2);
+            TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt3", 1.2M);
             TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt4", true);
 
             var resultSpans = TestHelpers.DeserializeArray(resultSpanBatch["spans"]);
@@ -178,7 +178,7 @@ namespace NewRelic.Telemetry.Tests
                 .WithTraceId("traceId")
                 .WithAttribute("customAtt1", "hello")
                 .WithAttribute("customAtt2", 1)
-                .WithAttribute("customAtt3", (decimal)1.2)
+                .WithAttribute("customAtt3", 1.2M)
                 .WithAttribute("customAtt4", true)
                 .WithSpan(SpanBuilder.Create("span1")
                     .WithTraceId("traceId")
@@ -210,7 +210,7 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribCount(resultCommonPropAttribs, 4);
             TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt1", "hello");
             TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt2", 1);
-            TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt3", (decimal)1.2);
+            TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt3", 1.2M);
             TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt4", true);
 
             var resultSpans = TestHelpers.DeserializeArray(resultSpanBatch["spans"]);

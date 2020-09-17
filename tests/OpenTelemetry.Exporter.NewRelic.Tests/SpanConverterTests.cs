@@ -19,7 +19,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         private const string TestServiceName = "TestService";
         private const string ErrorMessage = "This is a test error description";
 
-        private const int Expected_CountSpans = 4;
+        private const int ExpectedCountSpans = 4;
 
         private List<Activity> _otSpans = new List<Activity>();
         private List<Span> _resultNRSpans = new List<Span>();
@@ -34,16 +34,15 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         //  3   Test Span 4                                     Trace 3     Included
         //  4       Should be Filtered - HTTP Call to NR        Trace 3     Excluded
         //  5           Should be filtered - Child of HTTP      Trace 3     Excluded
-
         private static DateTimeOffset _traceStartTime = DateTime.UtcNow;
         private (int? Parent, string Name, DateTimeOffset Start, DateTimeOffset End, Status Status, bool IsCallToNewRelic)[] _spanDefinitions = new (int?, string, DateTimeOffset, DateTimeOffset, Status, bool)[]
         {
-            (null, "Test Span 1", _traceStartTime, _traceStartTime.AddMilliseconds(225), Status.Ok, false ),
-            (0, "Test Span 2", _traceStartTime.AddMilliseconds(1), _traceStartTime.AddMilliseconds(100), Status.Aborted.WithDescription(ErrorMessage), false ),
-            (null, "Test Span 3", _traceStartTime.AddMilliseconds(2), _traceStartTime.AddMilliseconds(375), Status.Ok, false ),
-            (null, "Test Span 4", _traceStartTime.AddMilliseconds(3), _traceStartTime.AddMilliseconds(650), Status.Ok, false ),
-            (3, "Should Be Filtered - HTTP Call to NR", _traceStartTime.AddMilliseconds(4), _traceStartTime.AddMilliseconds(600), Status.Ok, true ),
-            (4, "Should Be Filtered - Child of HTTP", _traceStartTime.AddMilliseconds(5), _traceStartTime.AddMilliseconds(500), Status.Ok, false ),
+            (null, "Test Span 1", _traceStartTime, _traceStartTime.AddMilliseconds(225), Status.Ok, false),
+            (0, "Test Span 2", _traceStartTime.AddMilliseconds(1), _traceStartTime.AddMilliseconds(100), Status.Aborted.WithDescription(ErrorMessage), false),
+            (null, "Test Span 3", _traceStartTime.AddMilliseconds(2), _traceStartTime.AddMilliseconds(375), Status.Ok, false),
+            (null, "Test Span 4", _traceStartTime.AddMilliseconds(3), _traceStartTime.AddMilliseconds(650), Status.Ok, false),
+            (3, "Should Be Filtered - HTTP Call to NR", _traceStartTime.AddMilliseconds(4), _traceStartTime.AddMilliseconds(600), Status.Ok, true),
+            (4, "Should Be Filtered - Child of HTTP", _traceStartTime.AddMilliseconds(5), _traceStartTime.AddMilliseconds(500), Status.Ok, false),
         };
 
         public SpanConverterTests()
@@ -84,6 +83,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
                     {
                         activity.AddTag("http.url", config.TraceUrl);
                     }
+
                     activity.SetEndTime(spanDefinition.End.UtcDateTime);
                     activity.SetStatus(spanDefinition.Status);
                     activity?.Stop();
@@ -102,7 +102,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         [Fact]
         public void Test_ExpectedSpansCreated()
         {
-            Assert.Equal(Expected_CountSpans, resultNRSpansDic.Count);
+            Assert.Equal(ExpectedCountSpans, resultNRSpansDic.Count);
 
             var resultNRSpan0 = resultNRSpansDic[_otSpans[0].Context.SpanId.ToHexString()];
             var resultNRSpan1 = resultNRSpansDic[_otSpans[1].Context.SpanId.ToHexString()];

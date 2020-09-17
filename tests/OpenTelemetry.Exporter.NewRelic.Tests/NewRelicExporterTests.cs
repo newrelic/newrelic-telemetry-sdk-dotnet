@@ -82,7 +82,8 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
                 };
 
             var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string> {
+                .AddInMemoryCollection(new Dictionary<string, string>
+                {
                     { "NewRelic:ServiceName", "test-newrelic" },
                     { "NewRelic:ApiKey", "my-apikey" },
                     { "NewRelic:TraceUrlOverride", $"http://{_testServerHost}:{_testServerPort}/trace/v1?requestId={requestId}" },

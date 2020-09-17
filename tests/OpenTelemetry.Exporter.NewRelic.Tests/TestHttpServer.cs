@@ -10,7 +10,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 {
     internal class TestHttpServer
     {
-        private static readonly Random GlobalRandom = new Random();
+        private static readonly Random _globalRandom = new Random();
 
         public static IDisposable RunServer(Action<HttpListenerContext> action, out string host, out int port)
         {
@@ -23,7 +23,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             {
                 try
                 {
-                    port = GlobalRandom.Next(2000, 5000);
+                    port = _globalRandom.Next(2000, 5000);
                     server = new RunningServer(action, host, port);
                     server.Start();
                     break;

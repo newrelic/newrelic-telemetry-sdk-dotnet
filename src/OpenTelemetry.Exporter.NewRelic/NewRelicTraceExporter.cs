@@ -21,14 +21,13 @@ namespace OpenTelemetry.Exporter.NewRelic
     /// </summary>
     public class NewRelicTraceExporter : ActivityExporter
     {
-        private readonly SpanDataSender _spanDataSender;
-        private const string _productName = "NewRelic-Dotnet-OpenTelemetry";
+        private const string ProductName = "NewRelic-Dotnet-OpenTelemetry";
+        private const string AttribNameUrl = "http.url";
 
-        private static readonly ActivitySpanId EmptyActivitySpanId = ActivitySpanId.CreateFromBytes(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, });
+        private static readonly ActivitySpanId _emptyActivitySpanId = ActivitySpanId.CreateFromBytes(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, });
         private static readonly string _productVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
 
-        private const string _attribName_url = "http.url";
-
+        private readonly SpanDataSender _spanDataSender;
         private readonly ILogger _logger;
         private readonly TelemetryConfiguration _config;
         private readonly string[] _nrEndpoints;
@@ -79,7 +78,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         internal NewRelicTraceExporter(SpanDataSender spanDataSender, TelemetryConfiguration config, ILoggerFactory loggerFactory)
         {
             _spanDataSender = spanDataSender;
-            spanDataSender.AddVersionInfo(_productName, _productVersion);
+            spanDataSender.AddVersionInfo(ProductName, _productVersion);
 
             _config = config;
 
@@ -128,7 +127,7 @@ namespace OpenTelemetry.Exporter.NewRelic
 
             foreach (var otSpan in otSpans)
             {
-                if(otSpan == null)
+                if (otSpan == null)
                 {
                     continue;
                 }
@@ -136,7 +135,7 @@ namespace OpenTelemetry.Exporter.NewRelic
                 try
                 {
                     var nrSpan = ToNewRelicSpan(otSpan);
-                    if(nrSpan == null)
+                    if (nrSpan == null)
                     {
                         spanIdsToFilter.Add(otSpan.Context.SpanId.ToHexString());
                         _logger?.LogDebug(null, $"The following span was filtered because it describes communication with a New Relic endpoint: Trace={otSpan.Context.TraceId}, Span={otSpan.Context.SpanId}, ParentSpan={otSpan.ParentSpanId}");
@@ -155,7 +154,9 @@ namespace OpenTelemetry.Exporter.NewRelic
                         {
                             otSpanId = otSpan.Context.SpanId.ToHexString();
                         }
-                        catch { }
+                        catch
+                        {
+                        }
 
                         _logger.LogError(null, ex, $"Error translating Open Telemetry Span {otSpanId} to New Relic Span.");
                     }
@@ -175,7 +176,7 @@ namespace OpenTelemetry.Exporter.NewRelic
 
         private List<Span> FilterSpans(List<Span> spans, List<string> spanIdsToFilter)
         {
-            if(spanIdsToFilter.Count == 0)
+            if (spanIdsToFilter.Count == 0)
             {
                 return spans;
             }
@@ -195,7 +196,7 @@ namespace OpenTelemetry.Exporter.NewRelic
                 }
             }
 
-            var newSpanIdsToFilter = newSpansToFilter.Select(x=>x.Id).ToArray();
+            var newSpanIdsToFilter = newSpansToFilter.Select(x => x.Id).ToArray();
 
             spanIdsToFilter = spanIdsToFilter.Union(newSpanIdsToFilter).ToList();
 
@@ -206,8 +207,15 @@ namespace OpenTelemetry.Exporter.NewRelic
 
         private Span ToNewRelicSpan(Activity openTelemetrySpan)
         {
-            if (openTelemetrySpan == default) throw new ArgumentException(nameof(openTelemetrySpan));
-            if (openTelemetrySpan.Context == default) throw new ArgumentException($"{nameof(openTelemetrySpan)}.Context");
+            if (openTelemetrySpan == default)
+            {
+                throw new ArgumentException(nameof(openTelemetrySpan));
+            }
+
+            if (openTelemetrySpan.Context == default)
+            {
+                throw new ArgumentException($"{nameof(openTelemetrySpan)}.Context");
+            }
 
             var newRelicSpanBuilder = SpanBuilder.Create(openTelemetrySpan.Context.SpanId.ToHexString())
                    .WithTraceId(openTelemetrySpan.Context.TraceId.ToHexString())
@@ -226,7 +234,7 @@ namespace OpenTelemetry.Exporter.NewRelic
                 newRelicSpanBuilder.WithServiceName(_config.ServiceName);
             }
 
-            if (openTelemetrySpan.ParentSpanId != EmptyActivitySpanId)
+            if (openTelemetrySpan.ParentSpanId != _emptyActivitySpanId)
             {
                 newRelicSpanBuilder.WithParentId(openTelemetrySpan.ParentSpanId.ToHexString());
             }
@@ -236,7 +244,7 @@ namespace OpenTelemetry.Exporter.NewRelic
                 foreach (var spanAttrib in openTelemetrySpan.Tags)
                 {
                     // Filter out calls to New Relic endpoint as these will cause an infinite loop
-                    if (string.Equals(spanAttrib.Key, _attribName_url, StringComparison.OrdinalIgnoreCase) && _nrEndpoints.Contains(spanAttrib.Value?.ToString().ToLower()))
+                    if (string.Equals(spanAttrib.Key, AttribNameUrl, StringComparison.OrdinalIgnoreCase) && _nrEndpoints.Contains(spanAttrib.Value?.ToString().ToLower()))
                     {
                         _logger?.LogDebug(null, $"The following span was filtered because it was identified as communication with a New Relic endpoint: Trace={openTelemetrySpan.Context.TraceId}, Span={openTelemetrySpan.Context.SpanId}, ParentSpan={openTelemetrySpan.ParentSpanId}. url={spanAttrib.Value}");
 

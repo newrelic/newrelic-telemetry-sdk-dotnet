@@ -12,13 +12,13 @@ namespace NewRelic.Telemetry.Spans
     /// </summary>
     public class SpanBuilder
     {
-        internal const string AttribName_ServiceName = "service.name";
-        internal const string AttribName_DurationMs = "duration.ms";
-        internal const string AttribName_Name = "name";
-        internal const string AttribName_ParentID = "parent.id";
-        internal const string AttribName_Error = "error";
-        internal const string AttribName_ErrorMsg = "error.message";
-        internal const string AttribName_InstrumentationProvider = "instrumentation.provider";
+        internal const string AttribNameServiceName = "service.name";
+        internal const string AttribNameDurationMs = "duration.ms";
+        internal const string AttribNameName = "name";
+        internal const string AttribNameParentID = "parent.id";
+        internal const string AttribNameError = "error";
+        internal const string AttribNameErrorMsg = "error.message";
+        internal const string AttribNameInstrumentationProvider = "instrumentation.provider";
 
         /// <summary>
         /// Creates a new SpanBuilder with a unique SpanId Identifier.
@@ -72,7 +72,7 @@ namespace NewRelic.Telemetry.Spans
         /// <param name="timestamp">Unix timestamp value ms precision.  Should be reported in UTC.</param>
         public SpanBuilder WithTimestamp(long timestamp)
         {
-            if(timestamp == default)
+            if (timestamp == default)
             {
                 return this;
             }
@@ -104,17 +104,17 @@ namespace NewRelic.Telemetry.Spans
         {
             if (hasError)
             {
-                return WithAttribute(AttribName_Error, true);
+                return WithAttribute(AttribNameError, true);
             }
 
-            if (_span.Attributes?.ContainsKey(AttribName_Error) == true)
+            if (_span.Attributes?.ContainsKey(AttribNameError) == true)
             {
-                _span.Attributes.Remove(AttribName_Error);
+                _span.Attributes.Remove(AttribNameError);
             }
 
-            if (_span.Attributes?.ContainsKey(AttribName_ErrorMsg) == true)
+            if (_span.Attributes?.ContainsKey(AttribNameErrorMsg) == true)
             {
-                _span.Attributes.Remove(AttribName_ErrorMsg);
+                _span.Attributes.Remove(AttribNameErrorMsg);
             }
 
             return this;
@@ -124,7 +124,7 @@ namespace NewRelic.Telemetry.Spans
         /// Used to indicate that an error has occurred during the unit of work represented
         /// by this Span.  Additionally records a message describing the error condition.
         /// </summary>
-        /// <param name="hasError"></param>
+        /// <param name="errorMessage"></param>
         public SpanBuilder HasError(string errorMessage)
         {
             HasError(true);
@@ -134,7 +134,7 @@ namespace NewRelic.Telemetry.Spans
                 return this;
             }
 
-            return WithAttribute(AttribName_ErrorMsg, errorMessage);
+            return WithAttribute(AttribNameErrorMsg, errorMessage);
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace NewRelic.Telemetry.Spans
         /// <param name="durationMs">Duration in milliseconds.</param>
         public SpanBuilder WithDurationMs(double durationMs)
         {
-            WithAttribute(AttribName_DurationMs, durationMs);
+            WithAttribute(AttribNameDurationMs, durationMs);
             return this;
         }
 
@@ -184,7 +184,7 @@ namespace NewRelic.Telemetry.Spans
         /// <param name="name"></param>
         public SpanBuilder WithName(string name)
         {
-            WithAttribute(AttribName_Name, name);
+            WithAttribute(AttribNameName, name);
             return this;
         }
 
@@ -195,7 +195,7 @@ namespace NewRelic.Telemetry.Spans
         /// <param name="parentId">The Id of the Span which launched this Span.  <see cref="Span.Id>">See SpanId</see>.</param>
         public SpanBuilder WithParentId(string parentId)
         {
-            WithAttribute(AttribName_ParentID, parentId);
+            WithAttribute(AttribNameParentID, parentId);
             return this;
         }
 
@@ -205,7 +205,7 @@ namespace NewRelic.Telemetry.Spans
         /// <param name="serviceName"></param>
         public SpanBuilder WithServiceName(string serviceName)
         {
-            WithAttribute(AttribName_ServiceName, serviceName);
+            WithAttribute(AttribNameServiceName, serviceName);
             return this;
         }
 
