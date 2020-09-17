@@ -43,7 +43,7 @@ namespace NewRelic.Telemetry.Metrics
     {
         private readonly TMetric _metric;
 
-        private Dictionary<string, object> _attributes => _metric.Attributes ?? (_metric.Attributes = new Dictionary<string, object>());
+        private Dictionary<string, object> Attributes => _metric.Attributes ?? (_metric.Attributes = new Dictionary<string, object>());
 
         internal MetricBuilder(string name)
         {
@@ -125,7 +125,7 @@ namespace NewRelic.Telemetry.Metrics
                 throw new InvalidOperationException($"{nameof(attribName)} cannot be empty.");
             }
 
-            _attributes[attribName] = attribVal;
+            Attributes[attribName] = attribVal;
             return this;
         }
 

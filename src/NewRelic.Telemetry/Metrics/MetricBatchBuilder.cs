@@ -38,11 +38,11 @@ namespace NewRelic.Telemetry.Metrics
             return _metricBatch;
         }
 
-        private MetricBatchCommonProperties _commonProperties => _metricBatch.CommonProperties ?? (_metricBatch.CommonProperties = new MetricBatchCommonProperties());
+        private MetricBatchCommonProperties CommonProperties => _metricBatch.CommonProperties ?? (_metricBatch.CommonProperties = new MetricBatchCommonProperties());
 
-        private Dictionary<string, object> _attributes => _commonProperties.Attributes ?? (_metricBatch.CommonProperties.Attributes = new Dictionary<string, object>());
+        private Dictionary<string, object> Attributes => CommonProperties.Attributes ?? (_metricBatch.CommonProperties.Attributes = new Dictionary<string, object>());
 
-        private List<Metric> _metrics => _metricBatch.Metrics ?? (_metricBatch.Metrics = new List<Metric>());
+        private List<Metric> Metrics => _metricBatch.Metrics ?? (_metricBatch.Metrics = new List<Metric>());
 
         /// <summary>
         /// Identifies the metrics start time for all of the metrics that are part 
@@ -56,7 +56,7 @@ namespace NewRelic.Telemetry.Metrics
                 return this;
             }
 
-            _commonProperties.Timestamp = DateTimeExtensions.ToUnixTimeMilliseconds(timestamp);
+            CommonProperties.Timestamp = DateTimeExtensions.ToUnixTimeMilliseconds(timestamp);
 
             return this;
         }
@@ -73,7 +73,7 @@ namespace NewRelic.Telemetry.Metrics
                 return this;
             }
 
-            _commonProperties.IntervalMs = intervalMs;
+            CommonProperties.IntervalMs = intervalMs;
 
             return this;
         }
@@ -91,7 +91,7 @@ namespace NewRelic.Telemetry.Metrics
                 throw new InvalidOperationException($"{nameof(attribName)} cannot be empty.");
             }
 
-            _attributes[attribName] = attribValue;
+            Attributes[attribName] = attribValue;
 
             return this;
         }
@@ -129,7 +129,7 @@ namespace NewRelic.Telemetry.Metrics
                 return this;
             }
 
-            _metrics.Add(metric);
+            Metrics.Add(metric);
             return this;
         }
 

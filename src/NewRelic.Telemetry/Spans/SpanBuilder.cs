@@ -31,7 +31,7 @@ namespace NewRelic.Telemetry.Spans
 
         private readonly Span _span = new Span();
 
-        private Dictionary<string, object> _attributes => _span.Attributes ?? (_span.Attributes = new Dictionary<string, object>());
+        private Dictionary<string, object> Attributes => _span.Attributes ?? (_span.Attributes = new Dictionary<string, object>());
 
         private SpanBuilder(string spanId)
         {
@@ -241,7 +241,7 @@ namespace NewRelic.Telemetry.Spans
                 throw new InvalidOperationException($"{nameof(attribName)} cannot be empty.");
             }
            
-            _attributes[attribName] = attribVal;
+            Attributes[attribName] = attribVal;
             return this;
         }
     }

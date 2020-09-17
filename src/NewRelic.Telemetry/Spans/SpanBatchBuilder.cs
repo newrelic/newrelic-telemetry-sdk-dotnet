@@ -36,11 +36,11 @@ namespace NewRelic.Telemetry.Spans
             return _spanBatch;
         }
 
-        private SpanBatchCommonProperties _commonProperties => _spanBatch.CommonProperties ?? (_spanBatch.CommonProperties = new SpanBatchCommonProperties());
+        private SpanBatchCommonProperties CommonProperties => _spanBatch.CommonProperties ?? (_spanBatch.CommonProperties = new SpanBatchCommonProperties());
 
-        private Dictionary<string, object> _attributes => _commonProperties.Attributes ?? (_spanBatch.CommonProperties.Attributes = new Dictionary<string, object>());
+        private Dictionary<string, object> Attributes => CommonProperties.Attributes ?? (_spanBatch.CommonProperties.Attributes = new Dictionary<string, object>());
 
-        private List<Span> _spans => _spanBatch.Spans ?? (_spanBatch.Spans = new List<Span>());
+        private List<Span> Spans => _spanBatch.Spans ?? (_spanBatch.Spans = new List<Span>());
 
         /// <summary>
         /// Optional:  Setting the traceId for the SpanBatch indicates that all spans being reported are from 
@@ -57,7 +57,7 @@ namespace NewRelic.Telemetry.Spans
                 return this;
             }
 
-            _commonProperties.TraceId = traceId;
+            CommonProperties.TraceId = traceId;
 
             return this;
         }
@@ -76,7 +76,7 @@ namespace NewRelic.Telemetry.Spans
                 throw new InvalidOperationException($"{nameof(attribName)} cannot be empty.");
             }
 
-            _attributes[attribName] = attribValue;
+            Attributes[attribName] = attribValue;
 
             return this;
         }
@@ -115,7 +115,7 @@ namespace NewRelic.Telemetry.Spans
                 return this;
             }
 
-            _spans.Add(span);
+            Spans.Add(span);
             return this;
         }
 

@@ -24,7 +24,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         private List<Activity> _otSpans = new List<Activity>();
         private List<Span> _resultNRSpans = new List<Span>();
 
-        private Dictionary<string, Span> resultNRSpansDic => _resultNRSpans.ToDictionary(x => x.Id);
+        private Dictionary<string, Span> ResultNRSpansDic => _resultNRSpans.ToDictionary(x => x.Id);
 
         // Creating the following spans                        Trace       Expected Outcome
         //  -----------------------------------------------------------------------------------
@@ -102,12 +102,12 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         [Fact]
         public void Test_ExpectedSpansCreated()
         {
-            Assert.Equal(ExpectedCountSpans, resultNRSpansDic.Count);
+            Assert.Equal(ExpectedCountSpans, ResultNRSpansDic.Count);
 
-            var resultNRSpan0 = resultNRSpansDic[_otSpans[0].Context.SpanId.ToHexString()];
-            var resultNRSpan1 = resultNRSpansDic[_otSpans[1].Context.SpanId.ToHexString()];
-            var resultNRSpan2 = resultNRSpansDic[_otSpans[2].Context.SpanId.ToHexString()];
-            var resultNRSpan3 = resultNRSpansDic[_otSpans[3].Context.SpanId.ToHexString()];
+            var resultNRSpan0 = ResultNRSpansDic[_otSpans[0].Context.SpanId.ToHexString()];
+            var resultNRSpan1 = ResultNRSpansDic[_otSpans[1].Context.SpanId.ToHexString()];
+            var resultNRSpan2 = ResultNRSpansDic[_otSpans[2].Context.SpanId.ToHexString()];
+            var resultNRSpan3 = ResultNRSpansDic[_otSpans[3].Context.SpanId.ToHexString()];
 
             Assert.NotNull(resultNRSpan0);
             Assert.NotNull(resultNRSpan1);
@@ -118,10 +118,10 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         [Fact]
         public void Test_ErrorAttribute()
         {
-            var resultSpan0 = resultNRSpansDic[_otSpans[0].Context.SpanId.ToHexString()];
-            var resultSpan1 = resultNRSpansDic[_otSpans[1].Context.SpanId.ToHexString()];
-            var resultSpan2 = resultNRSpansDic[_otSpans[2].Context.SpanId.ToHexString()];
-            var resultSpan3 = resultNRSpansDic[_otSpans[3].Context.SpanId.ToHexString()];
+            var resultSpan0 = ResultNRSpansDic[_otSpans[0].Context.SpanId.ToHexString()];
+            var resultSpan1 = ResultNRSpansDic[_otSpans[1].Context.SpanId.ToHexString()];
+            var resultSpan2 = ResultNRSpansDic[_otSpans[2].Context.SpanId.ToHexString()];
+            var resultSpan3 = ResultNRSpansDic[_otSpans[3].Context.SpanId.ToHexString()];
 
             Assert.False(resultSpan0.Attributes.ContainsKey("error"));
             Assert.True((bool)resultSpan1.Attributes["error"]);
@@ -133,10 +133,10 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         [Fact]
         public void Test_TraceId()
         {
-            var resultNRSpan0 = resultNRSpansDic[_otSpans[0].Context.SpanId.ToHexString()];
-            var resultNRSpan1 = resultNRSpansDic[_otSpans[1].Context.SpanId.ToHexString()];
-            var resultNRSpan2 = resultNRSpansDic[_otSpans[2].Context.SpanId.ToHexString()];
-            var resultNRSpan3 = resultNRSpansDic[_otSpans[3].Context.SpanId.ToHexString()];
+            var resultNRSpan0 = ResultNRSpansDic[_otSpans[0].Context.SpanId.ToHexString()];
+            var resultNRSpan1 = ResultNRSpansDic[_otSpans[1].Context.SpanId.ToHexString()];
+            var resultNRSpan2 = ResultNRSpansDic[_otSpans[2].Context.SpanId.ToHexString()];
+            var resultNRSpan3 = ResultNRSpansDic[_otSpans[3].Context.SpanId.ToHexString()];
 
             Assert.Equal(resultNRSpan0.TraceId, _otSpans[0].Context.TraceId.ToHexString());
             Assert.Equal(resultNRSpan1.TraceId, _otSpans[1].Context.TraceId.ToHexString());
@@ -150,10 +150,10 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         [Fact]
         public void Test_ParentSpanId()
         {
-            var resultNRSpan0 = resultNRSpansDic[_otSpans[0].Context.SpanId.ToHexString()];
-            var resultNRSpan1 = resultNRSpansDic[_otSpans[1].Context.SpanId.ToHexString()];
-            var resultNRSpan2 = resultNRSpansDic[_otSpans[2].Context.SpanId.ToHexString()];
-            var resultNRSpan3 = resultNRSpansDic[_otSpans[3].Context.SpanId.ToHexString()];
+            var resultNRSpan0 = ResultNRSpansDic[_otSpans[0].Context.SpanId.ToHexString()];
+            var resultNRSpan1 = ResultNRSpansDic[_otSpans[1].Context.SpanId.ToHexString()];
+            var resultNRSpan2 = ResultNRSpansDic[_otSpans[2].Context.SpanId.ToHexString()];
+            var resultNRSpan3 = ResultNRSpansDic[_otSpans[3].Context.SpanId.ToHexString()];
 
             Assert.Null(resultNRSpan0.ParentId);
             Assert.Equal(resultNRSpan1.ParentId, resultNRSpan0.Id);
@@ -164,8 +164,8 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         [Fact]
         public void Test_FilterOutNewRelicEndpoint()
         {
-            Assert.False(resultNRSpansDic.ContainsKey(_otSpans[4].Context.SpanId.ToHexString()));
-            Assert.False(resultNRSpansDic.ContainsKey(_otSpans[5].Context.SpanId.ToHexString()));
+            Assert.False(ResultNRSpansDic.ContainsKey(_otSpans[4].Context.SpanId.ToHexString()));
+            Assert.False(ResultNRSpansDic.ContainsKey(_otSpans[5].Context.SpanId.ToHexString()));
         }
 
         [Fact]
@@ -173,7 +173,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         {
             for (var i = 0; i < _otSpans.Count; ++i)
             {
-                if (!resultNRSpansDic.TryGetValue(_otSpans[i].Context.SpanId.ToHexString(), out var nrSpan))
+                if (!ResultNRSpansDic.TryGetValue(_otSpans[i].Context.SpanId.ToHexString(), out var nrSpan))
                 {
                     continue;
                 }
@@ -192,7 +192,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         {
             foreach (var otSpan in _otSpans)
             {
-                if (!resultNRSpansDic.TryGetValue(otSpan.Context.SpanId.ToHexString(), out var nrSpan))
+                if (!ResultNRSpansDic.TryGetValue(otSpan.Context.SpanId.ToHexString(), out var nrSpan))
                 {
                     continue;
                 }
