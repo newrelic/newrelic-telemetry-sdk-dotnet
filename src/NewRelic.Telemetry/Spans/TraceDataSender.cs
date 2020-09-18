@@ -54,7 +54,7 @@ namespace NewRelic.Telemetry.Tracing
 
         public async Task<Response> SendDataAsync(IEnumerable<NewRelicSpan> spans)
         {
-            var batch = new NewRelicSpanBatch(spans, null);
+            var batch = new NewRelicSpanBatch(spans);
 
             return await SendDataAsync(batch);
         }

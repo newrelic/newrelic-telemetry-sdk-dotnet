@@ -6,35 +6,27 @@ using System.Runtime.Serialization;
 
 namespace NewRelic.Telemetry.Metrics
 {
-    public struct NewRelicMetricBatchCommonProperties
+    public readonly struct NewRelicMetricBatchCommonProperties
     {
         public long? Timestamp { get; }
 
         [DataMember(Name = "interval.ms")]
         public long? IntervalMs { get; }
 
-        public Dictionary<string, object>? Attributes { get; private set; }
+        private readonly Dictionary<string, object> _attributes;
+
+        public IReadOnlyDictionary<string, object> Attributes => _attributes;
 
         public NewRelicMetricBatchCommonProperties(long? timestamp, long? intervalMs, Dictionary<string, object>? attributes)
         {
             Timestamp = timestamp;
             IntervalMs = intervalMs;
-            Attributes = attributes;
+            _attributes = attributes ?? new Dictionary<string, object>();
         }
 
         public void SetInstrumentationProvider(string instrumentationProvider)
         {
-            if (string.IsNullOrWhiteSpace(instrumentationProvider))
-            {
-                return;
-            }
-
-            if (Attributes == null)
-            {
-                Attributes = new Dictionary<string, object>();
-            }
-
-            Attributes[NewRelicConsts.AttribNameInstrumentationProvider] = instrumentationProvider;
+            _attributes[NewRelicConsts.AttribNameInstrumentationProvider] = instrumentationProvider;
         }
     }
 }

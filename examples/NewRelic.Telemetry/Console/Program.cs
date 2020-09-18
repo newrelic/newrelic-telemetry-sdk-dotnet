@@ -160,7 +160,7 @@ namespace BasicConsoleApplication
                 }
             }
 
-            var spanBatch = new NewRelicSpanBatch(spans, null);
+            var spanBatch = new NewRelicSpanBatch(spans);
 
             // Send the SpanBatch to the New Relic endpoint.
             await SendDataToNewRelic(spanBatch);

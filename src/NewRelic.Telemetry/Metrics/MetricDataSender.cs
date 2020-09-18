@@ -44,7 +44,7 @@ namespace NewRelic.Telemetry.Metrics
 
         public async Task<Response> SendDataAsync(IEnumerable<NewRelicMetric> metrics)
         {
-            var batch = new NewRelicMetricBatch(metrics, null);
+            var batch = new NewRelicMetricBatch(metrics);
 
             return await SendDataAsync(batch);
         }

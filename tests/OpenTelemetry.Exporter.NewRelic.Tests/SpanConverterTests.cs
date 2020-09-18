@@ -19,7 +19,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         private const string TestServiceName = "TestService";
         private const string ErrorMessage = "This is a test error description";
 
-        private const int ExpectedCountSpans = 4;
+        private const int ExpectedCountSpans = 6;
         private const string AttrNameParentID = "parent.Id";
 
         private TelemetryConfiguration _config;
@@ -173,13 +173,6 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         }
 
         [Fact]
-        public void Test_FilterOutNewRelicEndpoint()
-        {
-            Assert.False(ResultNRSpansDic.ContainsKey(_otSpans[4].Context.SpanId.ToHexString()));
-            Assert.False(ResultNRSpansDic.ContainsKey(_otSpans[5].Context.SpanId.ToHexString()));
-        }
-
-        [Fact]
         public void Test_Timestamps()
         {
             for (var i = 0; i < _otSpans.Count; ++i)
@@ -202,9 +195,9 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         public void Test_InstrumentationProvider()
         {
             Assert.Equal(_otSpans.Count, _resultNRSpans.Count);
-            Assert.NotNull(_resultNRSpanBatch?.CommonProperties?.Attributes);
-            Assert.True(_resultNRSpanBatch?.CommonProperties?.Attributes?.ContainsKey("instrumentation.provider"));
-            Assert.Equal(_config.InstrumentationProvider, _resultNRSpanBatch?.CommonProperties?.Attributes?["instrumentation.provider"]);
+            Assert.NotNull(_resultNRSpanBatch?.CommonProperties.Attributes);
+            Assert.True(_resultNRSpanBatch?.CommonProperties.Attributes.ContainsKey("instrumentation.provider"));
+            Assert.Equal(_config.InstrumentationProvider, _resultNRSpanBatch?.CommonProperties.Attributes["instrumentation.provider"]);
         }
     }
 }

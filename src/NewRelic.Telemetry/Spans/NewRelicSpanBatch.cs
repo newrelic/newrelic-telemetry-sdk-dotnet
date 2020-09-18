@@ -11,11 +11,17 @@ namespace NewRelic.Telemetry.Tracing
     public struct NewRelicSpanBatch : ITelemetryDataType<NewRelicSpanBatch>
     {
         [DataMember(Name = "common")]
-        public NewRelicSpanBatchCommonProperties? CommonProperties { get; private set; }
+        public NewRelicSpanBatchCommonProperties CommonProperties { get; private set; }
 
         public IEnumerable<NewRelicSpan> Spans { get; }
 
-        public NewRelicSpanBatch(IEnumerable<NewRelicSpan> spans, NewRelicSpanBatchCommonProperties? commonProperties)
+        public NewRelicSpanBatch(IEnumerable<NewRelicSpan> spans)
+        {
+            CommonProperties = new NewRelicSpanBatchCommonProperties(null);
+            Spans = spans;
+        }
+
+        public NewRelicSpanBatch(IEnumerable<NewRelicSpan> spans, NewRelicSpanBatchCommonProperties commonProperties)
         {
             CommonProperties = commonProperties;
             Spans = spans;
@@ -28,17 +34,7 @@ namespace NewRelic.Telemetry.Tracing
 
         public void SetInstrumentationProvider(string instrumentationProvider)
         {
-            if (string.IsNullOrWhiteSpace(instrumentationProvider))
-            {
-                return;
-            }
-
-            if (CommonProperties == null)
-            {
-                CommonProperties = new NewRelicSpanBatchCommonProperties(null, null);
-            }
-
-            CommonProperties?.SetInstrumentationProvider(instrumentationProvider);
+            CommonProperties.SetInstrumentationProvider(instrumentationProvider);
         }
     }
 }

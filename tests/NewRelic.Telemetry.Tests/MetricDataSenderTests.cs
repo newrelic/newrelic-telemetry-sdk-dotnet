@@ -14,7 +14,8 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         public void SendAnEmptyMetricBatch()
         {
-            var spanBatch = new NewRelicMetricBatch(new NewRelicMetric[0], null);
+            var spanBatch = new NewRelicMetricBatch(
+                metrics: new NewRelicMetric[0]);
 
             var dataSender = new MetricDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
 
@@ -39,9 +40,8 @@ namespace NewRelic.Telemetry.Tests
                             name: "TestMetric",
                             timestamp: null,
                             attributes: null,
-                            value: 0)
-                    },
-                commonProperties: null);
+                            value: 0),
+                    });
 
             var dataSender = new MetricDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
 

@@ -81,12 +81,12 @@ namespace NewRelic.Telemetry.Tests
                             parentSpanId: null,
                             attributes: new Dictionary<string, object>()
                             {
-                                { NewRelicConsts.Tracing.AttribNameName, "TestSpan" }
+                                { NewRelicConsts.Tracing.AttribNameName, "TestSpan" },
                             });
 
             var spanBatch = new NewRelicSpanBatch(
                     spans: new[] { span },
-                    commonProperties: new NewRelicSpanBatchCommonProperties(traceId, null));
+                    commonProperties: new NewRelicSpanBatchCommonProperties(traceId));
 
             var dataSender = new TraceDataSender(
                 new TelemetryConfiguration()
@@ -108,9 +108,9 @@ namespace NewRelic.Telemetry.Tests
             var actualSpans = spanBatch.Spans.ToArray();
 
             Assert.AreEqual(1, actualSpans.Length);
-            Assert.IsNotNull(spanBatch.CommonProperties?.Attributes);
-            Assert.IsTrue(spanBatch.CommonProperties?.Attributes?.ContainsKey("instrumentation.provider"));
-            Assert.AreEqual(instrumentationProvider, spanBatch.CommonProperties?.Attributes?["instrumentation.provider"]);
+            Assert.IsNotNull(spanBatch.CommonProperties.Attributes);
+            Assert.IsTrue(spanBatch.CommonProperties.Attributes.ContainsKey("instrumentation.provider"));
+            Assert.AreEqual(instrumentationProvider, spanBatch.CommonProperties.Attributes["instrumentation.provider"]);
         }
     }
 }
