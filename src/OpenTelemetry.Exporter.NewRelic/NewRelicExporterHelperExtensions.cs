@@ -62,28 +62,5 @@ namespace OpenTelemetry.Trace
         {
             return UseNewRelic(builder, config, null);
         }
-
-        /// <summary>
-        /// Configure the New Relic Data Exporter with default settings.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="apiKey"></param>
-        /// <returns></returns>
-        public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, string apiKey)
-        {
-            return UseNewRelic(builder, apiKey, null);
-        }
-
-        /// <summary>
-        /// Configure the New Relic Data Exporter with default settings providing a logger factory.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="apiKey"></param>
-        /// <param name="loggerFactory"></param>
-        /// <returns></returns>
-        public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, string apiKey, ILoggerFactory loggerFactory)
-        {
-            return UseNewRelic(builder, new TelemetryConfiguration().WithApiKey(apiKey), loggerFactory);
-        }
     }
 }
