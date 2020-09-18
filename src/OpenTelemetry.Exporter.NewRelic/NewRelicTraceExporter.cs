@@ -234,7 +234,7 @@ namespace OpenTelemetry.Exporter.NewRelic
                 newRelicSpanBuilder.WithServiceName(_config.ServiceName);
             }
 
-            if (openTelemetrySpan.ParentSpanId != _emptyActivitySpanId)
+            if (openTelemetrySpan.ParentSpanId != default && openTelemetrySpan.ParentSpanId != _emptyActivitySpanId)
             {
                 newRelicSpanBuilder.WithParentId(openTelemetrySpan.ParentSpanId.ToHexString());
             }
