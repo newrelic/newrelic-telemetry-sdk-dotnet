@@ -8,6 +8,6 @@ namespace NewRelic.Telemetry
     public interface ITelemetryDataType<T> where T:ITelemetryDataType<T>
     {
         string ToJson();
-        List<T> Split();
+        void SetInstrumentationProvider(string instrumentationProvider);
     }
 }

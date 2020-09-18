@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
-using NewRelic.Telemetry.Spans;
+using NewRelic.Telemetry.Tracing;
 using NewRelic.Telemetry.Transport;
 using System;
 using System.Collections.Generic;
@@ -45,9 +45,9 @@ namespace NewRelic.Telemetry.Tests
             var actualCountCallsSendData = 0;
 
             // Arrange
-            var successfulSpanBatches = new List<SpanBatch>();
+            var successfulSpanBatches = new List<NewRelicSpanBatch>();
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
+            var dataSender = new TraceDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
 
             var okJsons = new List<string>();
 
@@ -57,7 +57,7 @@ namespace NewRelic.Telemetry.Tests
             {
                 actualCountCallsSendData++;
 
-                if (spanBatch.Spans?.Count < 4)
+                if (spanBatch.Spans.Count() < 4)
                 {
                     okJsons.Add(spanBatch.ToJson());
                     successfulSpanBatches.Add(spanBatch);
@@ -78,15 +78,14 @@ namespace NewRelic.Telemetry.Tests
                 {"testAttrib1", "testAttribValue1" }
             };
 
-            var spanBatch = SpanBatch.Create()
-                .WithTraceId(expectedTraceID)
-                .WithAttributes(attribs);
-
+            var spans = new List<NewRelicSpan>();
             for (var i = 0; i < expectedCountSpans; i++)
             {
-                spanBatch.WithSpan(Span.Create(i.ToString()));
+                spans.Add(new NewRelicSpan(null, i.ToString(), i, null, null));
             }
 
+            var spanBatch = new NewRelicSpanBatch(spans, new NewRelicSpanBatchCommonProperties(expectedTraceID, attribs));
+           
 
             // Act
             await dataSender.SendDataAsync(spanBatch);
@@ -99,7 +98,7 @@ namespace NewRelic.Telemetry.Tests
             Assert.AreEqual(expectedCountSpans, successfulSpanBatches.SelectMany(x => x.Spans).Count(), "Unexpected number of successful Spans");
             Assert.AreEqual(expectedCountSpans, successfulSpanBatches.SelectMany(x => x.Spans).Select(x => x.Id).Distinct().Count(), "All Spans should be unique (spanId)");
 
-            //Test the attributes on the spanbatch
+            //Test the attributes on the NewRelicSpanBatch
             Assert.AreEqual(expectedCountDistinctTraceIds, successfulSpanBatches.Select(x => x.CommonProperties?.TraceId).Distinct().Count(), "The traceId on split batches are not the same");
             Assert.AreEqual(expectedTraceID, successfulSpanBatches.FirstOrDefault().CommonProperties?.TraceId, "The traceId on split batches does not match the original traceId");
             Assert.AreEqual(expectedCountSpanBatchAttribSets, successfulSpanBatches.Select(x => x.CommonProperties?.Attributes).Distinct().Count(), "The attributes on all span batches should be the same");
@@ -135,30 +134,30 @@ namespace NewRelic.Telemetry.Tests
             const string traceID_SplitBatch_Prefix = "TooLarge";
 
             var actualCountCallsSendData = 0;
-            var successfulSpans = new List<Span>();
+            var successfulSpans = new List<NewRelicSpan>();
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
+            var dataSender = new TraceDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
 
             var shouldSplitJsons = new List<string>();
 
             // Mock the behavior to return EntityTooLarge for any span batch that has a span with an 
             // id that starts with TooLarge.
-            dataSender.WithCaptureSendDataAsyncDelegate((spanBatch, retryNum) =>
+            dataSender.WithCaptureSendDataAsyncDelegate((NewRelicSpanBatch, retryNum) =>
             {
                 actualCountCallsSendData++;
 
-                if(spanBatch.Spans == null)
+                if(NewRelicSpanBatch.Spans == null)
                 {
                     return;
                 }
 
-                if (spanBatch.Spans.Any(x => x.Id.StartsWith(traceID_SplitBatch_Prefix)))
+                if (NewRelicSpanBatch.Spans.Any(x => x.Id.StartsWith(traceID_SplitBatch_Prefix)))
                 {
-                    shouldSplitJsons.Add(spanBatch.ToJson());
+                    shouldSplitJsons.Add(NewRelicSpanBatch.ToJson());
                 }
                 else
                 {
-                    successfulSpans.AddRange(spanBatch.Spans);
+                    successfulSpans.AddRange(NewRelicSpanBatch.Spans);
                 }
             });
 
@@ -171,15 +170,14 @@ namespace NewRelic.Telemetry.Tests
                 return Task.FromResult(response);
             });
 
-            var spanBatch = SpanBatch.Create();
-
-            spanBatch.WithSpan(Span.Create($"{traceID_SplitBatch_Prefix}1"));
-            spanBatch.WithSpan(Span.Create($"{traceID_SplitBatch_Prefix}2"));
-            spanBatch.WithSpan(Span.Create($"{traceID_SplitBatch_Prefix}3"));
-            spanBatch.WithSpan(Span.Create(traceID_Success));
+            var spans = new List<NewRelicSpan>();
+            spans.Add(new NewRelicSpan(null,$"{traceID_SplitBatch_Prefix}1", 0, null, null));
+            spans.Add(new NewRelicSpan(null,$"{traceID_SplitBatch_Prefix}2", 0, null, null));
+            spans.Add(new NewRelicSpan(null,$"{traceID_SplitBatch_Prefix}3", 0, null, null));
+            spans.Add(new NewRelicSpan(null, traceID_Success, 0, null, null));
 
             // Act
-            var result = await dataSender.SendDataAsync(spanBatch);
+            var result = await dataSender.SendDataAsync(spans);
 
             // Assert
             Assert.AreEqual(NewRelicResponseStatus.Failure, result.ResponseStatus);
@@ -206,7 +204,7 @@ namespace NewRelic.Telemetry.Tests
             var actualBackoffSequenceFromTestRun = new List<uint>();
             var actualCountCallsSendData = 0;
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
+            var dataSender = new TraceDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
 
             dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
             {
@@ -215,7 +213,7 @@ namespace NewRelic.Telemetry.Tests
                 return;
             });
 
-            dataSender.WithCaptureSendDataAsyncDelegate((spanBatch, retryNum) =>
+            dataSender.WithCaptureSendDataAsyncDelegate((NewRelicSpanBatch, retryNum) =>
             {
                 actualCountCallsSendData++;
             });
@@ -225,8 +223,13 @@ namespace NewRelic.Telemetry.Tests
                 return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.RequestTimeout));
             });
 
-            var spanBatch = SpanBatch.Create()
-                .WithSpan(Span.Create("Test Span"));
+
+            var spans = new List<NewRelicSpan>()
+            {
+                new NewRelicSpan(null,"Test Span",12345,null,null)
+            };
+
+            var spanBatch = new NewRelicSpanBatch(spans, null);
 
             var result = await dataSender.SendDataAsync(spanBatch);
 
@@ -249,7 +252,7 @@ namespace NewRelic.Telemetry.Tests
 
             var actualBackoffSequenceFromTestRun = new List<uint>();
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
+            var dataSender = new TraceDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
             dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
             {
                 actualBackoffSequenceFromTestRun.Add(milliSecondsDelay);
@@ -258,7 +261,7 @@ namespace NewRelic.Telemetry.Tests
             });
 
             var actualCountCallsSendData = 0;
-            dataSender.WithCaptureSendDataAsyncDelegate((spanBatch, retryNum) =>
+            dataSender.WithCaptureSendDataAsyncDelegate((NewRelicSpanBatch, retryNum) =>
             {
                 actualCountCallsSendData++;
             });
@@ -275,9 +278,12 @@ namespace NewRelic.Telemetry.Tests
                 return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK));
             });
 
-            var spanBatch = SpanBatch.Create()
-               .WithSpan(Span.Create("Test Span"))
-               ;
+            var spans = new List<NewRelicSpan>()
+            {
+                new NewRelicSpan(null,"Test Span",12345,null,null)
+            };
+
+            var spanBatch = new NewRelicSpanBatch(spans, null);
 
             var result = await dataSender.SendDataAsync(spanBatch);
 
@@ -305,7 +311,7 @@ namespace NewRelic.Telemetry.Tests
 
             var actualBackoffSequenceFromTestRun = new List<uint>();
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
+            var dataSender = new TraceDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
             dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
             {
                 actualBackoffSequenceFromTestRun.Add(milliSecondsDelay);
@@ -314,7 +320,7 @@ namespace NewRelic.Telemetry.Tests
             });
 
             var actualCountCallsSendData = 0;
-            dataSender.WithCaptureSendDataAsyncDelegate((spanBatch, retryNum) =>
+            dataSender.WithCaptureSendDataAsyncDelegate((NewRelicSpanBatch, retryNum) =>
             {
                 actualCountCallsSendData++;
             });
@@ -327,8 +333,12 @@ namespace NewRelic.Telemetry.Tests
                 return Task.FromResult(httpResponse);
             });
 
-            var spanBatch = SpanBatch.Create()
-               .WithSpan(Span.Create("Test Span"));
+            var spans = new List<NewRelicSpan>()
+            {
+                new NewRelicSpan(null,"Test Span",12345,null,null)
+            };
+
+            var spanBatch = new NewRelicSpanBatch(spans, null);
 
             var result = await dataSender.SendDataAsync(spanBatch);
 
@@ -349,7 +359,7 @@ namespace NewRelic.Telemetry.Tests
 
             var actualBackoffSequenceFromTestRun = new List<uint>();
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
+            var dataSender = new TraceDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
 
             dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
             {
@@ -359,7 +369,7 @@ namespace NewRelic.Telemetry.Tests
             });
 
             var actualCountCallsSendData = 0;
-            dataSender.WithCaptureSendDataAsyncDelegate((spanBatch, retryNum) =>
+            dataSender.WithCaptureSendDataAsyncDelegate((NewRelicSpanBatch, retryNum) =>
             {
                 actualCountCallsSendData++;
             });
@@ -377,11 +387,15 @@ namespace NewRelic.Telemetry.Tests
                 return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK));
             });
 
-            var spanBatch = SpanBatch.Create()
-               .WithSpan(Span.Create("Test Span"))
-               ;
+            var spans = new List<NewRelicSpan>()
+            {
+                new NewRelicSpan(null,"Test Span",12345,null,null)
+            };
+
+            var spanBatch = new NewRelicSpanBatch(spans, null);
 
             var result = await dataSender.SendDataAsync(spanBatch);
+
 
             Assert.AreEqual(NewRelicResponseStatus.Success, result.ResponseStatus);
             Assert.AreEqual(expectedNumSendBatchAsyncCall, actualCountCallsSendData, "Unexpected Number of SendDataAsync calls");
@@ -398,7 +412,7 @@ namespace NewRelic.Telemetry.Tests
 
             uint actualDelayFromTestRun = 0;
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456").WithMaxRetryAttempts(1));
+            var dataSender = new TraceDataSender(new TelemetryConfiguration().WithApiKey("123456").WithMaxRetryAttempts(1), null);
 
             dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
             {
@@ -416,11 +430,15 @@ namespace NewRelic.Telemetry.Tests
                 return Task.FromResult(httpResponse);
             });
 
-            var spanBatch = SpanBatch.Create()
-               .WithSpan(Span.Create("Test Span"))
-               ;
+            var spans = new List<NewRelicSpan>()
+            {
+                new NewRelicSpan(null,"Test Span",12345,null,null)
+            };
 
-            var response = await dataSender.SendDataAsync(spanBatch);
+            var spanBatch = new NewRelicSpanBatch(spans, null);
+
+            var result = await dataSender.SendDataAsync(spanBatch);
+
 
             Assert.IsTrue(actualDelayFromTestRun >= delayMs - errorMargin && actualDelayFromTestRun <= delayMs + errorMargin,$"Expected delay: {delayMs}, margin: +/-{errorMargin}, actual delay: {actualDelayFromTestRun}");
         }
@@ -430,7 +448,7 @@ namespace NewRelic.Telemetry.Tests
         {
             const int expectedNumSendBatchAsyncCall = 1;
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
+            var dataSender = new TraceDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
 
             dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
             {
@@ -439,7 +457,7 @@ namespace NewRelic.Telemetry.Tests
             });
 
             var actualCountCallsSendData = 0;
-            dataSender.WithCaptureSendDataAsyncDelegate((spanBatch, retryNum) =>
+            dataSender.WithCaptureSendDataAsyncDelegate((NewRelicSpanBatch, retryNum) =>
             {
                 actualCountCallsSendData++;
             });
@@ -449,9 +467,12 @@ namespace NewRelic.Telemetry.Tests
                 throw new Exception("Server Error", new Exception("Inner exception message"));
             });
 
-            var spanBatch = SpanBatch.Create()
-               .WithSpan(Span.Create("Test Span"))
-               ;
+            var spans = new List<NewRelicSpan>()
+            {
+                new NewRelicSpan(null,"Test Span",12345,null,null)
+            };
+
+            var spanBatch = new NewRelicSpanBatch(spans, null);
 
             var result = await dataSender.SendDataAsync(spanBatch);
 
@@ -468,7 +489,7 @@ namespace NewRelic.Telemetry.Tests
             const int expectedNumSendBatchAsyncCall = 1;
             const int expectedNumHttpHandlerCall = 0;
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
+            var dataSender = new TraceDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
 
             dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
             {
@@ -491,9 +512,12 @@ namespace NewRelic.Telemetry.Tests
             });
 
 
-            var spanBatch = SpanBatch.Create()
-               .WithSpan(Span.Create("Test Span"))
-               ;
+            var spans = new List<NewRelicSpan>()
+            {
+                new NewRelicSpan(null,"Test Span",12345,null,null)
+            };
+
+            var spanBatch = new NewRelicSpanBatch(spans, null);
 
             var result = await dataSender.SendDataAsync(spanBatch);
 
@@ -514,7 +538,7 @@ namespace NewRelic.Telemetry.Tests
         [TestCase("productName", "1.0.0")]
         public void AddVersionInfo(string productName, string productVersion)
         {
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
+            var dataSender = new TraceDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
 
             var expectedUserAgentValue = dataSender.UserAgent;
 

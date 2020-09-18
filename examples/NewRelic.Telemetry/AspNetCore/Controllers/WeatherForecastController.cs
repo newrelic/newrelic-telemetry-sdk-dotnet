@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using NewRelic.Telemetry.Spans;
+using NewRelic.Telemetry.Tracing;
 using NewRelic.Telemetry.Transport;
+using NewRelic.Telemetry.Extensions;
+using NewRelic.Telemetry;
 
 namespace AspNetCoreWebApiApplication.Controllers
 {
@@ -22,13 +24,13 @@ namespace AspNetCoreWebApiApplication.Controllers
 
         private readonly ILogger<WeatherForecastController> _logger;
 
-        private readonly SpanDataSender _spanDataSender;
+        private readonly TraceDataSender _spanDataSender;
 
         /// <summary>
         /// Use dependency injection in the constructor to pass in the Logger Factory and
         /// the Configuration Provider.
         /// </summary>
-		public WeatherForecastController(ILoggerFactory loggerFactory, SpanDataSender spanDataSender)
+		public WeatherForecastController(ILoggerFactory loggerFactory, TraceDataSender spanDataSender)
         {
             _spanDataSender = spanDataSender;
             _logger = loggerFactory.CreateLogger<WeatherForecastController>();
@@ -37,16 +39,10 @@ namespace AspNetCoreWebApiApplication.Controllers
         [HttpGet]
         public async Task<IEnumerable<WeatherForecast>> Get()
         {
-
             // Each span must have a unique identifier.  In this example, we are using a Guid.
             var spanId = Guid.NewGuid().ToString();
-
-            var span = Span.Create(spanId);
-
-            // We can add additional attribution to a span using helper functions.
-            // In this case a timestamp and the controller action name are recorded
-            span.WithTimestamp(DateTimeOffset.UtcNow)
-                .WithName("WeatherForecase/Get");
+            var spanTimeStamp = DateTime.UtcNow;
+            var spanAttribs = new Dictionary<string, object>();
 
             // Wrapping the unit of work inside a try/catch is helpful to ensure that
             // spans are always reported to the endpoint, even if they have exceptions.
@@ -68,9 +64,8 @@ namespace AspNetCoreWebApiApplication.Controllers
             // If an unhandled exception occurs, it can be denoted on the span.
             catch (Exception ex)
             {
-                // In the event of an exception
-                span.HasError(true);
-                span.WithAttribute("Exception", ex);
+                spanAttribs[NewRelicConsts.Tracing.AttribName_HasError] = true;
+                spanAttribs[NewRelicConsts.Tracing.AttribName_ErrorMsg] = ex;
 
                 //This ensures that tracking of spans doesn't interfere with the normal execution flow
                 throw;
@@ -78,16 +73,19 @@ namespace AspNetCoreWebApiApplication.Controllers
             // In all cases, the span is sent up to the New Relic endpoint.
             finally
             {
-                // Create a new SpanBatch and associate the span to it.
-                var spanBatch = SpanBatch.Create()
-                    .WithSpan(span);
+                spanAttribs[NewRelicConsts.Tracing.AttribName_Name] = "WeatherForecast/Get";
+                spanAttribs[NewRelicConsts.Tracing.AttribName_DurationMs] = DateTime.UtcNow.Subtract(spanTimeStamp).TotalMilliseconds;
 
-                // Since this SpanBatch represents a single trace, identify
-                // the TraceId for the entire batch.
-                spanBatch.WithTraceId(Guid.NewGuid().ToString());
+
+                var span = new NewRelicSpan(
+                    traceId: Guid.NewGuid().ToString(),
+                    spanId: spanId,
+                    timestamp: spanTimeStamp.ToUnixTimeMilliseconds(),
+                    parentSpanId: null,
+                    attributes: spanAttribs);
 
                 // Send it to the New Relic endpoint.
-                var newRelicResult = await _spanDataSender.SendDataAsync(spanBatch);
+                var newRelicResult = await _spanDataSender.SendDataAsync(new[] { span });
 
                 if (newRelicResult.ResponseStatus == NewRelicResponseStatus.Failure)
                 {

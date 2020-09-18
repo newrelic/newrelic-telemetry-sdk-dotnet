@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NewRelic.Telemetry.Metrics;
+using NewRelic.Telemetry.Tracing;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -9,9 +12,12 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Utf8Json;
+using Utf8Json.Resolvers;
 
 namespace NewRelic.Telemetry.Transport
 {
+
     public abstract class DataSender<TData> where TData : ITelemetryDataType<TData>
     {
         private readonly string _telemetrySdkVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
@@ -31,7 +37,7 @@ namespace NewRelic.Telemetry.Transport
 
         protected abstract string EndpointUrl { get; }
 
-        //protected abstract TData[] Split(TData dataToSplit);
+        protected abstract TData[] Split(TData dataToSplit);
 
         protected abstract bool ContainsNoData(TData dataToCheck);
 
@@ -83,9 +89,9 @@ namespace NewRelic.Telemetry.Transport
 
         private async Task<Response> RetryWithSplit(TData data)
         {
-            var newBatches = data.Split();
+            var newBatches = Split(data);
 
-            if (newBatches.Count == 0)
+            if (newBatches.Length == 0)
             {
                 _logger.Error($@"Cannot send data because it exceeds the size limit and cannot be split.");
                 return Response.Failure(HttpStatusCode.RequestEntityTooLarge,"Cannot send data because it exceeds size limit and cannot be further split.");
@@ -93,9 +99,9 @@ namespace NewRelic.Telemetry.Transport
 
             _logger.Warning("Splitting the data and retrying.");
 
-            var taskList = new Task<Response>[newBatches.Count];
+            var taskList = new Task<Response>[newBatches.Length];
 
-            for (var i = 0; i < newBatches.Count; i++)
+            for (var i = 0; i < newBatches.Length; i++)
             {
                 taskList[i] = SendDataAsync(newBatches[i]);
             }
@@ -260,20 +266,14 @@ namespace NewRelic.Telemetry.Transport
                 return Response.Failure("API Key was not available");
             }
 
-            BeforeDataSend(dataToSend);
+            if (_config.InstrumentationProvider != null)
+            {
+                dataToSend.SetInstrumentationProvider(_config.InstrumentationProvider);
+            }
 
             return await SendDataAsync(dataToSend, 0);
         }
-
-        /// <summary>
-        /// Provides a place to do any pre-work on the data to send
-        /// For example, allows updating of the instrumentation provider for spans
-        /// </summary>
-        /// <param name="dataToSend"></param>
-        protected virtual void BeforeDataSend(TData dataToSend)
-        {
-        }
-
+       
         /// <summary>
         /// Method used to add product information including product name and version to the User-Agent HTTP header.
         /// </summary>

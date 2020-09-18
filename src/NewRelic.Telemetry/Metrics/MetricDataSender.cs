@@ -1,62 +1,55 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using NewRelic.Telemetry.Metrics;
 using NewRelic.Telemetry.Transport;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Utf8Json;
+using Utf8Json.Resolvers;
 
 namespace NewRelic.Telemetry.Metrics
 {
-    /// <summary>
-    /// The MetricDataSender is used to send Metric data to New Relic.  It manages the communication 
-    /// with the New Relic end points and reports outcomes.
-    /// </summary>
-    public class MetricDataSender : DataSender<MetricBatch>
+    public class MetricDataSender : DataSender<NewRelicMetricBatch>
     {
         protected override string EndpointUrl => _config.MetricUrl;
 
-        /// <summary>
-        /// Creates new MetricDataSender setting the options using an instance of TelemetryConfiguration
-        /// to specify settings.
-        /// </summary>
-        /// <param name="configOptions"></param>
-        public MetricDataSender(TelemetryConfiguration configOptions) : base(configOptions)
+        protected override bool ContainsNoData(NewRelicMetricBatch dataToCheck)
+        {
+            return !dataToCheck.Metrics.Any();
+        }
+
+        private static readonly NewRelicMetricBatch[] _emptyMetricBatchArray = new NewRelicMetricBatch[0];
+
+        protected override NewRelicMetricBatch[] Split(NewRelicMetricBatch metricBatch)
+        {
+            var countMetrics = metricBatch.Metrics.Count();
+            if (countMetrics <= 1)
+            {
+                return _emptyMetricBatchArray;
+            }
+
+            var targetMetricCount = countMetrics / 2;
+            var batch0Metrics = metricBatch.Metrics.Take(targetMetricCount).ToList();
+            var batch1Metrics = metricBatch.Metrics.Skip(targetMetricCount).ToList();
+
+            var result = new[]
+            {
+                new NewRelicMetricBatch(batch0Metrics, metricBatch.CommonProperties),
+                new NewRelicMetricBatch(batch1Metrics, metricBatch.CommonProperties)
+            };
+
+            return result;
+        }
+
+        public MetricDataSender(TelemetryConfiguration config, ILoggerFactory? loggerFactory) : base(config, loggerFactory)
         {
         }
 
-        /// <summary>
-        /// Creates new MetricDataSender setting the options using an instance of TelemetryConfiguration
-        /// to specify settings and a Logger Factory that will be used to log information about the
-        /// interactions with New Relic endpoints.
-        /// </summary>
-        /// <param name="configOptions"></param>
-        /// <param name="loggerFactory"></param>
-        public MetricDataSender(TelemetryConfiguration configOptions, ILoggerFactory loggerFactory) : base(configOptions, loggerFactory)
+        public async Task<Response> SendDataAsync(IEnumerable<NewRelicMetric> metrics)
         {
-        }
+            var batch = new NewRelicMetricBatch(metrics, null);
 
-        /// <summary>
-        /// Creates new MetricDataSender obtaining configuration settings from a Configuration Provider 
-        /// that is compatible with <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration.</see>
-        /// </summary>
-        /// <param name="configProvider"></param>
-        public MetricDataSender(IConfiguration configProvider) : base(configProvider)
-        {
-        }
-
-        /// <summary>
-        /// Creates new MetricDataSender obtaining configuration settings from a Configuration Provider 
-        /// that is compatible with <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration.</see>
-        /// It also accepts a <see cref="Microsoft.Extensions.Logging.ILoggerFactory">logger factory</see> 
-        /// that will be used to log information about the interactions with New Relic endpoints.
-        /// </summary>
-        /// <param name="configProvider"></param>
-        /// <param name="loggerFactory"></param>
-        public MetricDataSender(IConfiguration configProvider, ILoggerFactory loggerFactory) : base(configProvider, loggerFactory)
-        {
-        }
-
-        protected override bool ContainsNoData(MetricBatch dataToCheck)
-        {
-            return (dataToCheck?.Metrics?.Count).GetValueOrDefault(0) == 0;
+            return await SendDataAsync(batch);
         }
     }
 }

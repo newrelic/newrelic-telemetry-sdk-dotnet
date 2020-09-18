@@ -13,15 +13,15 @@ namespace NewRelic.Telemetry.Tests
         private long timestampL = DateTimeExtensions.ToUnixTimeMilliseconds(timestamp);
         private long interval = 250L;
         private long countValue = 67;
-        private MetricSummaryValue summaryValue = new MetricSummaryValue(10, 64, 3, 15);
+        private NewRelicMetricSummaryValue summaryValue = new NewRelicMetricSummaryValue(10, 64, 3, 15);
         private Dictionary<string, object> CustomAttributes = new Dictionary<string, object>() { { "attr1Key", "attr1Value" } };
 
         [Test]
         public void ToJson_EmptyMetricBatch() 
         {
             // Arrange
-            var metricBatch = MetricBatch.Create().WithTimestamp(timestamp);
-            
+            var metricBatch = new NewRelicMetricBatch(new List<NewRelicMetric>(), new NewRelicMetricBatchCommonProperties(timestampL, null, null));
+
             // Act
             var jsonString = metricBatch.ToJson();
 
@@ -35,16 +35,27 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         public void ToJson_NonEmptyMetricBatch()
         {
-
             // Arrange
-            var metricBatch = MetricBatch.Create()
-                .WithIntervalMs(interval)
-                .WithTimestamp(timestamp)
-                .WithMetric(CountMetric.Create("metric1", countValue)
-                    .WithIntervalMs(interval)
-                    .WithAttributes(CustomAttributes))
-                .WithMetric(SummaryMetric.Create("metric2", summaryValue)
-                    .WithIntervalMs(interval));
+            var metricBatch = new NewRelicMetricBatch(
+                commonProperties: new NewRelicMetricBatchCommonProperties(
+                    timestamp: timestampL,
+                    intervalMs: interval,
+                    attributes: null),
+                metrics: new []
+                {
+                    NewRelicMetric.CreateCountMetric(
+                        name: "metric1",
+                        timestamp: null,
+                        attributes: CustomAttributes,
+                        value: countValue,
+                        intervalMs: interval),
+                    NewRelicMetric.CreateSummaryMetric(
+                        name: "metric2",
+                        timestamp: null,
+                        attributes: null,
+                        interval: interval,
+                        summaryValue: summaryValue)
+                });
 
             // Act
             var jsonString = metricBatch.ToJson();

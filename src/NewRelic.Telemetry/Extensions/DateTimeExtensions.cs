@@ -2,12 +2,11 @@
 
 namespace NewRelic.Telemetry.Extensions
 {
-
     /// <summary>
     /// Provides DateTime conversions to Unix Timestamps.
     /// This supports backwards compatibility with .NET v4.5
     /// </summary>
-    internal static class DateTimeExtensions
+    public static class DateTimeExtensions
     {
         private const long TicksPerMillisecond = 10000;
         private const long TicksPerSecond = TicksPerMillisecond * 1000;
@@ -24,7 +23,12 @@ namespace NewRelic.Telemetry.Extensions
 
         private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        internal static long ToUnixTimeMilliseconds(this DateTimeOffset dateTime)
+        public static long ToUnixTimeMilliseconds(this DateTimeOffset dateTime)
+        {
+            return (dateTime.ToUniversalTime().Ticks / TicksPerMillisecond) - UnixEpochMilliseconds;
+        }
+
+        public static long ToUnixTimeMilliseconds(this DateTime dateTime)
         {
             return (dateTime.ToUniversalTime().Ticks / TicksPerMillisecond) - UnixEpochMilliseconds;
         }

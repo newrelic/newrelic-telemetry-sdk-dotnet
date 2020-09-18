@@ -3,6 +3,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using NewRelic.Telemetry.Metrics;
 using NewRelic.Telemetry.Transport;
+using NewRelic.Telemetry.Tracing;
+using System.Collections.Generic;
 
 namespace NewRelic.Telemetry.Tests
 {
@@ -11,9 +13,9 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         public void SendAnEmptyMetricBatch()
         {
-            var spanBatch = MetricBatch.Create();
+            var spanBatch = new NewRelicMetricBatch(new NewRelicMetric[0], null);
 
-            var dataSender = new MetricDataSender(new TelemetryConfiguration().WithApiKey("123456"));
+            var dataSender = new MetricDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
 
             dataSender.WithHttpHandlerImpl((serializedJson) =>
             {
@@ -29,11 +31,18 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         public void SendANonEmptyMetricBatch()
         {
+            var metricBatch = new NewRelicMetricBatch(
+                metrics: new []
+                    {
+                        NewRelicMetric.CreateGaugeMetric(
+                            name: "TestMetric",
+                            timestamp: null,
+                            attributes: null,
+                            value: 0)
+                    },
+                commonProperties: null);
 
-            var metricBatch = MetricBatch.Create()
-                .WithMetric(GaugeMetric.Create("TestMetric", 0));
-
-            var dataSender = new MetricDataSender(new TelemetryConfiguration().WithApiKey("123456"));
+            var dataSender = new MetricDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
 
             dataSender.WithHttpHandlerImpl((serializedJson) =>
             {

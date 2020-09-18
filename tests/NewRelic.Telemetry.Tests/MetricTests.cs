@@ -12,19 +12,22 @@ namespace NewRelic.Telemetry.Tests
         public void BuildCountMetric()
         {
             var timestamp = DateTime.UtcNow;
+            var timestampL = DateTimeExtensions.ToUnixTimeMilliseconds(timestamp);
             var interval = 33L;
             var value = 22;
 
-            var attributes = new Dictionary<string, object> 
-            { { "attrKey", "attrValue" } };
+            var metric = NewRelicMetric.CreateCountMetric(
+                name: "metricName",
+                timestamp: timestampL,
+                attributes: new Dictionary<string, object>
+                    {
+                        { "attrKey", "attrValue" },
+                        { "adsfasdf", 12 }
+                    },
+                value: value,
+                intervalMs: interval);
 
-            var metric = CountMetric.Create("metricname",value)
-                .WithTimestamp(timestamp)
-                .WithIntervalMs(interval)
-                .WithAttribute("adsfasdf",12)
-                .WithAttributes(attributes);
-
-            Assert.AreEqual("metricname", metric.Name);
+            Assert.AreEqual("metricName", metric.Name);
             Assert.AreEqual("count", metric.Type);
             Assert.AreEqual(value, metric.Value);
             Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(timestamp), metric.Timestamp);
@@ -36,21 +39,54 @@ namespace NewRelic.Telemetry.Tests
         public void BuildGaugeMetric()
         {
             var timestamp = DateTime.UtcNow;
-            var interval = 33L;
+            var timestampL = DateTimeExtensions.ToUnixTimeMilliseconds(timestamp);
             var value = 87;
 
-            var attributes = new Dictionary<string, object>
-            { { "attrKey", "attrValue" } };
+            var metric = NewRelicMetric.CreateGaugeMetric(
+                name: "metricName",
+                timestamp: timestampL,
+                attributes: new Dictionary<string, object>
+                    {
+                        { "attrKey", "attrValue" },
+                        { "adsfasdf", 12 }
+                    },
+                value: value);
 
-            var metric = GaugeMetric.Create("metricname",value)
-                .WithTimestamp(timestamp)
-                .WithIntervalMs(interval)
-                .WithAttribute("adsfasdf", 12)
-                .WithAttributes(attributes);
-
-            Assert.AreEqual("metricname", metric.Name);
+            Assert.AreEqual("metricName", metric.Name);
             Assert.AreEqual("gauge", metric.Type);
-            Assert.AreEqual(value, ((GaugeMetric)metric).Value);
+            Assert.AreEqual(value, metric.Value);
+            Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(timestamp), metric.Timestamp);
+            Assert.AreEqual(12, metric.Attributes?["adsfasdf"]);
+            Assert.AreEqual("attrValue", metric.Attributes?["attrKey"]);
+        }
+
+        [Test]
+        public void BuildSummaryMetricWithClass()
+        {
+            var timestamp = DateTime.UtcNow;
+            var timestampL = DateTimeExtensions.ToUnixTimeMilliseconds(timestamp);
+            var interval = 33L;
+            var value = new NewRelicMetricSummaryValue(
+                    count: 10d,
+                    sum: 64,
+                    min: 3,
+                    max: 15);
+
+            var metric = NewRelicMetric.CreateSummaryMetric(
+                name: "metricName",
+                timestamp: timestampL,
+                attributes: new Dictionary<string, object>
+                    {
+                        { "attrKey", "attrValue" },
+                        { "adsfasdf", 12 }
+                    },
+                interval: interval,
+                summaryValue: value
+               );
+
+            Assert.AreEqual("metricName", metric.Name);
+            Assert.AreEqual("summary", metric.Type);
+            Assert.AreEqual(value, metric.SummaryValue);
             Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(timestamp), metric.Timestamp);
             Assert.AreEqual(interval, metric.IntervalMs);
             Assert.AreEqual(12, metric.Attributes?["adsfasdf"]);
@@ -58,24 +94,32 @@ namespace NewRelic.Telemetry.Tests
         }
 
         [Test]
-        public void BuildSummaryMetric()
+        public void BuildSummaryMetricWithValues()
         {
             var timestamp = DateTime.UtcNow;
+            var timestampL = DateTimeExtensions.ToUnixTimeMilliseconds(timestamp);
             var interval = 33L;
-            var value = new MetricSummaryValue(10d, 64, 3, 15);
+            var value = new NewRelicMetricSummaryValue(10d, 64, 3, 15);
 
-            var attributes = new Dictionary<string, object>
-            { { "attrKey", "attrValue" } };
 
-            var metric = SummaryMetric.Create("metricname", value)
-                .WithTimestamp(timestamp)
-                .WithIntervalMs(interval)
-                .WithAttribute("adsfasdf", 12)
-                .WithAttributes(attributes);
+            var metric = NewRelicMetric.CreateSummaryMetric(
+                name: "metricName",
+                timestamp: timestampL,
+                attributes: new Dictionary<string, object>
+                    {
+                        { "attrKey", "attrValue" },
+                        { "adsfasdf", 12 }
+                    },
+                interval: interval,
+                count: value.Count,
+                min: value.Min,
+                max: value.Max,
+                sum: value.Sum
+               );
 
-            Assert.AreEqual("metricname", metric.Name);
+            Assert.AreEqual("metricName", metric.Name);
             Assert.AreEqual("summary", metric.Type);
-            Assert.AreEqual(value, metric.Value);
+            Assert.AreEqual(value, metric.SummaryValue);
             Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(timestamp), metric.Timestamp);
             Assert.AreEqual(interval, metric.IntervalMs);
             Assert.AreEqual(12, metric.Attributes?["adsfasdf"]);
@@ -86,31 +130,33 @@ namespace NewRelic.Telemetry.Tests
         public void BuildSummaryMetricWithNullMinMax()
         {
             var timestamp = DateTime.UtcNow;
+            var timestampL = DateTimeExtensions.ToUnixTimeMilliseconds(timestamp);
             var interval = 33L;
-            var value = new MetricSummaryValue(10d, 64);
+            var value = new NewRelicMetricSummaryValue(
+                    count: 10d,
+                    sum: 64,
+                    min: null,
+                    max: null);
 
-            var attributes = new Dictionary<string, object>
-            { { "attrKey", "attrValue" } };
+            var metric = NewRelicMetric.CreateSummaryMetric(
+                name: "metricName",
+                timestamp: timestampL,
+                attributes: new Dictionary<string, object>
+                    {
+                        { "attrKey", "attrValue" },
+                        { "adsfasdf", 12 }
+                    },
+                interval: interval,
+                summaryValue: value
+               );
 
-            var metric = SummaryMetric.Create("metricname", value)
-                .WithTimestamp(timestamp)
-                .WithIntervalMs(interval)
-                .WithAttribute("adsfasdf", 12)
-                .WithAttributes(attributes);
-
-            Assert.AreEqual("metricname", metric.Name);
+            Assert.AreEqual("metricName", metric.Name);
             Assert.AreEqual("summary", metric.Type);
-            Assert.AreEqual(value, metric.Value);
+            Assert.AreEqual(value, metric.SummaryValue);
             Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(timestamp), metric.Timestamp);
             Assert.AreEqual(interval, metric.IntervalMs);
             Assert.AreEqual(12, metric.Attributes?["adsfasdf"]);
             Assert.AreEqual("attrValue", metric.Attributes?["attrKey"]);
         }
-
-        //[Test]
-        //public void ThrowExceptionIfNullName()
-        //{
-        //    Assert.Throws<ArgumentNullException>(new TestDelegate(() => CountMetric.Create(null)));
-        //}
     }
 }
