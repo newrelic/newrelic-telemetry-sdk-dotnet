@@ -19,9 +19,9 @@ namespace OpenTelemetry.Trace
         /// <param name="builder"><see cref="TracerProviderBuilder"/> builder to use.</param>
         /// <param name="configure">Exporter configuration options.</param>
         /// <returns>The instance of <see cref="TracerProviderBuilder"/> to chain the calls.</returns>
-        public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, Action<TelemetryConfiguration> configure)
+        public static TracerProviderBuilder AddNewRelicExporter(this TracerProviderBuilder builder, Action<TelemetryConfiguration> configure)
         {
-            return UseNewRelic(builder, configure, null);
+            return AddNewRelicExporter(builder, configure, null);
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace OpenTelemetry.Trace
         /// <param name="configure">Exporter configuration options.</param>
         /// <param name="loggerFactory">ILoggerFactory instance for creating an ILogger.</param>
         /// <returns>The instance of <see cref="TracerProviderBuilder"/> to chain the calls.</returns>
-        public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, Action<TelemetryConfiguration> configure, ILoggerFactory loggerFactory)
+        public static TracerProviderBuilder AddNewRelicExporter(this TracerProviderBuilder builder, Action<TelemetryConfiguration> configure, ILoggerFactory loggerFactory)
         {
             if (builder == null)
             {
