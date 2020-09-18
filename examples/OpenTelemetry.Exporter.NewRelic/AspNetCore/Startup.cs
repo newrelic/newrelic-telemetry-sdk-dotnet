@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NewRelic.Telemetry;
 using OpenTelemetry.Trace;
 
 namespace SampleAspNetCoreApp
@@ -28,9 +29,13 @@ namespace SampleAspNetCoreApp
                 // container so that it may be injected into the OpenTelemetry Tracer.
                 var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
+                var newRelicConfig = new TelemetryConfiguration();
+                newRelicConfig.WithApiKey(this.Configuration.GetValue<string>("NewRelic:ApiKey"));
+                newRelicConfig.WithServiceName(this.Configuration.GetValue<string>("NewRelic:ServiceName"));
+
                 // Adds the New Relic Exporter loading settings from the appsettings.json
                 tracerBuilder
-                    .UseNewRelic(Configuration, loggerFactory)
+                    .UseNewRelic(newRelicConfig, loggerFactory)
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation();
             });
