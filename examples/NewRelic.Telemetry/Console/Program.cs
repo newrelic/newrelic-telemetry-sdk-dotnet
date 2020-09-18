@@ -80,13 +80,13 @@ namespace BasicConsoleApplication
                     // In the event of an exception, mark the span 
                     // as having an error and record a custom attribute 
                     // with the details about the exception.
-                    spanAttribs[NewRelicConsts.Tracing.AttribName_HasError] = true;
-                    spanAttribs[NewRelicConsts.Tracing.AttribName_HasError] = ex;
+                    spanAttribs[NewRelicConsts.Tracing.AttribNameHasError] = true;
+                    spanAttribs[NewRelicConsts.Tracing.AttribNameHasError] = ex;
                 }
                 finally
                 {
-                    spanAttribs[NewRelicConsts.Tracing.AttribName_Name] =  $"{traceId} - {spanIdx}";
-                    spanAttribs[NewRelicConsts.Tracing.AttribName_DurationMs] = DateTime.UtcNow.Subtract(spanStartTime).TotalMilliseconds;
+                    spanAttribs[NewRelicConsts.Tracing.AttribNameName] =  $"{traceId} - {spanIdx}";
+                    spanAttribs[NewRelicConsts.Tracing.AttribNameDurationMs] = DateTime.UtcNow.Subtract(spanStartTime).TotalMilliseconds;
 
                     // Create a new Span assigning it a random guid as the spanId
                     var span = new NewRelicSpan(
@@ -139,13 +139,13 @@ namespace BasicConsoleApplication
                         // In the event of an exception, mark the span 
                         // as having an error and record a custom attribute 
                         // with the details about the exception.
-                        spanAttribs[NewRelicConsts.Tracing.AttribName_HasError] = true;
-                        spanAttribs[NewRelicConsts.Tracing.AttribName_HasError] = ex;
+                        spanAttribs[NewRelicConsts.Tracing.AttribNameHasError] = true;
+                        spanAttribs[NewRelicConsts.Tracing.AttribNameHasError] = ex;
                     }
                     finally
                     {
-                        spanAttribs[NewRelicConsts.Tracing.AttribName_Name] = $"{traceId} - {spanIdx}";
-                        spanAttribs[NewRelicConsts.Tracing.AttribName_DurationMs] = DateTime.UtcNow.Subtract(spanStartTime).TotalMilliseconds;
+                        spanAttribs[NewRelicConsts.Tracing.AttribNameName] = $"{traceId} - {spanIdx}";
+                        spanAttribs[NewRelicConsts.Tracing.AttribNameDurationMs] = DateTime.UtcNow.Subtract(spanStartTime).TotalMilliseconds;
 
                         // Create a new Span assigning it a random guid as the spanId
                         var span = new NewRelicSpan(

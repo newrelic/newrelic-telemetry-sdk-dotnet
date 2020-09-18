@@ -1,12 +1,15 @@
-﻿using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
-using NewRelic.Telemetry.Tracing;
-using NewRelic.Telemetry.Transport;
-using NewRelic.Telemetry.Extensions;
+﻿// Copyright 2020 New Relic, Inc. All rights reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using NewRelic.Telemetry.Extensions;
+using NewRelic.Telemetry.Tracing;
+using NewRelic.Telemetry.Transport;
+using NUnit.Framework;
 
 namespace NewRelic.Telemetry.Tests
 {
@@ -15,12 +18,10 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         public void SendAnEmptySpanBatch()
         {
-
             var traceId = "123";
             var spanBatch = new NewRelicSpanBatch(
                 spans : new NewRelicSpan[0],
                 commonProperties:  new NewRelicSpanBatchCommonProperties(traceId, null));
-
 
             var dataSender = new TraceDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
 
@@ -47,7 +48,7 @@ namespace NewRelic.Telemetry.Tests
                 parentSpanId: null,
                 attributes: new Dictionary<string, object>()
                 {
-                    { NewRelicConsts.Tracing.AttribName_Name, "TestSpan" }
+                    { NewRelicConsts.Tracing.AttribNameName, "TestSpan" }
                 });
 
             var spanBatch = new NewRelicSpanBatch(
@@ -80,16 +81,17 @@ namespace NewRelic.Telemetry.Tests
                             parentSpanId: null,
                             attributes: new Dictionary<string, object>()
                             {
-                                { NewRelicConsts.Tracing.AttribName_Name, "TestSpan" }
+                                { NewRelicConsts.Tracing.AttribNameName, "TestSpan" }
                             });
 
             var spanBatch = new NewRelicSpanBatch(
                     spans: new[] { span },
                     commonProperties: new NewRelicSpanBatchCommonProperties(traceId, null));
 
-            var dataSender = new TraceDataSender(new TelemetryConfiguration()
+            var dataSender = new TraceDataSender(
+                new TelemetryConfiguration()
                 .WithApiKey("123456")
-                .WithInstrumentationProviderName(instrumentationProvider),null);
+                .WithInstrumentationProviderName(instrumentationProvider), null);
 
             NewRelicSpanBatch? capturedSpanbatch = null;
 

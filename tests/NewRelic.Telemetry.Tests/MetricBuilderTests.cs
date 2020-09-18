@@ -1,8 +1,11 @@
-using NUnit.Framework;
+// Copyright 2020 New Relic, Inc. All rights reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 using System;
 using System.Collections.Generic;
-using NewRelic.Telemetry.Metrics;
 using NewRelic.Telemetry.Extensions;
+using NewRelic.Telemetry.Metrics;
+using NUnit.Framework;
 
 namespace NewRelic.Telemetry.Tests
 {
@@ -78,11 +81,10 @@ namespace NewRelic.Telemetry.Tests
                 attributes: new Dictionary<string, object>
                     {
                         { "attrKey", "attrValue" },
-                        { "adsfasdf", 12 }
+                        { "adsfasdf", 12 },
                     },
                 interval: interval,
-                summaryValue: value
-               );
+                summaryValue: value);
 
             Assert.AreEqual("metricName", metric.Name);
             Assert.AreEqual("summary", metric.Type);
@@ -108,14 +110,13 @@ namespace NewRelic.Telemetry.Tests
                 attributes: new Dictionary<string, object>
                     {
                         { "attrKey", "attrValue" },
-                        { "adsfasdf", 12 }
+                        { "adsfasdf", 12 },
                     },
                 interval: interval,
                 count: value.Count,
                 min: value.Min,
                 max: value.Max,
-                sum: value.Sum
-               );
+                sum: value.Sum);
 
             Assert.AreEqual("metricName", metric.Name);
             Assert.AreEqual("summary", metric.Type);
@@ -144,11 +145,10 @@ namespace NewRelic.Telemetry.Tests
                 attributes: new Dictionary<string, object>
                     {
                         { "attrKey", "attrValue" },
-                        { "adsfasdf", 12 }
+                        { "adsfasdf", 12 },
                     },
                 interval: interval,
-                summaryValue: value
-               );
+                summaryValue: value);
 
             Assert.AreEqual("metricName", metric.Name);
             Assert.AreEqual("summary", metric.Type);

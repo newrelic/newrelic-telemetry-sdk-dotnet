@@ -1,10 +1,13 @@
-﻿using System;
+﻿// Copyright 2020 New Relic, Inc. All rights reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+using System;
 
 namespace NewRelic.Telemetry.Extensions
 {
     /// <summary>
     /// Provides DateTime conversions to Unix Timestamps.
-    /// This supports backwards compatibility with .NET v4.5
+    /// This supports backwards compatibility with .NET v4.5.
     /// </summary>
     public static class DateTimeExtensions
     {
@@ -32,6 +35,5 @@ namespace NewRelic.Telemetry.Extensions
         {
             return (dateTime.ToUniversalTime().Ticks / TicksPerMillisecond) - UnixEpochMilliseconds;
         }
-
     }
 }

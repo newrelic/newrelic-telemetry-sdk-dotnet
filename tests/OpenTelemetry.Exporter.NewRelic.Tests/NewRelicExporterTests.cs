@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright 2020 New Relic, Inc. All rights reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,9 +19,9 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
     {
         private static readonly ConcurrentDictionary<Guid, string> Responses = new ConcurrentDictionary<Guid, string>();
 
-        private readonly IDisposable? testServer;
-        private readonly string testServerHost;
-        private readonly int testServerPort;
+        private readonly IDisposable? _testServer;
+        private readonly string _testServerHost;
+        private readonly int _testServerPort;
 
         static NewRelicExporterTests()
         {
@@ -37,10 +40,10 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 
         public NewRelicExporterTests()
         {
-            this.testServer = TestHttpServer.RunServer(
+            this._testServer = TestHttpServer.RunServer(
                 ctx => ProcessServerRequest(ctx),
-                out this.testServerHost,
-                out this.testServerPort);
+                out this._testServerHost,
+                out this._testServerPort);
 
             static void ProcessServerRequest(HttpListenerContext context)
             {
@@ -60,7 +63,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 
         public void Dispose()
         {
-            this.testServer?.Dispose();
+            this._testServer?.Dispose();
         }
 
         [Fact]
@@ -82,7 +85,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
                 .AddInMemoryCollection(new Dictionary<string, string> {
                     { "NewRelic:ServiceName", "test-newrelic" },
                     { "NewRelic:ApiKey", "my-apikey" },
-                    { "NewRelic:TraceUrlOverride", $"http://{this.testServerHost}:{this.testServerPort}/trace/v1?requestId={requestId}" },
+                    { "NewRelic:TraceUrlOverride", $"http://{this._testServerHost}:{this._testServerPort}/trace/v1?requestId={requestId}" },
                 })
                 .Build();
 

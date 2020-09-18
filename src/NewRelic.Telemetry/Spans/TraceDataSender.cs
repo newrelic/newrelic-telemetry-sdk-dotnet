@@ -1,12 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
-using NewRelic.Telemetry.Tracing;
-using System.Linq;
-using Utf8Json;
-using Utf8Json.Resolvers;
-using NewRelic.Telemetry.Transport;
-using System.Threading.Tasks;
+﻿// Copyright 2020 New Relic, Inc. All rights reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using NewRelic.Telemetry.Transport;
 
 namespace NewRelic.Telemetry.Tracing
 {
@@ -36,20 +36,21 @@ namespace NewRelic.Telemetry.Tracing
             var result = new[]
             {
                 new NewRelicSpanBatch(batch0Spans, spanBatch.CommonProperties),
-                new NewRelicSpanBatch(batch1Spans, spanBatch.CommonProperties)
+                new NewRelicSpanBatch(batch1Spans, spanBatch.CommonProperties),
             };
 
             return result;
         }
 
-        public TraceDataSender(TelemetryConfiguration config, ILoggerFactory? loggerFactory) : base(config, loggerFactory)
+        public TraceDataSender(TelemetryConfiguration config, ILoggerFactory? loggerFactory)
+            : base(config, loggerFactory)
         {
         }
 
-        public TraceDataSender(IConfiguration config, ILoggerFactory? loggerFactory) : base(config, loggerFactory)
+        public TraceDataSender(IConfiguration config, ILoggerFactory? loggerFactory)
+            : base(config, loggerFactory)
         {
         }
-
 
         public async Task<Response> SendDataAsync(IEnumerable<NewRelicSpan> spans)
         {

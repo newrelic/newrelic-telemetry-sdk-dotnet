@@ -45,8 +45,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{E4E6AA6F
 		build\Common.nonprod.props = build\Common.nonprod.props
 		build\Common.prod.props = build\Common.prod.props
 		build\Common.props = build\Common.props
+		build\Common.ruleset = build\Common.ruleset
 		build\newrelic-icon.png = build\newrelic-icon.png
 		build\NewRelic.snk = build\NewRelic.snk
+		build\stylecop.json = build\stylecop.json
+		build\StyleCop.props = build\StyleCop.props
 		build\Versioning.targets = build\Versioning.targets
 	EndProjectSection
 EndProject

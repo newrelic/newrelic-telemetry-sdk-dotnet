@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// Copyright 2020 New Relic, Inc. All rights reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Utf8Json;
 using Utf8Json.Resolvers;
@@ -14,8 +17,8 @@ namespace NewRelic.Telemetry.Tracing
 
         public NewRelicSpanBatch(IEnumerable<NewRelicSpan> spans, NewRelicSpanBatchCommonProperties? commonProperties)
         {
-            this.CommonProperties = commonProperties;
-            this.Spans = spans;
+            CommonProperties = commonProperties;
+            Spans = spans;
         }
 
         public string ToJson()
@@ -25,18 +28,17 @@ namespace NewRelic.Telemetry.Tracing
 
         public void SetInstrumentationProvider(string instrumentationProvider)
         {
-            if(string.IsNullOrWhiteSpace(instrumentationProvider))
+            if (string.IsNullOrWhiteSpace(instrumentationProvider))
             {
                 return;
             }
 
-            if(CommonProperties == null)
+            if (CommonProperties == null)
             {
-                CommonProperties = new NewRelicSpanBatchCommonProperties();
+                CommonProperties = new NewRelicSpanBatchCommonProperties(null, null);
             }
 
             CommonProperties?.SetInstrumentationProvider(instrumentationProvider);
         }
-
     }
 }

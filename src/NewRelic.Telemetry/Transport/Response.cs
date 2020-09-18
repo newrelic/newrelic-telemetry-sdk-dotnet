@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright 2020 New Relic, Inc. All rights reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+using System;
 using System.Net;
 
 namespace NewRelic.Telemetry.Transport
@@ -20,7 +23,7 @@ namespace NewRelic.Telemetry.Transport
         /// Data was sent to New Relic endpoint and was accepted for processing.
         /// Represents Http Response Codes 2xx
         /// </summary>
-        Success
+        Success,
     }
 
     /// <summary>
@@ -28,8 +31,8 @@ namespace NewRelic.Telemetry.Transport
     /// </summary>
     public class Response
     {
-        internal readonly static Response DidNotSend = new Response(NewRelicResponseStatus.DidNotSend_NoData);
-        internal readonly static Response Success = new Response(NewRelicResponseStatus.Success);
+        internal static readonly Response _didNotSend = new Response(NewRelicResponseStatus.DidNotSend_NoData);
+        internal static readonly Response _success = new Response(NewRelicResponseStatus.Success);
 
         internal static Response Failure(HttpStatusCode? httpStatusCode, string responseMessage)
         {
@@ -53,7 +56,6 @@ namespace NewRelic.Telemetry.Transport
 
             return result;
         }
-
 
         /// <summary>
         /// Summarizes the outcome of the request.  See <see cref="NewRelicResponseStatus"/> for the possible outcomes.

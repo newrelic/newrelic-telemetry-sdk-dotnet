@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// Copyright 2020 New Relic, Inc. All rights reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace NewRelic.Telemetry.Tracing
@@ -12,8 +15,8 @@ namespace NewRelic.Telemetry.Tracing
 
         public NewRelicSpanBatchCommonProperties(string? traceId, Dictionary<string, object>? attributes)
         {
-            this.TraceId = traceId;
-            this.Attributes = attributes;
+            TraceId = traceId;
+            Attributes = attributes;
         }
 
         public void SetInstrumentationProvider(string instrumentationProvider)
@@ -28,7 +31,7 @@ namespace NewRelic.Telemetry.Tracing
                 Attributes = new Dictionary<string, object>();
             }
 
-            Attributes[NewRelicConsts.AttribName_InstrumentationProvider] = instrumentationProvider;
+            Attributes[NewRelicConsts.AttribNameInstrumentationProvider] = instrumentationProvider;
         }
     }
 }

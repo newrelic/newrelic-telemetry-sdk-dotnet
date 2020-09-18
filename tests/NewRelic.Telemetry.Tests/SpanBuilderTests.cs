@@ -1,8 +1,9 @@
-using NUnit.Framework;
-using System;
+// Copyright 2020 New Relic, Inc. All rights reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 using System.Collections.Generic;
 using NewRelic.Telemetry.Tracing;
-using NewRelic.Telemetry.Extensions;
+using NUnit.Framework;
 
 namespace NewRelic.Telemetry.Tests
 {
@@ -20,10 +21,10 @@ namespace NewRelic.Telemetry.Tests
                 {
                     { "attrKey", "attrValue" },
                     { "adsfasdf", 12 },
-                    { NewRelicConsts.Tracing.AttribName_DurationMs, 67 },
-                    { NewRelicConsts.Tracing.AttribName_ServiceName, "serviceName" },
-                    { NewRelicConsts.Tracing.AttribName_HasError, true },
-                    { NewRelicConsts.Tracing.AttribName_Name, "name" }
+                    { NewRelicConsts.Tracing.AttribNameDurationMs, 67 },
+                    { NewRelicConsts.Tracing.AttribNameServiceName, "serviceName" },
+                    { NewRelicConsts.Tracing.AttribNameHasError, true },
+                    { NewRelicConsts.Tracing.AttribNameName, "name" },
                 });
 
             Assert.AreEqual("spanId", span.Id);

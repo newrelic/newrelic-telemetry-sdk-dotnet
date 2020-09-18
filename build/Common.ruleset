@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="New Relic Telemetry SDK for .NET Rules" Description="New Relic Telemetry SDK for .NET ruleset for src and tests directories." ToolsVersion="16.0">
+  <Localization ResourceAssembly="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.dll" ResourceBaseName="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.Localized">
+    <Name Resource="NewRelicTelemetrySDKNETRules_Name" />
+    <Description Resource="NewRelicTelemetrySDKNETRules_Description" />
+  </Localization>
+  <Include Path="extendeddesignguidelinerules.ruleset" Action="Default" />
+  <Include Path="minimumrecommendedrules.ruleset" Action="Default" />
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp" RuleNamespace="Microsoft.CodeAnalysis.CSharp">
+    <Rule Id="CS8019" Action="Error" />
+  </Rules>
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="SA0001" Action="Info" />
+    <Rule Id="SA1000" Action="Error" />
+    <Rule Id="SA1001" Action="Error" />
+    <Rule Id="SA1002" Action="Error" />
+    <Rule Id="SA1003" Action="Error" />
+    <Rule Id="SA1005" Action="Error" />
+    <Rule Id="SA1009" Action="Error" />
+    <Rule Id="SA1011" Action="Error" />
+    <Rule Id="SA1012" Action="Error" />
+    <Rule Id="SA1028" Action="Info" />
+    <Rule Id="SA1101" Action="None" />
+    <Rule Id="SA1116" Action="Error" />
+    <Rule Id="SA1123" Action="Info" />
+    <Rule Id="SA1127" Action="Error" />
+    <Rule Id="SA1128" Action="Error" />
+    <Rule Id="SA1200" Action="None" />
+    <Rule Id="SA1201" Action="None" />
+    <Rule Id="SA1203" Action="Error" />
+    <Rule Id="SA1206" Action="Error" />
+    <Rule Id="SA1208" Action="None" />
+    <Rule Id="SA1210" Action="Error" />
+    <Rule Id="SA1303" Action="Error" />
+    <Rule Id="SA1309" Action="None" />
+    <Rule Id="SA1400" Action="Error" />
+    <Rule Id="SA1401" Action="Hidden" />
+    <Rule Id="SA1407" Action="None" />
+    <Rule Id="SA1505" Action="Error" />
+    <Rule Id="SA1513" Action="Error" />
+    <Rule Id="SA1516" Action="Error" />
+    <Rule Id="SA1600" Action="None" />
+    <Rule Id="SA1611" Action="Info" />
+    <Rule Id="SA1614" Action="Info" />
+    <Rule Id="SA1615" Action="Info" />
+    <Rule Id="SA1616" Action="Info" />
+    <Rule Id="SA1617" Action="Info" />
+    <Rule Id="SA1618" Action="Info" />
+    <Rule Id="SA1623" Action="Info" />
+    <Rule Id="SA1633" Action="Error" />
+    <Rule Id="SA1634" Action="Error" />
+    <Rule Id="SA1635" Action="Error" />
+    <Rule Id="SA1636" Action="Error" />
+    <Rule Id="SA1640" Action="Error" />
+    <Rule Id="SA1641" Action="Error" />
+    <Rule Id="SA1642" Action="Error" />
+    <Rule Id="SX1101" Action="Warning" />
+    <Rule Id="SX1309" Action="Error" />
+    <Rule Id="SX1309S" Action="Error" />
+  </Rules>
+</RuleSet>

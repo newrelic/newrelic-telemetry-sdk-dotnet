@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿// Copyright 2020 New Relic, Inc. All rights reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+using Microsoft.Extensions.Configuration;
 
 namespace NewRelic.Telemetry
 {
@@ -11,7 +14,7 @@ namespace NewRelic.Telemetry
         /// REQUIRED: Your Insights Insert API Key.  This value is required in order to communicate with the
         /// New Relic Endpoint. 
         /// </summary>
-        /// <see cref="https://docs.newrelic.com/docs/insights/insights-data-sources/custom-data/introduction-event-api#register">for more information</see>
+        /// <see cref="https://docs.newrelic.com/docs/insights/insights-data-sources/custom-data/introduction-event-api#register">for more information.</see>
         public string? ApiKey { get; private set; }
 
         /// <summary>
@@ -24,6 +27,7 @@ namespace NewRelic.Telemetry
         /// </summary>
         public string MetricUrl { get; private set; } = "https://metric-api.newrelic.com/metric/v1";
 
+        /// <summary>
         /// Logs messages sent-to and received-by the New Relic endpoints.  This setting
         /// is useful for troubleshooting, but is not recommended in production environments.
         /// </summary>
@@ -74,13 +78,14 @@ namespace NewRelic.Telemetry
         /// A list of the New Relic endpoints where information is sent.  This collection may be used
         /// to filter out communications with New Relic endpoints during analysis.
         /// </summary>
-        public string[] NewRelicEndpoints => new []
+        public string[] NewRelicEndpoints => new[]
         {
             TraceUrl,
-            MetricUrl
+            MetricUrl,
         };
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="TelemetryConfiguration"/> class.
         /// Creates the Configuration object accepting all default settings.
         /// </summary>
         public TelemetryConfiguration()
@@ -88,16 +93,19 @@ namespace NewRelic.Telemetry
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="TelemetryConfiguration"/> class.
         /// Constructs a new configuration object using a configuration provider. Allows for an overall
         /// New Relic Value
         /// by <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration</see>.
         /// </summary>
         /// <param name="configProvider"></param>
-        public TelemetryConfiguration(IConfiguration configProvider) : this(configProvider, null)
+        public TelemetryConfiguration(IConfiguration configProvider)
+            : this(configProvider, null)
         { 
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="TelemetryConfiguration"/> class.
         /// Constructs a new configuration object using a configuration provider. Allows for an overall
         /// New Relic Value and can be overriden with a Product Specific Value.
         /// by <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration</see>.
@@ -108,7 +116,7 @@ namespace NewRelic.Telemetry
             var newRelicConfigSection = configProvider
                 .GetSection("NewRelic");
 
-            if(newRelicConfigSection == null)
+            if (newRelicConfigSection == null)
             {
                 return;
             }
@@ -119,7 +127,7 @@ namespace NewRelic.Telemetry
                 productConfigSection = newRelicConfigSection.GetSection(productSpecificConfig);
             }
 
-            ApiKey = GetValueString("ApiKey", productConfigSection, newRelicConfigSection) ??  ApiKey;
+            ApiKey = GetValueString("ApiKey", productConfigSection, newRelicConfigSection) ?? ApiKey;
             ServiceName = GetValueString("ServiceName", productConfigSection, newRelicConfigSection) ?? ServiceName;
             TraceUrl = GetValueString("TraceUrlOverride", productConfigSection, newRelicConfigSection) ?? TraceUrl;
             MetricUrl = GetValueString("MetricUrlOverride", productConfigSection, newRelicConfigSection) ?? MetricUrl;
@@ -127,35 +135,7 @@ namespace NewRelic.Telemetry
             SendTimeout = GetValueInt("SendTimeoutSeconds", productConfigSection, newRelicConfigSection) ?? SendTimeout;
             MaxRetryAttempts = GetValueInt("MaxRetryAttempts", productConfigSection, newRelicConfigSection) ?? MaxRetryAttempts;
             BackoffMaxSeconds = GetValueInt("BackoffMaxSeconds", productConfigSection, newRelicConfigSection) ?? BackoffMaxSeconds;
-            BackoffDelayFactorSeconds = GetValueInt("BackoffDelayFactorSeconds", productConfigSection, newRelicConfigSection) ??  BackoffDelayFactorSeconds;
-        }
-
-        private string? GetValueString(string key, IConfigurationSection? productConfigSection, IConfigurationSection newRelicConfigSection)
-        {
-            return productConfigSection?[key] ?? newRelicConfigSection[key];
-        }
-
-
-        private bool? GetValueBool(string key, IConfigurationSection? productConfigSection, IConfigurationSection newRelicConfigSection)
-        {
-            string valStr = productConfigSection?[key] ?? newRelicConfigSection[key];
-            if (!string.IsNullOrEmpty(valStr) && bool.TryParse(valStr, out var valBool))
-            {
-                return valBool;
-            }
-
-            return null;
-        }
-
-        private int? GetValueInt(string key, IConfigurationSection? productConfigSection, IConfigurationSection newRelicConfigSection)
-        {
-            string valStr = productConfigSection?[key] ?? newRelicConfigSection[key];
-            if (!string.IsNullOrEmpty(valStr) && int.TryParse(valStr, out var valInt))
-            {
-                return valInt;
-            }
-
-            return null;
+            BackoffDelayFactorSeconds = GetValueInt("BackoffDelayFactorSeconds", productConfigSection, newRelicConfigSection) ?? BackoffDelayFactorSeconds;
         }
 
         /// <summary>
@@ -187,7 +167,7 @@ namespace NewRelic.Telemetry
         /// with the New Relic endpoints.
         /// </summary>
         /// <param name="apiKey"></param>
-        /// <see cref="https://docs.newrelic.com/docs/insights/insights-data-sources/custom-data/introduction-event-api#register">for more information</see>
+        /// <see cref="https://docs.newrelic.com/docs/insights/insights-data-sources/custom-data/introduction-event-api#register">for more information.</see>
         public TelemetryConfiguration WithApiKey(string apiKey)
         {
             ApiKey = apiKey;
@@ -243,7 +223,6 @@ namespace NewRelic.Telemetry
             return this;
         }
 
-
         /// <summary>
         /// Each time the DataSender retries, it backs-off and waits for a longer period of time.
         /// The amount of time grows exponentially with each attempt until it exceeds the <see cref="BackoffMaxSeconds"/>.
@@ -253,6 +232,7 @@ namespace NewRelic.Telemetry
         /// With a BackOffDelayFactorSeconds of 5 and BackoffMaxSeconds of 80. 
         /// Backoffs would be 5s (5^1), 25s (5^2), 80s (2^3=125 -> 80), 80s (2^4 = 625 -> 80), etc. 
         /// </example>
+        /// <param name="delayFactorSeconds"></param>
         public TelemetryConfiguration WithBackoffDelayFactorSeconds(int delayFactorSeconds)
         {
             BackoffDelayFactorSeconds = delayFactorSeconds;
@@ -267,6 +247,33 @@ namespace NewRelic.Telemetry
         {
             ServiceName = serviceName;
             return this;
+        }
+
+        private string? GetValueString(string key, IConfigurationSection? productConfigSection, IConfigurationSection newRelicConfigSection)
+        {
+            return productConfigSection?[key] ?? newRelicConfigSection[key];
+        }
+
+        private bool? GetValueBool(string key, IConfigurationSection? productConfigSection, IConfigurationSection newRelicConfigSection)
+        {
+            string valStr = productConfigSection?[key] ?? newRelicConfigSection[key];
+            if (!string.IsNullOrEmpty(valStr) && bool.TryParse(valStr, out var valBool))
+            {
+                return valBool;
+            }
+
+            return null;
+        }
+
+        private int? GetValueInt(string key, IConfigurationSection? productConfigSection, IConfigurationSection newRelicConfigSection)
+        {
+            string valStr = productConfigSection?[key] ?? newRelicConfigSection[key];
+            if (!string.IsNullOrEmpty(valStr) && int.TryParse(valStr, out var valInt))
+            {
+                return valInt;
+            }
+
+            return null;
         }
     }
 }

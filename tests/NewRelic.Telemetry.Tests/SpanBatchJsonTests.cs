@@ -1,14 +1,17 @@
-﻿using NUnit.Framework;
-using NewRelic.Telemetry.Tracing;
-using System.Linq;
+﻿// Copyright 2020 New Relic, Inc. All rights reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 using System.Collections.Generic;
+using System.Linq;
+using NewRelic.Telemetry.Tracing;
+using NUnit.Framework;
 
 namespace NewRelic.Telemetry.Tests
-{ 
-    class SpanBatchJsonTests
+{
+    public class SpanBatchJsonTests
     {
         [Test]
-        public void ToJson_EmptySpanBatch() 
+        public void ToJson_EmptySpanBatch()
         {
             // Arrange
             var spanBatch = new NewRelicSpanBatch(
@@ -20,7 +23,7 @@ namespace NewRelic.Telemetry.Tests
             // Act
             var jsonString = spanBatch.ToJson();
 
-            //Assert
+            // Assert
             var resultSpanBatch = TestHelpers.DeserializeArrayFirstOrDefault(jsonString);
             var resultCommonProps = TestHelpers.DeserializeObject(resultSpanBatch["common"]);
 
@@ -44,11 +47,11 @@ namespace NewRelic.Telemetry.Tests
                         parentSpanId : "parentId",
                         attributes : new Dictionary<string, object>()
                         {
-                            { NewRelicConsts.Tracing.AttribName_DurationMs, 67 },
-                            { NewRelicConsts.Tracing.AttribName_ServiceName, "serviceName" },
-                            { NewRelicConsts.Tracing.AttribName_Name, "name" },
-                            { NewRelicConsts.Tracing.AttribName_HasError, true }
-                        })
+                            { NewRelicConsts.Tracing.AttribNameDurationMs, 67 },
+                            { NewRelicConsts.Tracing.AttribNameServiceName, "serviceName" },
+                            { NewRelicConsts.Tracing.AttribNameName, "name" },
+                            { NewRelicConsts.Tracing.AttribNameHasError, true },
+                        }),
                 });
 
             // Act
@@ -60,7 +63,7 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForCollectionLength(resultSpanBatches, 1);
 
             var resultSpanBatch = resultSpanBatches.First();
-            
+
             var resultCommonProps = TestHelpers.DeserializeObject(resultSpanBatch["common"]);
 
             TestHelpers.AssertForAttribValue(resultCommonProps, "trace.id", "traceId");
@@ -68,7 +71,7 @@ namespace NewRelic.Telemetry.Tests
             var resultSpans = TestHelpers.DeserializeArray(resultSpanBatch["spans"]);
 
             TestHelpers.AssertForCollectionLength(resultSpans, 1);
-            
+
             var resultSpan = resultSpans.FirstOrDefault();
 
             TestHelpers.AssertForAttribValue(resultSpan, "id", "span1");
@@ -109,10 +112,10 @@ namespace NewRelic.Telemetry.Tests
                         parentSpanId : "parentId1",
                         attributes : new Dictionary<string, object>()
                         {
-                            { NewRelicConsts.Tracing.AttribName_DurationMs, 100 },
-                            { NewRelicConsts.Tracing.AttribName_ServiceName, "serviceName1" },
-                            { NewRelicConsts.Tracing.AttribName_Name, "name1" },
-                            { NewRelicConsts.Tracing.AttribName_HasError, true }
+                            { NewRelicConsts.Tracing.AttribNameDurationMs, 100 },
+                            { NewRelicConsts.Tracing.AttribNameServiceName, "serviceName1" },
+                            { NewRelicConsts.Tracing.AttribNameName, "name1" },
+                            { NewRelicConsts.Tracing.AttribNameHasError, true }
                         }),
                     new NewRelicSpan(
                         spanId: "span2",
@@ -121,16 +124,16 @@ namespace NewRelic.Telemetry.Tests
                         parentSpanId : "parentId2",
                         attributes : new Dictionary<string, object>()
                         {
-                            { NewRelicConsts.Tracing.AttribName_DurationMs, 200 },
-                            { NewRelicConsts.Tracing.AttribName_ServiceName, "serviceName2" },
-                            { NewRelicConsts.Tracing.AttribName_Name, "name2" },
+                            { NewRelicConsts.Tracing.AttribNameDurationMs, 200 },
+                            { NewRelicConsts.Tracing.AttribNameServiceName, "serviceName2" },
+                            { NewRelicConsts.Tracing.AttribNameName, "name2" },
                         }),
                 });
 
             // Act
             var jsonString = spanBatch.ToJson();
 
-            //Assert
+            // Assert
             var resultSpanBatches = TestHelpers.DeserializeArray(jsonString);
 
             TestHelpers.AssertForCollectionLength(resultSpanBatches, 1);
@@ -209,10 +212,10 @@ namespace NewRelic.Telemetry.Tests
                         parentSpanId : "parentId",
                         attributes : new Dictionary<string, object>()
                         {
-                            { NewRelicConsts.Tracing.AttribName_DurationMs, 67 },
-                            { NewRelicConsts.Tracing.AttribName_ServiceName, "serviceName" },
-                            { NewRelicConsts.Tracing.AttribName_Name, "name" },
-                            { NewRelicConsts.Tracing.AttribName_HasError, true }
+                            { NewRelicConsts.Tracing.AttribNameDurationMs, 67 },
+                            { NewRelicConsts.Tracing.AttribNameServiceName, "serviceName" },
+                            { NewRelicConsts.Tracing.AttribNameName, "name" },
+                            { NewRelicConsts.Tracing.AttribNameHasError, true },
                         })
                 });
 

@@ -1,12 +1,15 @@
-﻿using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
-using NewRelic.Telemetry.Tracing;
-using NewRelic.Telemetry.Transport;
+﻿// Copyright 2020 New Relic, Inc. All rights reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using NewRelic.Telemetry.Tracing;
+using NewRelic.Telemetry.Transport;
+using NUnit.Framework;
 
 namespace NewRelic.Telemetry.Tests
 {
@@ -33,7 +36,7 @@ namespace NewRelic.Telemetry.Tests
         ///             Total = 7 Requests/Batches              9 spans
         /// </summary>
         [Test]
-        async public Task RequestTooLarge_SplitSuccess()
+        public async Task RequestTooLarge_SplitSuccess()
         {
             const int expectedCountSpans = 9;
             const int expectedCountCallsSendData = 7;
@@ -75,7 +78,7 @@ namespace NewRelic.Telemetry.Tests
 
             var attribs = new Dictionary<string, object>()
             {
-                {"testAttrib1", "testAttribValue1" }
+                { "testAttrib1", "testAttribValue1" },
             };
 
             var spans = new List<NewRelicSpan>();
@@ -85,7 +88,6 @@ namespace NewRelic.Telemetry.Tests
             }
 
             var spanBatch = new NewRelicSpanBatch(spans, new NewRelicSpanBatchCommonProperties(expectedTraceID, attribs));
-           
 
             // Act
             await dataSender.SendDataAsync(spanBatch);
@@ -93,12 +95,12 @@ namespace NewRelic.Telemetry.Tests
             // Assert
             Assert.AreEqual(expectedCountCallsSendData, actualCountCallsSendData);
 
-            //Test the Spans
+            // Test the Spans
             Assert.AreEqual(expectedCountSuccessfulSpanBatches, successfulSpanBatches.Count, "Unexpected number of calls");
             Assert.AreEqual(expectedCountSpans, successfulSpanBatches.SelectMany(x => x.Spans).Count(), "Unexpected number of successful Spans");
             Assert.AreEqual(expectedCountSpans, successfulSpanBatches.SelectMany(x => x.Spans).Select(x => x.Id).Distinct().Count(), "All Spans should be unique (spanId)");
 
-            //Test the attributes on the NewRelicSpanBatch
+            // Test the attributes on the NewRelicSpanBatch
             Assert.AreEqual(expectedCountDistinctTraceIds, successfulSpanBatches.Select(x => x.CommonProperties?.TraceId).Distinct().Count(), "The traceId on split batches are not the same");
             Assert.AreEqual(expectedTraceID, successfulSpanBatches.FirstOrDefault().CommonProperties?.TraceId, "The traceId on split batches does not match the original traceId");
             Assert.AreEqual(expectedCountSpanBatchAttribSets, successfulSpanBatches.Select(x => x.CommonProperties?.Attributes).Distinct().Count(), "The attributes on all span batches should be the same");
@@ -126,7 +128,7 @@ namespace NewRelic.Telemetry.Tests
         ///             Total = 7 Requests/Batches      4 spans requested, 1 span successful
         /// </summary>
         [Test]
-        async public Task RequestTooLarge_SplitFail()
+        public async Task RequestTooLarge_SplitFail()
         {
             const int expectedCountCallsSendData = 7;
             const int expectedCountSuccessfulSpanBatches = 1;
@@ -146,7 +148,7 @@ namespace NewRelic.Telemetry.Tests
             {
                 actualCountCallsSendData++;
 
-                if(NewRelicSpanBatch.Spans == null)
+                if (NewRelicSpanBatch.Spans == null)
                 {
                     return;
                 }
@@ -171,9 +173,9 @@ namespace NewRelic.Telemetry.Tests
             });
 
             var spans = new List<NewRelicSpan>();
-            spans.Add(new NewRelicSpan(null,$"{traceID_SplitBatch_Prefix}1", 0, null, null));
-            spans.Add(new NewRelicSpan(null,$"{traceID_SplitBatch_Prefix}2", 0, null, null));
-            spans.Add(new NewRelicSpan(null,$"{traceID_SplitBatch_Prefix}3", 0, null, null));
+            spans.Add(new NewRelicSpan(null, $"{traceID_SplitBatch_Prefix}1", 0, null, null));
+            spans.Add(new NewRelicSpan(null, $"{traceID_SplitBatch_Prefix}2", 0, null, null));
+            spans.Add(new NewRelicSpan(null, $"{traceID_SplitBatch_Prefix}3", 0, null, null));
             spans.Add(new NewRelicSpan(null, traceID_Success, 0, null, null));
 
             // Act
@@ -187,9 +189,9 @@ namespace NewRelic.Telemetry.Tests
         }
 
         [Test]
-        async public Task RetryBackoffSequence_RetriesExceeded()
+        public async Task RetryBackoffSequence_RetriesExceeded()
         {
-            var expectedNumSendBatchAsyncCall = 9; //1 first call + 8 calls from retries
+            var expectedNumSendBatchAsyncCall = 9; // 1 first call + 8 calls from retries
             var expectedBackoffSequenceFromTestRun = new List<int>()
             {
                 5000,
@@ -199,7 +201,7 @@ namespace NewRelic.Telemetry.Tests
                 80000,
                 80000,
                 80000,
-                80000
+                80000,
             };
             var actualBackoffSequenceFromTestRun = new List<uint>();
             var actualCountCallsSendData = 0;
@@ -223,10 +225,14 @@ namespace NewRelic.Telemetry.Tests
                 return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.RequestTimeout));
             });
 
-
             var spans = new List<NewRelicSpan>()
             {
-                new NewRelicSpan(null,"Test Span",12345,null,null)
+                new NewRelicSpan(
+                    traceId: null,
+                    spanId: "Test Span",
+                    timestamp: 12345,
+                    parentSpanId: null,
+                    attributes: null),
             };
 
             var spanBatch = new NewRelicSpanBatch(spans, null);
@@ -240,7 +246,7 @@ namespace NewRelic.Telemetry.Tests
         }
 
         [Test]
-        async public Task RetryBackoffSequence_IntermittentTimeoutEventuallySucceeds()
+        public async Task RetryBackoffSequence_IntermittentTimeoutEventuallySucceeds()
         {
             var expectedNumSendBatchAsyncCall = 4; // 1 first call + 3 calls from retries
             var expectedBackoffSequenceFromTestRun = new List<int>()
@@ -280,7 +286,12 @@ namespace NewRelic.Telemetry.Tests
 
             var spans = new List<NewRelicSpan>()
             {
-                new NewRelicSpan(null,"Test Span",12345,null,null)
+                new NewRelicSpan(
+                    traceId: null,
+                    spanId: "Test Span",
+                    timestamp: 12345,
+                    parentSpanId: null,
+                    attributes: null),
             };
 
             var spanBatch = new NewRelicSpanBatch(spans, null);
@@ -293,7 +304,7 @@ namespace NewRelic.Telemetry.Tests
         }
 
         [Test]
-        async public Task RetryOn429_RetriesExceeded()
+        public async Task RetryOn429_RetriesExceeded()
         {
             const int delayMS = 10000;
             const int expectedNumSendBatchAsyncCall = 9; // 1 first call + 3 calls from retries
@@ -333,9 +344,15 @@ namespace NewRelic.Telemetry.Tests
                 return Task.FromResult(httpResponse);
             });
 
+
             var spans = new List<NewRelicSpan>()
             {
-                new NewRelicSpan(null,"Test Span",12345,null,null)
+                new NewRelicSpan(
+                    traceId: null,
+                    spanId: "Test Span",
+                    timestamp: 12345,
+                    parentSpanId: null,
+                    attributes: null),
             };
 
             var spanBatch = new NewRelicSpanBatch(spans, null);
@@ -348,7 +365,7 @@ namespace NewRelic.Telemetry.Tests
         }
 
         [Test]
-        async public Task RetryOn429WithDuration_429HappensOnce()
+        public async Task RetryOn429WithDuration_429HappensOnce()
         {
             const int delayMS = 10000;
             const int expectedNumSendBatchAsyncCall = 2;
@@ -369,7 +386,7 @@ namespace NewRelic.Telemetry.Tests
             });
 
             var actualCountCallsSendData = 0;
-            dataSender.WithCaptureSendDataAsyncDelegate((NewRelicSpanBatch, retryNum) =>
+            dataSender.WithCaptureSendDataAsyncDelegate((newRelicSpanBatch, retryNum) =>
             {
                 actualCountCallsSendData++;
             });
@@ -387,9 +404,15 @@ namespace NewRelic.Telemetry.Tests
                 return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK));
             });
 
+
             var spans = new List<NewRelicSpan>()
             {
-                new NewRelicSpan(null,"Test Span",12345,null,null)
+                new NewRelicSpan(
+                    traceId: null,
+                    spanId: "Test Span",
+                    timestamp: 12345,
+                    parentSpanId: null,
+                    attributes: null),
             };
 
             var spanBatch = new NewRelicSpanBatch(spans, null);
@@ -403,7 +426,7 @@ namespace NewRelic.Telemetry.Tests
         }
 
         [Test]
-        async public Task RetryOn429WithSpecificDate_429HappensOnce()
+        public async Task RetryOn429WithSpecificDate_429HappensOnce()
         {
             const int delayMs = 10000;
             // The actual retry delay will be slightly less than delayMs since UtcNow is recalculated in RetryWithServerDelay()
@@ -430,21 +453,26 @@ namespace NewRelic.Telemetry.Tests
                 return Task.FromResult(httpResponse);
             });
 
+
             var spans = new List<NewRelicSpan>()
             {
-                new NewRelicSpan(null,"Test Span",12345,null,null)
+                new NewRelicSpan(
+                    traceId: null,
+                    spanId: "Test Span",
+                    timestamp: 12345,
+                    parentSpanId: null,
+                    attributes: null),
             };
 
             var spanBatch = new NewRelicSpanBatch(spans, null);
 
             var result = await dataSender.SendDataAsync(spanBatch);
 
-
-            Assert.IsTrue(actualDelayFromTestRun >= delayMs - errorMargin && actualDelayFromTestRun <= delayMs + errorMargin,$"Expected delay: {delayMs}, margin: +/-{errorMargin}, actual delay: {actualDelayFromTestRun}");
+            Assert.IsTrue(actualDelayFromTestRun >= delayMs - errorMargin && actualDelayFromTestRun <= delayMs + errorMargin, $"Expected delay: {delayMs}, margin: +/-{errorMargin}, actual delay: {actualDelayFromTestRun}");
         }
 
         [Test]
-        async public Task SendDataAsyncThrowsHttpException()
+        public async Task SendDataAsyncThrowsHttpException()
         {
             const int expectedNumSendBatchAsyncCall = 1;
 
@@ -469,7 +497,12 @@ namespace NewRelic.Telemetry.Tests
 
             var spans = new List<NewRelicSpan>()
             {
-                new NewRelicSpan(null,"Test Span",12345,null,null)
+                new NewRelicSpan(
+                    traceId: null,
+                    spanId: "Test Span",
+                    timestamp: 12345,
+                    parentSpanId: null,
+                    attributes: null),
             };
 
             var spanBatch = new NewRelicSpanBatch(spans, null);
@@ -484,7 +517,7 @@ namespace NewRelic.Telemetry.Tests
 
 
         [Test]
-        async public Task SendDataAsyncThrowsNonHttpException()
+        public async Task SendDataAsyncThrowsNonHttpException()
         {
             const int expectedNumSendBatchAsyncCall = 1;
             const int expectedNumHttpHandlerCall = 0;
@@ -514,7 +547,12 @@ namespace NewRelic.Telemetry.Tests
 
             var spans = new List<NewRelicSpan>()
             {
-                new NewRelicSpan(null,"Test Span",12345,null,null)
+                new NewRelicSpan(
+                    traceId: null,
+                    spanId: "Test Span",
+                    timestamp: 12345,
+                    parentSpanId: null,
+                    attributes: null),
             };
 
             var spanBatch = new NewRelicSpanBatch(spans, null);
@@ -542,7 +580,7 @@ namespace NewRelic.Telemetry.Tests
 
             var expectedUserAgentValue = dataSender.UserAgent;
 
-            if (!string.IsNullOrEmpty(productName) && !string.IsNullOrEmpty(productVersion)) 
+            if (!string.IsNullOrEmpty(productName) && !string.IsNullOrEmpty(productVersion))
             {
                 expectedUserAgentValue += " " + $@"{productName}/{productVersion}";
             }

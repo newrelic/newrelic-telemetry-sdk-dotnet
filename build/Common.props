@@ -1,6 +1,8 @@
 <Project>
   <PropertyGroup>
     <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>true</WarningsAsErrors>
     <SignAssembly>true</SignAssembly>
     <RepoRoot>$([System.IO.Directory]::GetParent($(MSBuildThisFileDirectory)).Parent.FullName)</RepoRoot>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)NewRelic.snk</AssemblyOriginatorKeyFile>

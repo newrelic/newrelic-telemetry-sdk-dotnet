@@ -2,12 +2,12 @@
 using System.Configuration;
 using System.Web.Http;
 using Microsoft.Extensions.Logging;
-using NewRelic.Telemetry;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using ASPNetFrameworkApiApplication.Models;
 using System.Linq;
+using NewRelic.Telemetry;
 using NewRelic.Telemetry.Transport;
 using NewRelic.Telemetry.Tracing;
 using NewRelic.Telemetry.Extensions;
@@ -81,8 +81,8 @@ namespace ASPNetFrameworkApiApplication.Controllers
             // If an unhandled exception occurs, it can be denoted on the span.
             catch (Exception ex)
             {
-                spanAttribs[NewRelicConsts.Tracing.AttribName_HasError] = true;
-                spanAttribs[NewRelicConsts.Tracing.AttribName_ErrorMsg] = ex;
+                spanAttribs[NewRelicConsts.Tracing.AttribNameHasError] = true;
+                spanAttribs[NewRelicConsts.Tracing.AttribNameErrorMsg] = ex;
 
                 //This ensures that tracking of spans doesn't interfere with the normal execution flow
                 throw;
@@ -90,8 +90,8 @@ namespace ASPNetFrameworkApiApplication.Controllers
             // In all cases, the span is sent up to the New Relic endpoint.
             finally
             {
-                spanAttribs[NewRelicConsts.Tracing.AttribName_Name] = "WeatherForecast/Get";
-                spanAttribs[NewRelicConsts.Tracing.AttribName_DurationMs] = DateTime.UtcNow.Subtract(spanTimeStamp).TotalMilliseconds;
+                spanAttribs[NewRelicConsts.Tracing.AttribNameName] = "WeatherForecast/Get";
+                spanAttribs[NewRelicConsts.Tracing.AttribNameDurationMs] = DateTime.UtcNow.Subtract(spanTimeStamp).TotalMilliseconds;
 
 
                 var span = new NewRelicSpan(
