@@ -18,12 +18,12 @@ namespace SampleAspNetFrameworkApp
             // Obtain the API Key from the Web.Config file
             var apiKey = ConfigurationManager.AppSettings["NewRelic.Telemetry.ApiKey"];
 
-            var newRelicConfig = new TelemetryConfiguration();
-            newRelicConfig.WithApiKey(apiKey);
-
             // Initialize OpenTelemetry and register the New Relic Exporter
             this.openTelemetry = Sdk.CreateTracerProviderBuilder()
-                .UseNewRelic(newRelicConfig)
+                .UseNewRelic(config =>
+                    config
+                        .WithApiKey(apiKey)
+                        .WithServiceName("aspnet-example"))
                 .AddAspNetInstrumentation()
                 .AddHttpClientInstrumentation()
                 .Build();
