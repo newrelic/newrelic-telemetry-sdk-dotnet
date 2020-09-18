@@ -2,7 +2,7 @@ name: New Relic Telemetry SDK for .NET
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
   push:
     tags:
       - refs/tags/v*.*.*      # v1.0.0
@@ -65,7 +65,7 @@ jobs:
 
       # These two steps will only run on a build of master or a tag is created.
     - name: Publish Packages to MyGet
-      if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags') }}
+      if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags') }}
       run: |
         nuget setapikey ${{ secrets.MYGET_APIKEY }} -source {{ secrets.MYGET_URL }}
         foreach ($file in Get-ChildItem -Path "${{ env.telemetrysdk_path }}\*" -File -Include *.nupkg) {
@@ -75,7 +75,7 @@ jobs:
       shell: powershell
 
     - name: Publish Symbols to MyGet
-      if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags') }}
+      if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags') }}
       run: |
         nuget setapikey ${{ secrets.MYGET_APIKEY }} -source {{ secrets.MYGET_URL_SYMBOLS }}
         foreach ($file in Get-ChildItem -Path "${{ env.telemetrysdk_path }}\*" -File -Include *.snupkg) {
