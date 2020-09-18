@@ -11,7 +11,7 @@ namespace OpenTelemetry.Trace
     /// <summary>
     /// Extension methods to help instantiate and configure the New Relic data exporter.
     /// </summary>
-    public static class OpenTelemetryBuilderExtensions
+    public static class NewRelicExporterHelperExtensions
     {
         /// <summary>
         /// Advanced Configuration the New Relic Data Exporter providing configuration provider and a logger factory
