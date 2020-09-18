@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NewRelic.Telemetry;
 using NewRelic.Telemetry.Spans;
@@ -31,28 +30,6 @@ namespace OpenTelemetry.Exporter.NewRelic
         private readonly ILogger _logger;
         private readonly TelemetryConfiguration _config;
         private readonly string[] _nrEndpoints;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewRelicTraceExporter"/> class.
-        /// Configures the Trace Exporter accepting settings from any configuration provider supported by Microsoft.Extensions.Configuration.
-        /// </summary>
-        /// <param name="configProvider"></param>
-        public NewRelicTraceExporter(IConfiguration configProvider)
-            : this(configProvider, null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewRelicTraceExporter"/> class.
-        /// Configures the Trace Exporter accepting settings from any configuration provider supported by Microsoft.Extensions.Configuration.
-        /// Also accepts any logging infrastructure supported by Microsoft.Extensions.Logging.
-        /// </summary>
-        /// <param name="configProvider"></param>
-        /// <param name="loggerFactory"></param>
-        public NewRelicTraceExporter(IConfiguration configProvider, ILoggerFactory loggerFactory)
-            : this(new TelemetryConfiguration(configProvider), loggerFactory)
-        {
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NewRelicTraceExporter"/> class.
