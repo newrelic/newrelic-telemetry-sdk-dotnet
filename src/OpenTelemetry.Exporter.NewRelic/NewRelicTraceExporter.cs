@@ -120,6 +120,19 @@ namespace OpenTelemetry.Exporter.NewRelic
             }
         }
 
+        private static string ToActivityKind(Activity activity)
+        {
+            return activity.Kind switch
+            {
+                ActivityKind.Consumer => "CONSUMER",
+                ActivityKind.Client => "CLIENT",
+                ActivityKind.Internal => "INTERNAL",
+                ActivityKind.Producer => "PRODUCER",
+                ActivityKind.Server => "SERVER",
+                _ => null,
+            };
+        }
+
         private SpanBatch ToNewRelicSpanBatch(in Batch<Activity> otSpans)
         {
             var nrSpans = new List<Span>();
@@ -238,6 +251,8 @@ namespace OpenTelemetry.Exporter.NewRelic
             {
                 newRelicSpanBuilder.WithParentId(openTelemetrySpan.ParentSpanId.ToHexString());
             }
+
+            newRelicSpanBuilder.WithAttribute("span.kind", ToActivityKind(openTelemetrySpan));
 
             if (openTelemetrySpan.Tags != null)
             {
