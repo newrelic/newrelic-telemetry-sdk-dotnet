@@ -9,9 +9,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NewRelic.Telemetry;
-using NewRelic.Telemetry.Spans;
+using NewRelic.Telemetry.Tracing;
 using NewRelic.Telemetry.Transport;
 using OpenTelemetry.Trace;
+using TelemetrySdk = NewRelic.Telemetry;
 
 namespace OpenTelemetry.Exporter.NewRelic
 {
@@ -21,14 +22,13 @@ namespace OpenTelemetry.Exporter.NewRelic
     public class NewRelicTraceExporter : ActivityExporter
     {
         private const string ProductName = "NewRelic-Dotnet-OpenTelemetry";
-        private const string AttribNameUrl = "http.url";
 
-        private static readonly ActivitySpanId _emptyActivitySpanId = ActivitySpanId.CreateFromBytes(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, });
+        private static readonly ActivitySpanId EmptyActivitySpanId = ActivitySpanId.CreateFromBytes(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, });
         private static readonly string _productVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
 
-        private readonly SpanDataSender _spanDataSender;
-        private readonly ILogger _logger;
-        private readonly TelemetryConfiguration _config;
+        private readonly TraceDataSender _spanDataSender;
+        private readonly ILogger? _logger;
+        private readonly TelemetrySdk.TelemetryConfiguration _config;
         private readonly string[] _nrEndpoints;
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// Configures the Trace Exporter accepting configuration settings from an instance of the New Relic Telemetry SDK configuration object.
         /// </summary>
         /// <param name="config"></param>
-        public NewRelicTraceExporter(TelemetryConfiguration config)
+        public NewRelicTraceExporter(TelemetrySdk.TelemetryConfiguration config)
             : this(config, null)
         {
         }
@@ -47,12 +47,12 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// accepts a logger factory supported by Microsoft.Extensions.Logging.
         /// </summary>
         /// <param name="config"></param>
-        public NewRelicTraceExporter(TelemetryConfiguration config, ILoggerFactory loggerFactory)
-            : this(new SpanDataSender(config, loggerFactory), config, loggerFactory)
+        public NewRelicTraceExporter(TelemetrySdk.TelemetryConfiguration config, ILoggerFactory? loggerFactory)
+            : this(new TraceDataSender(config, loggerFactory), config, loggerFactory)
         {
         }
 
-        internal NewRelicTraceExporter(SpanDataSender spanDataSender, TelemetryConfiguration config, ILoggerFactory loggerFactory)
+        internal NewRelicTraceExporter(TraceDataSender spanDataSender, TelemetrySdk.TelemetryConfiguration config, ILoggerFactory? loggerFactory)
         {
             _spanDataSender = spanDataSender;
             spanDataSender.AddVersionInfo(ProductName, _productVersion);
@@ -75,52 +75,39 @@ namespace OpenTelemetry.Exporter.NewRelic
             // Prevent exporter's HTTP operations from being instrumented.
             using var scope = SuppressInstrumentationScope.Begin();
 
-            var nrSpanBatch = ToNewRelicSpanBatch(batch);
+            var nrSpans = ToNewRelicSpans(batch);
 
-            if (nrSpanBatch.Spans?.Count == 0)
+            if (nrSpans.Count() == 0)
             {
                 return ExportResult.Success;
             }
 
-            Response response = null;
-            Task.Run(async () => response = await _spanDataSender.SendDataAsync(nrSpanBatch)).GetAwaiter().GetResult();
+            Response? response = null;
+            Task.Run(async () => response = await _spanDataSender.SendDataAsync(nrSpans)).GetAwaiter().GetResult();
 
-            switch (response.ResponseStatus)
+            switch (response?.ResponseStatus)
             {
                 case NewRelicResponseStatus.DidNotSend_NoData:
                 case NewRelicResponseStatus.Success:
                     return ExportResult.Success;
-               
+
                 case NewRelicResponseStatus.Failure:
                 default:
                     return ExportResult.Failure;
             }
         }
 
-        private SpanBatch ToNewRelicSpanBatch(in Batch<Activity> otSpans)
+        private List<NewRelicSpan> ToNewRelicSpans(in Batch<Activity> otSpans)
         {
-            var nrSpans = new List<Span>();
+            var nrSpans = new List<NewRelicSpan>();
             var spanIdsToFilter = new List<string>();
 
             foreach (var otSpan in otSpans)
             {
-                if (otSpan == null)
-                {
-                    continue;
-                }
-
                 try
                 {
                     var nrSpan = ToNewRelicSpan(otSpan);
-                    if (nrSpan == null)
-                    {
-                        spanIdsToFilter.Add(otSpan.Context.SpanId.ToHexString());
-                        _logger?.LogDebug(null, $"The following span was filtered because it describes communication with a New Relic endpoint: Trace={otSpan.Context.TraceId}, Span={otSpan.Context.SpanId}, ParentSpan={otSpan.ParentSpanId}");
-                    }
-                    else
-                    {
-                        nrSpans.Add(nrSpan);
-                    }
+                    nrSpans.Add(nrSpan);
                 }
                 catch (Exception ex)
                 {
@@ -140,49 +127,10 @@ namespace OpenTelemetry.Exporter.NewRelic
                 }
             }
 
-            nrSpans = FilterSpans(nrSpans, spanIdsToFilter);
-
-            var spanBatchBuilder = SpanBatchBuilder.Create();
-
-            spanBatchBuilder.WithSpans(nrSpans);
-
-            var nrSpanBatch = spanBatchBuilder.Build();
-
-            return nrSpanBatch;
+            return nrSpans;
         }
 
-        private List<Span> FilterSpans(List<Span> spans, List<string> spanIdsToFilter)
-        {
-            if (spanIdsToFilter.Count == 0)
-            {
-                return spans;
-            }
-
-            var newSpansToFilter = spans.Where(x => spanIdsToFilter.Contains(x.ParentId)).ToArray();
-            
-            if (newSpansToFilter.Length == 0)
-            {
-                return spans;
-            } 
-            
-            if (_logger?.IsEnabled(LogLevel.Debug) == true)
-            {
-                foreach (var spanToFilter in newSpansToFilter)
-                {
-                    _logger?.LogDebug(null, $"The following span was filtered because it is a descendant of a span that describes communication with a New Relic endpoint: Trace={spanToFilter.TraceId}, Span={spanToFilter.Id}, ParentSpan={spanToFilter.ParentId ?? "<NULL>"}");
-                }
-            }
-
-            var newSpanIdsToFilter = newSpansToFilter.Select(x => x.Id).ToArray();
-
-            spanIdsToFilter = spanIdsToFilter.Union(newSpanIdsToFilter).ToList();
-
-            spans = spans.Except(newSpansToFilter).ToList();
-            
-            return FilterSpans(spans, spanIdsToFilter);
-        }
-
-        private Span ToNewRelicSpan(Activity openTelemetrySpan)
+        private NewRelicSpan ToNewRelicSpan(Activity openTelemetrySpan)
         {
             if (openTelemetrySpan == default)
             {
@@ -194,45 +142,60 @@ namespace OpenTelemetry.Exporter.NewRelic
                 throw new ArgumentException($"{nameof(openTelemetrySpan)}.Context");
             }
 
-            var newRelicSpanBuilder = SpanBuilder.Create(openTelemetrySpan.Context.SpanId.ToHexString())
-                   .WithTraceId(openTelemetrySpan.Context.TraceId.ToHexString())
-                   .WithExecutionTimeInfo(openTelemetrySpan.StartTimeUtc, openTelemetrySpan.Duration)
-                   .WithName(openTelemetrySpan.DisplayName);
+            // Build attributes with required items
+            var newRelicSpanAttribs = new Dictionary<string, object>()
+            {
+                { NewRelicConsts.Tracing.AttribNameDurationMs, openTelemetrySpan.Duration.TotalMilliseconds },
+            };
+
+            if (!string.IsNullOrWhiteSpace(openTelemetrySpan.DisplayName))
+            {
+                newRelicSpanAttribs.Add(NewRelicConsts.Tracing.AttribNameName, openTelemetrySpan.DisplayName);
+            }
 
             var status = openTelemetrySpan.GetStatus();
             if (!status.IsOk)
             {
-                // this will set HasError = true and the description if available
-                newRelicSpanBuilder.HasError(status.Description);
+                newRelicSpanAttribs.Add(NewRelicConsts.Tracing.AttribNameHasError, true);
+
+                if (!string.IsNullOrWhiteSpace(status.Description))
+                {
+                    newRelicSpanAttribs.Add(NewRelicConsts.Tracing.AttribNameErrorMsg, status.Description);
+                }
             }
 
-            if (!string.IsNullOrWhiteSpace(_config.ServiceName))
+            if (_config.ServiceName != null && !string.IsNullOrWhiteSpace(_config.ServiceName))
             {
-                newRelicSpanBuilder.WithServiceName(_config.ServiceName);
+                newRelicSpanAttribs.Add(NewRelicConsts.Tracing.AttribNameServiceName, _config.ServiceName);
             }
 
-            if (openTelemetrySpan.ParentSpanId != _emptyActivitySpanId)
+            var parentSpanId = null as string;
+            if (openTelemetrySpan.ParentSpanId != EmptyActivitySpanId)
             {
-                newRelicSpanBuilder.WithParentId(openTelemetrySpan.ParentSpanId.ToHexString());
+                parentSpanId = openTelemetrySpan.ParentSpanId.ToHexString();
             }
 
             if (openTelemetrySpan.Tags != null)
             {
                 foreach (var spanAttrib in openTelemetrySpan.Tags)
                 {
-                    // Filter out calls to New Relic endpoint as these will cause an infinite loop
-                    if (string.Equals(spanAttrib.Key, AttribNameUrl, StringComparison.OrdinalIgnoreCase) && _nrEndpoints.Contains(spanAttrib.Value?.ToString().ToLower()))
+                    if (spanAttrib.Value == null)
                     {
-                        _logger?.LogDebug(null, $"The following span was filtered because it was identified as communication with a New Relic endpoint: Trace={openTelemetrySpan.Context.TraceId}, Span={openTelemetrySpan.Context.SpanId}, ParentSpan={openTelemetrySpan.ParentSpanId}. url={spanAttrib.Value}");
-
-                        return null;
+                        continue;
                     }
 
-                    newRelicSpanBuilder.WithAttribute(spanAttrib.Key, spanAttrib.Value);
+                    newRelicSpanAttribs.Add(spanAttrib.Key, spanAttrib.Value);
                 }
             }
 
-            return newRelicSpanBuilder.Build();
+            var newRelicSpan = new NewRelicSpan(
+                traceId: openTelemetrySpan.Context.TraceId.ToHexString(),
+                spanId: openTelemetrySpan.Context.SpanId.ToHexString(),
+                parentSpanId: parentSpanId,
+                timestamp: openTelemetrySpan.StartTimeUtc.ToUnixTimeMilliseconds(),
+                attributes: newRelicSpanAttribs);
+
+            return newRelicSpan;
         }
     }
 }

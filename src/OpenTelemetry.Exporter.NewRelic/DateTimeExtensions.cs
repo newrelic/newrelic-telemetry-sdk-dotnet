@@ -3,7 +3,7 @@
 
 using System;
 
-namespace NewRelic.Telemetry.Extensions
+namespace OpenTelemetry.Exporter.NewRelic
 {
     /// <summary>
     /// Provides DateTime conversions to Unix Timestamps.
@@ -24,7 +24,9 @@ namespace NewRelic.Telemetry.Extensions
         private const long UnixEpochTicks = DaysTo1970 * TicksPerDay;
         private const long UnixEpochMilliseconds = UnixEpochTicks / TicksPerMillisecond; // 62,135,596,800,000
 
-        internal static long ToUnixTimeMilliseconds(this DateTimeOffset dateTime)
+        private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        public static long ToUnixTimeMilliseconds(this DateTime dateTime)
         {
             return (dateTime.ToUniversalTime().Ticks / TicksPerMillisecond) - UnixEpochMilliseconds;
         }

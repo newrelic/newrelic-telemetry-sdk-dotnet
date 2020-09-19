@@ -144,21 +144,21 @@ public class WeatherForecastController : ApiController
 <br/>
 
 
-## The SpanBuilder
-The `SpanBuilder` is a tool to help build new Spans.  In this example, a `SpanBuilder` is instantiated with a `SpanId` and it is associated to a trace with a `TraceId`.  The SpanId is required and must be unique.
+## The Span
+The `Span` is a tool to help build new Spans.  In this example, a `Span` is instantiated with a `SpanId` and it is associated to a trace with a `TraceId`.  The SpanId is required and must be unique.
 
 ```CSharp
 var traceId = Guid.NewGuid().ToString();
 var spanId = Guid.NewGuid().ToString();
 
-var spanBuilder = SpanBuilder.Create(spanId)
+var span = Span.Create(spanId)
 	.WithTraceId(traceId);
 ```
 
 **Intrinsic Attribution** <br>
-Use the SpanBuilder methods to add additional information about the span. In this example, start-time, duration, and a name are added as additional attribution to the span.
+Use the Span methods to add additional information about the span. In this example, start-time, duration, and a name are added as additional attribution to the span.
 ```CSharp
-spanBuilder.WithTimestamp(DateTime.UtcNow)
+span.WithTimestamp(DateTime.UtcNow)
 	.WithDurationMs(3192)
 	.WithName("Get 5-day Forecast");
 ```
@@ -176,10 +176,10 @@ The following methods support adding intrinsic attributes to a span.
 
 
 **Custom Attribution** <br>
-The SpanBuilder also supports adding custom attributes to the span.  In the example below, the relative url is added to a custom attribute on the span.
+The Span also supports adding custom attributes to the span.  In the example below, the relative url is added to a custom attribute on the span.
 
 ```CSharp
-spanBuilder.WithAttribute("RelativeURL", "/Weather/Forecast");
+span.WithAttribute("RelativeURL", "/Weather/Forecast");
 ```
 
 * Attribute Names are limited to 255-bytes.
@@ -193,7 +193,7 @@ A span may be marked as having an error.  In this example, if the work being mea
 var traceId = Guid.NewGuid().ToString();
 var spanId = Guid.NewGuid().ToString();
 
-var spanBuilder = SpanBuilder.Create(spanId)
+var span = Span.Create(spanId)
 	.WithTraceId(traceId);
 
 try
@@ -202,8 +202,8 @@ try
 }
 catch (Exception ex)
 {
-	spanBuilder.HasError(true);
-	spanBuilder.WithAttribute("Exception", ex);
+	span.HasError(true);
+	span.WithAttribute("Exception", ex);
 	throw;
 }
 finally
@@ -222,35 +222,21 @@ var traceId = Guid.NewGuid().ToString();
 
 // Create the parent Span
 var parentSpanId = Guid.NewGuid().ToString();
-var parentSpanBuilder = SpanBuilder.Create(parentSpanId)
+var parentSpan = Span.Create(parentSpanId)
 	.WithTraceId(traceId)
 	.WithName("5-day forecast");
 
 // Create the child span and assocaite it to the parent span
 var childSpanId = Guid.NewGuid().ToString();
-var childSpanBuilder = SpanBuilder.Create(childSpanId)
+var childSpan = Span.Create(childSpanId)
 	.WithTraceId(traceId)
 	.WithName("Consult The Weather Oracle")
 	.WithParentId(parentSpanId);
 ```
 <br/>
 
-**Obtaining the Span from the SpanBuilder** <br/>
-When the building of a span is complete, invoke the `Build()` method on the `SpanBuilder` to obtain the `Span` object.
-
-```CSharp
-var traceId = Guid.NewGuid().ToString();
-var spanId = Guid.NewGuid().ToString();
-
-var spanBuilder = SpanBuilder.Create(parentSpanId)
-	.WithTraceId(traceId)
-	.WithName("5-day forecast");
-
-var span = spanBuilder.Build();
-```
-
-## The SpanBatchBuilder
-The `SpanBatchBuilder` is a tool that manages a collection of spans to be sent to the New Relic endpoint.
+## The SpanBatch
+The `SpanBatch` is a tool that manages a collection of spans to be sent to the New Relic endpoint.
 
 This example is a single trace with two spans that are related.  Since all of the spans on the SpanBatch belong to the same Trace, the TraceId is set on the SpanBatch, as opposed to on the individual spans.
 
@@ -259,37 +245,24 @@ var traceId = Guid.NewGuid().ToString();
 
 // Create the parent Span
 var parentSpanId = Guid.NewGuid().ToString();
-var parentSpan = SpanBuilder.Create(parentSpanId)
+var parentSpan = Span.Create(parentSpanId)
 	.WithName("5-day forecast")
-	.Build();
+	;
 
 // Create the child span and assocaite it to the parent span
 var childSpanId = Guid.NewGuid().ToString();
-var childSpan = SpanBuilder.Create(childSpanId)
+var childSpan = Span.Create(childSpanId)
 	.WithName("Consult The Weather Oracle")
 	.WithParentId(parentSpanId)
-	.Build();
+	;
 
 // Bundle the two spans into a span batch
-var spanBatchBuilder = SpanBatchBuilder.Create().
+var spanBatch = SpanBatch.Create().
 	.WithTraceId(traceId)
 	.WithSpan(parentSpan)
 	.WithSpan(childSpan);
 
 ````
-
-**Obtaining the SpanBatch from the SpanBatchBuilder** <br/>
-When the building of a `SpanBatch` is complete, invoke the `Build()` method on the `SpanBatchBuilder` to obtain the `SpanBatch` object.
-
-
-```CSharp
-var spanBatchBuilder = SpanBatchBuilder.Create();
-	.WithTraceId(traceId)
-	.WithSpan(parentSpan)
-	.WithSpan(childSpan);
-
-var spanBatch = spanBatchBuilder.Build();
-```
 <br/>
 
 ## Sending Data to the New Relic Trace endpoint
@@ -304,19 +277,18 @@ var spanDataSender = new SpanDataSender(new TelemetryConfiguration()
 var traceId = Guid.NewGuid().ToString();
 
 var parentSpanId = Guid.NewGuid().ToString();
-var parentSpan = SpanBuilder.Create(parentSpanId)
-	.WithName("5-day forecast").Build();
+var parentSpan = Span.Create(parentSpanId)
+	.WithName("5-day forecast");
 
 var childSpanId = Guid.NewGuid().ToString();
-var childSpan = SpanBuilder.Create(childSpanId)
+var childSpan = Span.Create(childSpanId)
 	.WithName("Consult The Weather Oracle")
-	.WithParentId(parentSpanId).Build();
+	.WithParentId(parentSpanId);
 
-var spanBatch = SpanBatchBuilder.Create().
+var spanBatch = SpanBatch.Create().
 	.WithTraceId(traceId)
 	.WithSpan(parentSpan)
-	.WithSpan(childSpan)
-	.Build();
+	.WithSpan(childSpan);
 
 // Send the spans to the New Relic Trace Endpoint
 var newRelicResult = await _spanDataSender.SendDataAsync(spanBatch);

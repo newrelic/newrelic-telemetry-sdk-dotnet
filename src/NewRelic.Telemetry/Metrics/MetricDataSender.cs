@@ -1,18 +1,15 @@
 ﻿// Copyright 2020 New Relic, Inc. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-using System.Linq;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NewRelic.Telemetry.Transport;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace NewRelic.Telemetry.Metrics
 {
-    /// <summary>
-    /// The MetricDataSender is used to send Metric data to New Relic.  It manages the communication 
-    /// with the New Relic end points and reports outcomes.
-    /// </summary>
-    public class MetricDataSender : DataSender<MetricBatch>
+    public class MetricDataSender : DataSender<NewRelicMetricBatch>
     {
         protected override string EndpointUrl => _config.MetricUrl;
 
@@ -25,6 +22,11 @@ namespace NewRelic.Telemetry.Metrics
         public MetricDataSender(TelemetryConfiguration configOptions)
             : base(configOptions)
         {
+        }
+
+        protected override bool ContainsNoData(NewRelicMetricBatch dataToCheck)
+        {
+            return !dataToCheck.Metrics.Any();
         }
 
         /// <summary>
@@ -40,52 +42,34 @@ namespace NewRelic.Telemetry.Metrics
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MetricDataSender"/> class.
-        /// Creates new MetricDataSender obtaining configuration settings from a Configuration Provider 
-        /// that is compatible with <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration.</see>.
-        /// </summary>
-        /// <param name="configProvider"></param>
-        public MetricDataSender(IConfiguration configProvider)
-            : base(configProvider)
+        public async Task<Response> SendDataAsync(IEnumerable<NewRelicMetric> metrics)
         {
+            var batch = new NewRelicMetricBatch(metrics);
+
+            return await SendDataAsync(batch);
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MetricDataSender"/> class.
-        /// Creates new MetricDataSender obtaining configuration settings from a Configuration Provider 
-        /// that is compatible with <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration.</see>
-        /// It also accepts a <see cref="Microsoft.Extensions.Logging.ILoggerFactory">logger factory</see> 
-        /// that will be used to log information about the interactions with New Relic endpoints.
-        /// </summary>
-        /// <param name="configProvider"></param>
-        /// <param name="loggerFactory"></param>
-        public MetricDataSender(IConfiguration configProvider, ILoggerFactory loggerFactory)
-            : base(configProvider, loggerFactory)
-        {
-        }
+        private static readonly NewRelicMetricBatch[] _emptyMetricBatchArray = new NewRelicMetricBatch[0];
 
-        protected override bool ContainsNoData(MetricBatch dataToCheck)
+        protected override NewRelicMetricBatch[] Split(NewRelicMetricBatch metricBatch)
         {
-            return (dataToCheck?.Metrics?.Count).GetValueOrDefault(0) == 0;
-        }
-
-        protected override MetricBatch[] Split(MetricBatch dataToSplit)
-        {
-            var countMetrics = dataToSplit.Metrics.Count;
+            var countMetrics = metricBatch.Metrics.Count();
             if (countMetrics <= 1)
             {
-                return null;
+                return _emptyMetricBatchArray;
             }
 
             var targetMetricCount = countMetrics / 2;
-            var batch0Metrics = dataToSplit.Metrics.Take(targetMetricCount).ToList();
-            var batch1Metrics = dataToSplit.Metrics.Skip(targetMetricCount).ToList();
+            var batch0Metrics = metricBatch.Metrics.Take(targetMetricCount).ToList();
+            var batch1Metrics = metricBatch.Metrics.Skip(targetMetricCount).ToList();
 
-            var batch0 = new MetricBatch(dataToSplit.CommonProperties, batch0Metrics);
-            var batch1 = new MetricBatch(dataToSplit.CommonProperties, batch1Metrics);
+            var result = new[]
+            {
+                new NewRelicMetricBatch(batch0Metrics, metricBatch.CommonProperties),
+                new NewRelicMetricBatch(batch1Metrics, metricBatch.CommonProperties),
+            };
 
-            return new[] { batch0, batch1 };
+            return result;
         }
     }
 }

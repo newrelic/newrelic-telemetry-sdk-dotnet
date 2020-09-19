@@ -1,9 +1,12 @@
 ﻿// Copyright 2020 New Relic, Inc. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using NewRelic.Telemetry.Spans;
+using NewRelic.Telemetry.Tracing;
 using NewRelic.Telemetry.Transport;
 using NUnit.Framework;
 
@@ -15,11 +18,11 @@ namespace NewRelic.Telemetry.Tests
         public void SendAnEmptySpanBatch()
         {
             var traceId = "123";
-            var spanBatch = SpanBatchBuilder.Create()
-                .WithTraceId(traceId)
-                .Build();
+            var spanBatch = new NewRelicSpanBatch(
+                spans: new NewRelicSpan[0],
+                commonProperties: new NewRelicSpanBatchCommonProperties(traceId));
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
+            var dataSender = new TraceDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
 
             dataSender.WithHttpHandlerImpl((serializedJson) =>
             {
@@ -37,12 +40,21 @@ namespace NewRelic.Telemetry.Tests
         {
             var traceId = "123";
 
-            var spanBatch = SpanBatchBuilder.Create()
-                .WithTraceId(traceId)
-                .WithSpan(SpanBuilder.Create("TestSpan").Build())
-                .Build();
+            var span = new NewRelicSpan(
+                traceId: null,
+                spanId: "Span1",
+                timestamp: DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                parentSpanId: null,
+                attributes: new Dictionary<string, object>()
+                {
+                    { NewRelicConsts.Tracing.AttribNameName, "TestSpan" },
+                });
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration().WithApiKey("123456"));
+            var spanBatch = new NewRelicSpanBatch(
+                spans: new[] { span }, 
+                commonProperties: new NewRelicSpanBatchCommonProperties(traceId));
+
+            var dataSender = new TraceDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
 
             dataSender.WithHttpHandlerImpl((serializedJson) =>
             {
@@ -58,19 +70,30 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         public void InstrumentationProviderSuppliedWhenConfigured()
         {
-            var traceId = "123";
-            var instrumentationProvider = "TestInstrumentationProvider";
+            const string traceId = "123";
+            const string instrumentationProvider = "TestInstrumentationProvider";
 
-            var spanBatch = SpanBatchBuilder.Create()
-                .WithTraceId(traceId)
-                .WithSpan(SpanBuilder.Create("TestSpan").Build())
-                .Build();
+            var span = new NewRelicSpan(
+                            traceId: null,
+                            spanId: "Span1",
+                            timestamp: DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                            parentSpanId: null,
+                            attributes: new Dictionary<string, object>()
+                            {
+                                { NewRelicConsts.Tracing.AttribNameName, "TestSpan" },
+                            });
 
-            var dataSender = new SpanDataSender(new TelemetryConfiguration()
+            var spanBatch = new NewRelicSpanBatch(
+                    spans: new[] { span },
+                    commonProperties: new NewRelicSpanBatchCommonProperties(traceId));
+
+            var dataSender = new TraceDataSender(
+                new TelemetryConfiguration()
                 .WithApiKey("123456")
-                .WithInstrumentationProviderName(instrumentationProvider));
+                .WithInstrumentationProviderName(instrumentationProvider), null);
 
-            SpanBatch capturedSpanbatch = null;
+            NewRelicSpanBatch? capturedSpanbatch = null;
+
             dataSender.WithCaptureSendDataAsyncDelegate((spanBatch, attempt) =>
             {
                 capturedSpanbatch = spanBatch;
@@ -79,10 +102,13 @@ namespace NewRelic.Telemetry.Tests
             var response = dataSender.SendDataAsync(spanBatch).Result;
 
             Assert.IsNotNull(spanBatch);
-            Assert.AreEqual(1, spanBatch.Spans.Count);
-            Assert.IsNotNull(spanBatch.Spans[0].Attributes);
-            Assert.IsTrue(spanBatch.Spans[0].Attributes.ContainsKey("instrumentation.provider"));
-            Assert.AreEqual(instrumentationProvider, spanBatch.Spans[0].Attributes["instrumentation.provider"]);
+
+            var actualSpans = spanBatch.Spans.ToArray();
+
+            Assert.AreEqual(1, actualSpans.Length);
+            Assert.IsNotNull(spanBatch.CommonProperties.Attributes);
+            Assert.IsTrue(spanBatch.CommonProperties.Attributes.ContainsKey("instrumentation.provider"));
+            Assert.AreEqual(instrumentationProvider, spanBatch.CommonProperties.Attributes["instrumentation.provider"]);
         }
     }
 }

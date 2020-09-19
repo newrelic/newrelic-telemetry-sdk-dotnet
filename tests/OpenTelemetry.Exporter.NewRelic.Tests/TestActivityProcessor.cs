@@ -9,8 +9,8 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 {
     internal class TestActivityProcessor : ActivityProcessor
     {
-        public Action<Activity> StartAction;
-        public Action<Activity> EndAction;
+        public Action<Activity>? StartAction;
+        public Action<Activity>? EndAction;
 
         public TestActivityProcessor()
         {

@@ -1,6 +1,8 @@
 ﻿// Copyright 2020 New Relic, Inc. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -10,15 +12,13 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace NewRelic.Telemetry.Transport
 {
     public abstract class DataSender<TData>
-        where TData : ITelemetryDataType
+        where TData : ITelemetryDataType<TData>
     {
-        internal string _userAgent;
+        internal string UserAgent { get; private set; }
 
         protected readonly TelemetryConfiguration _config;
         protected readonly TelemetryLogging _logger;
@@ -31,7 +31,7 @@ namespace NewRelic.Telemetry.Transport
         // Delegate functions in support of unit testing
         private Func<string, Task<HttpResponseMessage>> _httpHandlerImpl;
         private Func<uint, Task> _delayerImpl = new Func<uint, Task>(async (uint milliseconds) => await Task.Delay((int)milliseconds));
-        private Action<TData, int> _captureSendDataAsyncCallDelegate = null;
+        private Action<TData, int>? _captureSendDataAsyncCallDelegate = null;
 
         protected abstract string EndpointUrl { get; }
 
@@ -44,7 +44,7 @@ namespace NewRelic.Telemetry.Transport
         {
         }
 
-        protected DataSender(IConfiguration configProvider, ILoggerFactory loggerFactory)
+        protected DataSender(IConfiguration configProvider, ILoggerFactory? loggerFactory)
             : this(new TelemetryConfiguration(configProvider), loggerFactory)
         {
         }
@@ -54,10 +54,10 @@ namespace NewRelic.Telemetry.Transport
         {
         }
 
-        protected DataSender(TelemetryConfiguration config, ILoggerFactory loggerFactory)
+        protected DataSender(TelemetryConfiguration config, ILoggerFactory? loggerFactory)
         {
             _userAgentBase = "NewRelic-Dotnet-TelemetrySDK/" + _telemetrySdkVersion;
-            _userAgent = _userAgentBase;
+            UserAgent = _userAgentBase;
 
             _config = config;
             _logger = new TelemetryLogging(loggerFactory);
@@ -70,6 +70,20 @@ namespace NewRelic.Telemetry.Transport
             sp.ConnectionLeaseTimeout = 60000;  // 1 minute
 
             _httpHandlerImpl = SendDataAsync;
+        }
+       
+        /// <summary>
+        /// Method used to add product information including product name and version to the User-Agent HTTP header.
+        /// </summary>
+        /// <param name="productName">Name of the product uses the TelemetrySDK (e.g. "OpenTelemetry.Exporter.NewRelic"). This should not be null or empty.</param>
+        /// <param name="productVersion">Version of the product uses the TelemetrySDK (e.g. "1.0.0"). This should not be null or empty.</param>
+        public void AddVersionInfo(string productName, string productVersion)
+        {
+            if (!string.IsNullOrEmpty(productName) && !string.IsNullOrEmpty(productVersion))
+            {
+                var productIdentifier = string.Join("/", productName, productVersion);
+                UserAgent = string.Join(" ", _userAgentBase, productIdentifier);
+            }
         }
 
         /// <summary>
@@ -85,23 +99,12 @@ namespace NewRelic.Telemetry.Transport
                 return Response.Failure("API Key was not available");
             }
 
-            BeforeDataSend(dataToSend);
+            if (_config.InstrumentationProvider != null)
+            {
+                dataToSend.SetInstrumentationProvider(_config.InstrumentationProvider);
+            }
 
             return await SendDataAsync(dataToSend, 0);
-        }
-
-        /// <summary>
-        /// Method used to add product information including product name and version to the User-Agent HTTP header.
-        /// </summary>
-        /// <param name="productName">Name of the product uses the TelemetrySDK (e.g. "OpenTelemetry.Exporter.NewRelic"). This should not be null or empty.</param>
-        /// <param name="productVersion">Version of the product uses the TelemetrySDK (e.g. "1.0.0"). This should not be null or empty.</param>
-        public void AddVersionInfo(string productName, string productVersion)
-        {
-            if (!string.IsNullOrEmpty(productName) && !string.IsNullOrEmpty(productVersion))
-            {
-                var productIdentifier = string.Join("/", productName, productVersion);
-                _userAgent = string.Join(" ", _userAgentBase, productIdentifier);
-            }
         }
 
         internal DataSender<TData> WithDelayFunction(Func<uint, Task> delayerImpl)
@@ -120,20 +123,11 @@ namespace NewRelic.Telemetry.Transport
             _captureSendDataAsyncCallDelegate = captureTestDataImpl;
         }
 
-        /// <summary>
-        /// Provides a place to do any pre-work on the data to send
-        /// For example, allows updating of the instrumentation provider for spans.
-        /// </summary>
-        /// <param name="dataToSend"></param>
-        protected virtual void BeforeDataSend(TData dataToSend)
-        {
-        }
-
         private async Task<Response> RetryWithSplit(TData data)
         {
             var newBatches = Split(data);
 
-            if (newBatches == null)
+            if (newBatches.Length == 0)
             {
                 _logger.Error($@"Cannot send data because it exceeds the size limit and cannot be split.");
                 return Response.Failure(HttpStatusCode.RequestEntityTooLarge, "Cannot send data because it exceeds size limit and cannot be further split.");
@@ -253,7 +247,7 @@ namespace NewRelic.Telemetry.Transport
                 // Anything else is interpreted as a failure condition.  No further attempts are made.
                 default:
                     _logger.Error($@"Response from New Relic ingest API: code: {httpResponse.StatusCode}");
-                    return Response.Failure(httpResponse.StatusCode, httpResponse.Content?.ToString());
+                    return Response.Failure(httpResponse.StatusCode, httpResponse.Content.ToString());
             }
         }
 
@@ -278,7 +272,7 @@ namespace NewRelic.Telemetry.Transport
                 var requestMessage = new HttpRequestMessage(HttpMethod.Post, EndpointUrl);
                 requestMessage.Content = streamContent;
 
-                requestMessage.Headers.Add("User-Agent", _userAgent);
+                requestMessage.Headers.Add("User-Agent", UserAgent);
 
                 requestMessage.Headers.Add("Api-Key", _config.ApiKey);
                 requestMessage.Method = HttpMethod.Post;
