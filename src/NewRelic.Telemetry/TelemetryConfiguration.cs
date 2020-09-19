@@ -75,16 +75,6 @@ namespace NewRelic.Telemetry
         public string? InstrumentationProvider { get; set; }
 
         /// <summary>
-        /// A list of the New Relic endpoints where information is sent.  This collection may be used
-        /// to filter out communications with New Relic endpoints during analysis.
-        /// </summary>
-        public string[] NewRelicEndpoints => new[]
-        {
-            TraceUrl,
-            MetricUrl,
-        };
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="TelemetryConfiguration"/> class.
         /// Creates the Configuration object accepting all default settings.
         /// </summary>
