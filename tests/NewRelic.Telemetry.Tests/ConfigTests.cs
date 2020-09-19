@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
-using NUnit.Framework;
+using Xunit;
 
 namespace NewRelic.Telemetry.Tests
 {
@@ -39,11 +39,6 @@ namespace NewRelic.Telemetry.Tests
         private const string ServiceNameDefaultValue = null;
 
         private const int BackoffMaxSecondsDefaultValue = 80;
-
-        [SetUp]
-        public void Setup()
-        {
-        }
 
         /// <summary>
         /// Uses a dictionary to produce an example appsettings.json configuration.  This 
@@ -190,14 +185,14 @@ namespace NewRelic.Telemetry.Tests
         /// when a config value for a product exists that it is used before the overall New Relic value
         /// and lastly the Default Value (in the class).
         /// </summary>
-        [Test]
+        [Fact]
         public void ProductSpecificConfig()
         {
             var telemetryConfig = new TelemetryConfiguration(ConfigExample_NewRelicConfig, ProductName);
-            Assert.AreEqual(ApiKeyProdValue, telemetryConfig.ApiKey);
-            Assert.AreEqual(SendTimeoutSecondsProdValue, telemetryConfig.SendTimeout);
-            Assert.AreEqual(ServiceNameNewRelicValue, telemetryConfig.ServiceName);
-            Assert.AreEqual(BackoffMaxSecondsDefaultValue, telemetryConfig.BackoffMaxSeconds);
+            Assert.Equal(ApiKeyProdValue, telemetryConfig.ApiKey);
+            Assert.Equal(SendTimeoutSecondsProdValue, telemetryConfig.SendTimeout);
+            Assert.Equal(ServiceNameNewRelicValue, telemetryConfig.ServiceName);
+            Assert.Equal(BackoffMaxSecondsDefaultValue, telemetryConfig.BackoffMaxSeconds);
         }
 
         /// <summary>
@@ -205,15 +200,15 @@ namespace NewRelic.Telemetry.Tests
         /// tests general Configuration without a specific product.  Testing to make sure that 
         /// the product configuration values are not used and that New Relic Values only override default values.
         /// </summary>
-        [Test]
+        [Fact]
         public void NewRelicConfigOnly()
         {
             var telemetryConfig = new TelemetryConfiguration(ConfigExample_NewRelicConfig);
 
-            Assert.AreEqual(ApiKeyNewRelicValue, telemetryConfig.ApiKey);
-            Assert.AreEqual(SendTimeoutSecondsDefaultValue, telemetryConfig.SendTimeout);
-            Assert.AreEqual(ServiceNameNewRelicValue, telemetryConfig.ServiceName);
-            Assert.AreEqual(BackoffMaxSecondsDefaultValue, telemetryConfig.BackoffMaxSeconds);
+            Assert.Equal(ApiKeyNewRelicValue, telemetryConfig.ApiKey);
+            Assert.Equal(SendTimeoutSecondsDefaultValue, telemetryConfig.SendTimeout);
+            Assert.Equal(ServiceNameNewRelicValue, telemetryConfig.ServiceName);
+            Assert.Equal(BackoffMaxSecondsDefaultValue, telemetryConfig.BackoffMaxSeconds);
         }
 
         /// <summary>
@@ -222,30 +217,30 @@ namespace NewRelic.Telemetry.Tests
         /// but there is a New Relic Section.  In this case, the values from New Relic section should
         /// override default values (as defined the in TelemetryConfiguration class).
         /// </summary>
-        [Test]
+        [Fact]
         public void MissingProductConfig()
         {
             var telemetryConfig = new TelemetryConfiguration(ConfigExample_NewRelicConfig, MissingProductName);
 
-            Assert.AreEqual(ApiKeyNewRelicValue, telemetryConfig.ApiKey);
-            Assert.AreEqual(SendTimeoutSecondsDefaultValue, telemetryConfig.SendTimeout);
-            Assert.AreEqual(ServiceNameNewRelicValue, telemetryConfig.ServiceName);
-            Assert.AreEqual(BackoffMaxSecondsDefaultValue, telemetryConfig.BackoffMaxSeconds);
+            Assert.Equal(ApiKeyNewRelicValue, telemetryConfig.ApiKey);
+            Assert.Equal(SendTimeoutSecondsDefaultValue, telemetryConfig.SendTimeout);
+            Assert.Equal(ServiceNameNewRelicValue, telemetryConfig.ServiceName);
+            Assert.Equal(BackoffMaxSecondsDefaultValue, telemetryConfig.BackoffMaxSeconds);
         }
 
         /// <summary>
         /// With a configuration that does NOT contain a New Relic section, 
         /// tests to ensure that only default values should be used (as defined the in TelemetryConfiguration class).
         /// </summary>
-        [Test]
+        [Fact]
         public void MissingNewRelicConfig()
         {
             var telemetryConfig = new TelemetryConfiguration(ConfigExample_NewRelicConfigMissing);
 
-            Assert.AreEqual(ApiKeyDefaultValue, telemetryConfig.ApiKey);
-            Assert.AreEqual(SendTimeoutSecondsDefaultValue, telemetryConfig.SendTimeout);
-            Assert.AreEqual(ServiceNameDefaultValue, telemetryConfig.ServiceName);
-            Assert.AreEqual(BackoffMaxSecondsDefaultValue, telemetryConfig.BackoffMaxSeconds);
+            Assert.Equal(ApiKeyDefaultValue, telemetryConfig.ApiKey);
+            Assert.Equal(SendTimeoutSecondsDefaultValue, telemetryConfig.SendTimeout);
+            Assert.Equal(ServiceNameDefaultValue, telemetryConfig.ServiceName);
+            Assert.Equal(BackoffMaxSecondsDefaultValue, telemetryConfig.BackoffMaxSeconds);
         }
     }
 }
