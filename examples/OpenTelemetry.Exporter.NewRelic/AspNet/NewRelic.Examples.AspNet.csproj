@@ -89,17 +89,17 @@
     <Reference Include="Microsoft.Extensions.Primitives, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Microsoft.Extensions.Primitives.2.1.0\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTelemetry, Version=0.5.0.2, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\OpenTelemetry.0.5.0-beta.2\lib\net46\OpenTelemetry.dll</HintPath>
+    <Reference Include="OpenTelemetry, Version=0.6.0.1, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\OpenTelemetry.0.6.0-beta.1\lib\net46\OpenTelemetry.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTelemetry.Api, Version=0.5.0.2, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\OpenTelemetry.Api.0.5.0-beta.2\lib\net452\OpenTelemetry.Api.dll</HintPath>
+    <Reference Include="OpenTelemetry.Api, Version=0.6.0.1, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\OpenTelemetry.Api.0.6.0-beta.1\lib\net452\OpenTelemetry.Api.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTelemetry.Instrumentation.AspNet, Version=0.5.0.2, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\OpenTelemetry.Instrumentation.AspNet.0.5.0-beta.2\lib\net46\OpenTelemetry.Instrumentation.AspNet.dll</HintPath>
+    <Reference Include="OpenTelemetry.Instrumentation.AspNet, Version=0.6.0.1, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\OpenTelemetry.Instrumentation.AspNet.0.6.0-beta.1\lib\net46\OpenTelemetry.Instrumentation.AspNet.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTelemetry.Instrumentation.Http, Version=0.5.0.2, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\OpenTelemetry.Instrumentation.Http.0.5.0-beta.2\lib\net461\OpenTelemetry.Instrumentation.Http.dll</HintPath>
+    <Reference Include="OpenTelemetry.Instrumentation.Http, Version=0.6.0.1, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\OpenTelemetry.Instrumentation.Http.0.6.0-beta.1\lib\net461\OpenTelemetry.Instrumentation.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
@@ -108,7 +108,7 @@
       <HintPath>..\..\..\packages\System.Collections.Immutable.1.4.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.Diagnostics.DiagnosticSource, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Diagnostics.DiagnosticSource.5.0.0-preview.8.20407.11\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Diagnostics.DiagnosticSource.5.0.0-rc.1.20451.14\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
     </Reference>
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
@@ -119,7 +119,7 @@
       <HintPath>..\..\..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0-preview.8.20407.11\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0-rc.1.20451.14\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
