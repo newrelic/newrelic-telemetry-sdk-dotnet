@@ -14,8 +14,8 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         public void SendAnEmptyMetricBatch()
         {
-            var spanBatch = MetricBatchBuilder.Create()
-                .Build();
+            var spanBatch = new NewRelicMetricBatch(
+                metrics: new NewRelicMetric[0]);
 
             var dataSender = new MetricDataSender(new TelemetryConfiguration().WithApiKey("123456"));
 
@@ -33,9 +33,15 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         public void SendANonEmptyMetricBatch()
         {
-            var metricBatch = MetricBatchBuilder.Create()
-                .WithMetric(MetricBuilder.CreateGaugeMetric("TestMetric").Build())
-                .Build();
+            var metricBatch = new NewRelicMetricBatch(
+                metrics: new[]
+                    {
+                        NewRelicMetric.CreateGaugeMetric(
+                            name: "TestMetric",
+                            timestamp: null,
+                            attributes: null,
+                            value: 0),
+                    });
 
             var dataSender = new MetricDataSender(new TelemetryConfiguration().WithApiKey("123456"));
 

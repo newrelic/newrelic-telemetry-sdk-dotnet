@@ -1,7 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using NewRelic.Telemetry;
-using NewRelic.Telemetry.Spans;
+using NewRelic.Telemetry.Tracing;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace BasicConsoleApplication
 {
     class Program
     {
-        private static SpanDataSender _dataSvc;
+        private static TraceDataSender _dataSvc;
 
         static void Main(string[] args)
         {
@@ -48,37 +49,25 @@ namespace BasicConsoleApplication
             Console.WriteLine($"{telemetryConfiguration.TraceUrl}");
 
             // The SpanDataSender handles all communication with the New Relic end point
-            _dataSvc = new SpanDataSender(telemetryConfiguration);
+            _dataSvc = new TraceDataSender(telemetryConfiguration, null);
         }
 
         /// <summary>
         /// In this example, all of the spans are for the same trace.  Accordingly, the
-        /// TraceId is set in the SpanBatchBuilder.
+        /// TraceId is set in the SpanBatch.
         /// </summary>
         private static async Task Example_SpanBatchForSingleTrace()
         {
             var traceId = System.Guid.NewGuid().ToString();
 
-            // The SpanBatchBuilder manages a collection of Spans
-            var spanBatchBuilder = SpanBatchBuilder.Create();
-
-            // Since all of the spans in this batch represent a single
-            // execution trace, set the TraceId on the SpanBatch instead
-            // of on the individual spans.
-            spanBatchBuilder.WithTraceId(traceId);
+            // The collection of Spans
+            var spans = new List<NewRelicSpan>();
 
             // Perform 10 units of work as part of this trace/spanBatch
             for (var spanIdx = 0; spanIdx < 5; spanIdx++)
             {
-                // The SpanBuilder is used to crate a new span.
-                // Create a new SpanBuilder assigning it a random guid as the spanId
-                var spanBuilder = SpanBuilder.Create(Guid.NewGuid().ToString());
-
-                //Add a name to the span to better understand it in the New Relic UI.
-                spanBuilder.WithName($"{traceId} - {spanIdx}");
-
-                // Capture the start time for later use in calculating duration.
-                var startTime = DateTime.UtcNow;
+                var spanStartTime = DateTime.UtcNow;
+                var spanAttribs = new Dictionary<string, object>();
 
                 try
                 {
@@ -90,25 +79,29 @@ namespace BasicConsoleApplication
                     // In the event of an exception, mark the span 
                     // as having an error and record a custom attribute 
                     // with the details about the exception.
-                    spanBuilder.HasError(true);
-                    spanBuilder.WithAttribute("Exception", ex);
+                    spanAttribs[NewRelicConsts.Tracing.AttribNameHasError] = true;
+                    spanAttribs[NewRelicConsts.Tracing.AttribNameHasError] = ex;
                 }
                 finally
                 {
-                    // Calculate the duration of execution and record it
-                    var duration = TimeSpan.FromMilliseconds(100);
-                    spanBuilder.WithExecutionTimeInfo(startTime, duration);
+                    spanAttribs[NewRelicConsts.Tracing.AttribNameName] =  $"{traceId} - {spanIdx}";
+                    spanAttribs[NewRelicConsts.Tracing.AttribNameDurationMs] = DateTime.UtcNow.Subtract(spanStartTime).TotalMilliseconds;
 
-                    //Obtain the completed Span from the SpanBuilder
-                    var span = spanBuilder.Build();
-
-                    //Attach the span to the Span Batch.
-                    spanBatchBuilder.WithSpan(span);
+                    // Create a new Span assigning it a random guid as the spanId
+                    var span = new NewRelicSpan(
+                        traceId: null,         //Not supplying TraceID here because Batch will have common properties with TraceID
+                        spanId: Guid.NewGuid().ToString(),
+                        parentSpanId: null,
+                        timestamp: DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                        attributes: spanAttribs);
+                    
+                    spans.Add(span);
                 }
             }
 
-            // Obtain the SpanBatch from the SpanBatchBuilder
-            var spanBatch = spanBatchBuilder.Build();
+            var spanBatchCommonProps = new NewRelicSpanBatchCommonProperties(traceId, null);
+
+            var spanBatch = new NewRelicSpanBatch(spans, spanBatchCommonProps);
 
             // Send the SpanBatch to the New Relic endpoint.
             await SendDataToNewRelic(spanBatch);
@@ -122,57 +115,51 @@ namespace BasicConsoleApplication
         /// </summary>
         private static async Task Example_SpanBatchForMultipleTraces()
         {
-            var spanBatchBuilder = SpanBatchBuilder.Create();
+            // The collection of Spans
+            var spans = new List<NewRelicSpan>();
 
             for (var traceIdx = 0; traceIdx < 3; traceIdx++)
             {
                 var traceId = Guid.NewGuid().ToString();
 
+                // Perform 10 units of work as part of this trace/spanBatch
                 for (var spanIdx = 0; spanIdx < 5; spanIdx++)
                 {
-                    
-                    var spanBuilder = SpanBuilder.Create(Guid.NewGuid().ToString());
-
-                    // Since multiple traces will be reported in the same SpanBatch,
-                    // the TraceID needs to be attached to the individual spans.
-                    spanBuilder.WithTraceId(traceId)
-                               .WithName($"{traceId} - {spanIdx}");
-
-                    // Capture the start time for later use in calculating duration.
-                    var startTime = DateTime.UtcNow;
+                    var spanStartTime = DateTime.UtcNow;
+                    var spanAttribs = new Dictionary<string, object>();
 
                     try
                     {
                         // Attempt to perform a unit of work
-                        DoWork($"Hello Outer Space Trace={traceId}, Span={spanIdx}");
+                        DoWork($"Hello World #{spanIdx}");
                     }
                     catch (Exception ex)
                     {
                         // In the event of an exception, mark the span 
                         // as having an error and record a custom attribute 
                         // with the details about the exception.
-                        spanBuilder.HasError(true);
-                        spanBuilder.WithAttribute("Exception", ex);
+                        spanAttribs[NewRelicConsts.Tracing.AttribNameHasError] = true;
+                        spanAttribs[NewRelicConsts.Tracing.AttribNameHasError] = ex;
                     }
                     finally
                     {
-                        // Calculate the duration of execution and record it
-                        var duration = TimeSpan.FromMilliseconds(100);
-                        spanBuilder.WithExecutionTimeInfo(startTime, duration);
+                        spanAttribs[NewRelicConsts.Tracing.AttribNameName] = $"{traceId} - {spanIdx}";
+                        spanAttribs[NewRelicConsts.Tracing.AttribNameDurationMs] = DateTime.UtcNow.Subtract(spanStartTime).TotalMilliseconds;
 
-                        //Obtain the completed Span from the SpanBuilder
-                        var span = spanBuilder.Build();
+                        // Create a new Span assigning it a random guid as the spanId
+                        var span = new NewRelicSpan(
+                            traceId: traceId,         //Since we're mixing traces in the same batch, the trace id is supplied on each span
+                            spanId: Guid.NewGuid().ToString(),
+                            parentSpanId: null,
+                            timestamp: DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                            attributes: spanAttribs);
 
-                        //Attach the span to the Span Batch.
-                        spanBatchBuilder.WithSpan(span);
+                        spans.Add(span);
                     }
                 }
-
-                Console.WriteLine();
             }
 
-            // Obtain the SpanBatch from the SpanBatchBuilder
-            var spanBatch = spanBatchBuilder.Build();
+            var spanBatch = new NewRelicSpanBatch(spans);
 
             // Send the SpanBatch to the New Relic endpoint.
             await SendDataToNewRelic(spanBatch);
@@ -184,7 +171,7 @@ namespace BasicConsoleApplication
         /// </summary>
         /// <param name="spanBatch"></param>
         /// <returns></returns>
-        private static async Task SendDataToNewRelic(SpanBatch spanBatch)
+        private static async Task SendDataToNewRelic(NewRelicSpanBatch spanBatch)
         {
             var result = await _dataSvc.SendDataAsync(spanBatch);
             Console.WriteLine("Send Data to New Relic");

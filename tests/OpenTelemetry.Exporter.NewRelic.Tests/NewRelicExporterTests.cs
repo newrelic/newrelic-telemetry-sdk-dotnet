@@ -17,9 +17,9 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
     [Collection("newrelic-exporter")]
     public class NewRelicExporterTests : IDisposable
     {
-        private static readonly ConcurrentDictionary<Guid, string> _responses = new ConcurrentDictionary<Guid, string>();
+        private static readonly ConcurrentDictionary<Guid, string> Responses = new ConcurrentDictionary<Guid, string>();
 
-        private readonly IDisposable _testServer;
+        private readonly IDisposable? _testServer;
         private readonly string _testServerHost;
         private readonly int _testServerPort;
 
@@ -53,7 +53,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 
                 string requestContent = readStream.ReadToEnd();
 
-                _responses.TryAdd(
+                Responses.TryAdd(
                     Guid.Parse(context.Request.QueryString["requestId"]),
                     requestContent);
 
@@ -63,7 +63,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 
         public void Dispose()
         {
-            _testServer.Dispose();
+            _testServer?.Dispose();
         }
 
         [Fact]
