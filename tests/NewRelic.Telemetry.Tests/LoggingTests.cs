@@ -3,13 +3,13 @@
 
 using System;
 using Microsoft.Extensions.Logging;
-using NUnit.Framework;
+using Xunit;
 
 namespace NewRelic.Telemetry.Tests
 {
     public class LoggingTests
     {
-        [Test]
+        [Fact]
         public void TestLogging()
         {
             var loggerFactory = new LoggerFactory();
@@ -27,10 +27,10 @@ namespace NewRelic.Telemetry.Tests
             tl.Error("error level logging message.");
             tl.Exception(ex);
 
-            Assert.IsTrue(customLogProvider.LogOutput.ContainsKey("NewRelic.Telemetry"));
+            Assert.True(customLogProvider.LogOutput.ContainsKey("NewRelic.Telemetry"));
             var logs = customLogProvider.LogOutput["NewRelic.Telemetry"];
 
-            Assert.AreEqual(5, logs.Count);
+            Assert.Equal(5, logs.Count);
             Assert.Contains("NewRelic Telemetry: debug level logging message.", logs);
             Assert.Contains("NewRelic Telemetry: information level logging message.", logs);
             Assert.Contains("NewRelic Telemetry: warning level logging message.", logs);
