@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using NewRelic.Telemetry.Extensions;
 using NewRelic.Telemetry.Tracing;
 using NewRelic.Telemetry.Transport;
 using NUnit.Framework;
@@ -44,7 +43,7 @@ namespace NewRelic.Telemetry.Tests
             var span = new NewRelicSpan(
                 traceId: null,
                 spanId: "Span1",
-                timestamp: DateTime.UtcNow.ToUnixTimeMilliseconds(),
+                timestamp: DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 parentSpanId: null,
                 attributes: new Dictionary<string, object>()
                 {
@@ -77,7 +76,7 @@ namespace NewRelic.Telemetry.Tests
             var span = new NewRelicSpan(
                             traceId: null,
                             spanId: "Span1",
-                            timestamp: DateTime.UtcNow.ToUnixTimeMilliseconds(),
+                            timestamp: DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                             parentSpanId: null,
                             attributes: new Dictionary<string, object>()
                             {

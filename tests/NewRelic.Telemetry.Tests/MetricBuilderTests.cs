@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using NewRelic.Telemetry.Extensions;
 using NewRelic.Telemetry.Metrics;
 using NUnit.Framework;
 
@@ -14,14 +13,13 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         public void BuildCountMetric()
         {
-            var timestamp = DateTime.UtcNow;
-            var timestampL = DateTimeExtensions.ToUnixTimeMilliseconds(timestamp);
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             var interval = 33L;
             var value = 22;
 
             var metric = NewRelicMetric.CreateCountMetric(
                 name: "metricName",
-                timestamp: timestampL,
+                timestamp: timestamp,
                 attributes: new Dictionary<string, object>
                     {
                         { "attrKey", "attrValue" },
@@ -33,7 +31,7 @@ namespace NewRelic.Telemetry.Tests
             Assert.AreEqual("metricName", metric.Name);
             Assert.AreEqual("count", metric.Type);
             Assert.AreEqual(value, metric.Value);
-            Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(timestamp), metric.Timestamp);
+            Assert.AreEqual(timestamp, metric.Timestamp);
             Assert.AreEqual(interval, metric.IntervalMs);
             Assert.AreEqual("attrValue", metric.Attributes?["attrKey"]);
         }
@@ -41,13 +39,12 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         public void BuildGaugeMetric()
         {
-            var timestamp = DateTime.UtcNow;
-            var timestampL = DateTimeExtensions.ToUnixTimeMilliseconds(timestamp);
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             var value = 87;
 
             var metric = NewRelicMetric.CreateGaugeMetric(
                 name: "metricName",
-                timestamp: timestampL,
+                timestamp: timestamp,
                 attributes: new Dictionary<string, object>
                     {
                         { "attrKey", "attrValue" },
@@ -58,7 +55,7 @@ namespace NewRelic.Telemetry.Tests
             Assert.AreEqual("metricName", metric.Name);
             Assert.AreEqual("gauge", metric.Type);
             Assert.AreEqual(value, metric.Value);
-            Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(timestamp), metric.Timestamp);
+            Assert.AreEqual(timestamp, metric.Timestamp);
             Assert.AreEqual(12, metric.Attributes?["adsfasdf"]);
             Assert.AreEqual("attrValue", metric.Attributes?["attrKey"]);
         }
@@ -66,8 +63,7 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         public void BuildSummaryMetricWithClass()
         {
-            var timestamp = DateTime.UtcNow;
-            var timestampL = DateTimeExtensions.ToUnixTimeMilliseconds(timestamp);
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             var interval = 33L;
             var value = new NewRelicMetricSummaryValue(
                     count: 10d,
@@ -77,7 +73,7 @@ namespace NewRelic.Telemetry.Tests
 
             var metric = NewRelicMetric.CreateSummaryMetric(
                 name: "metricName",
-                timestamp: timestampL,
+                timestamp: timestamp,
                 attributes: new Dictionary<string, object>
                     {
                         { "attrKey", "attrValue" },
@@ -89,7 +85,7 @@ namespace NewRelic.Telemetry.Tests
             Assert.AreEqual("metricName", metric.Name);
             Assert.AreEqual("summary", metric.Type);
             Assert.AreEqual(value, metric.SummaryValue);
-            Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(timestamp), metric.Timestamp);
+            Assert.AreEqual(timestamp, metric.Timestamp);
             Assert.AreEqual(interval, metric.IntervalMs);
             Assert.AreEqual(12, metric.Attributes?["adsfasdf"]);
             Assert.AreEqual("attrValue", metric.Attributes?["attrKey"]);
@@ -98,15 +94,14 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         public void BuildSummaryMetricWithValues()
         {
-            var timestamp = DateTime.UtcNow;
-            var timestampL = DateTimeExtensions.ToUnixTimeMilliseconds(timestamp);
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             var interval = 33L;
             var value = new NewRelicMetricSummaryValue(10d, 64, 3, 15);
 
 
             var metric = NewRelicMetric.CreateSummaryMetric(
                 name: "metricName",
-                timestamp: timestampL,
+                timestamp: timestamp,
                 attributes: new Dictionary<string, object>
                     {
                         { "attrKey", "attrValue" },
@@ -121,7 +116,7 @@ namespace NewRelic.Telemetry.Tests
             Assert.AreEqual("metricName", metric.Name);
             Assert.AreEqual("summary", metric.Type);
             Assert.AreEqual(value, metric.SummaryValue);
-            Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(timestamp), metric.Timestamp);
+            Assert.AreEqual(timestamp, metric.Timestamp);
             Assert.AreEqual(interval, metric.IntervalMs);
             Assert.AreEqual(12, metric.Attributes?["adsfasdf"]);
             Assert.AreEqual("attrValue", metric.Attributes?["attrKey"]);
@@ -130,8 +125,7 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         public void BuildSummaryMetricWithNullMinMax()
         {
-            var timestamp = DateTime.UtcNow;
-            var timestampL = DateTimeExtensions.ToUnixTimeMilliseconds(timestamp);
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             var interval = 33L;
             var value = new NewRelicMetricSummaryValue(
                     count: 10d,
@@ -141,7 +135,7 @@ namespace NewRelic.Telemetry.Tests
 
             var metric = NewRelicMetric.CreateSummaryMetric(
                 name: "metricName",
-                timestamp: timestampL,
+                timestamp: timestamp,
                 attributes: new Dictionary<string, object>
                     {
                         { "attrKey", "attrValue" },
@@ -153,7 +147,7 @@ namespace NewRelic.Telemetry.Tests
             Assert.AreEqual("metricName", metric.Name);
             Assert.AreEqual("summary", metric.Type);
             Assert.AreEqual(value, metric.SummaryValue);
-            Assert.AreEqual(DateTimeExtensions.ToUnixTimeMilliseconds(timestamp), metric.Timestamp);
+            Assert.AreEqual(timestamp, metric.Timestamp);
             Assert.AreEqual(interval, metric.IntervalMs);
             Assert.AreEqual(12, metric.Attributes?["adsfasdf"]);
             Assert.AreEqual("attrValue", metric.Attributes?["attrKey"]);

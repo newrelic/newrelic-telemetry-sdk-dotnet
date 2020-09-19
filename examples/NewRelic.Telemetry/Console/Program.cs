@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using NewRelic.Telemetry;
 using NewRelic.Telemetry.Tracing;
-using NewRelic.Telemetry.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -93,9 +92,9 @@ namespace BasicConsoleApplication
                         traceId: null,         //Not supplying TraceID here because Batch will have common properties with TraceID
                         spanId: Guid.NewGuid().ToString(),
                         parentSpanId: null,
-                        timestamp: DateTime.UtcNow.ToUnixTimeMilliseconds(),
+                        timestamp: DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                         attributes: spanAttribs);
-
+                    
                     spans.Add(span);
                 }
             }
@@ -152,7 +151,7 @@ namespace BasicConsoleApplication
                             traceId: traceId,         //Since we're mixing traces in the same batch, the trace id is supplied on each span
                             spanId: Guid.NewGuid().ToString(),
                             parentSpanId: null,
-                            timestamp: DateTime.UtcNow.ToUnixTimeMilliseconds(),
+                            timestamp: DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                             attributes: spanAttribs);
 
                         spans.Add(span);

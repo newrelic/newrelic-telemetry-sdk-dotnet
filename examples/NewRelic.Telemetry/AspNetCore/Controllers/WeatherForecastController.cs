@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NewRelic.Telemetry.Tracing;
 using NewRelic.Telemetry.Transport;
-using NewRelic.Telemetry.Extensions;
 using NewRelic.Telemetry;
 
 namespace AspNetCoreWebApiApplication.Controllers
@@ -40,7 +39,7 @@ namespace AspNetCoreWebApiApplication.Controllers
         {
             // Each span must have a unique identifier.  In this example, we are using a Guid.
             var spanId = Guid.NewGuid().ToString();
-            var spanTimeStamp = DateTime.UtcNow;
+            var spanTimeStamp = DateTimeOffset.UtcNow;
             var spanAttribs = new Dictionary<string, object>();
 
             // Wrapping the unit of work inside a try/catch is helpful to ensure that
@@ -73,13 +72,13 @@ namespace AspNetCoreWebApiApplication.Controllers
             finally
             {
                 spanAttribs[NewRelicConsts.Tracing.AttribNameName] = "WeatherForecast/Get";
-                spanAttribs[NewRelicConsts.Tracing.AttribNameDurationMs] = DateTime.UtcNow.Subtract(spanTimeStamp).TotalMilliseconds;
+                spanAttribs[NewRelicConsts.Tracing.AttribNameDurationMs] = DateTimeOffset.UtcNow.Subtract(spanTimeStamp).TotalMilliseconds;
 
 
                 var span = new NewRelicSpan(
                     traceId: Guid.NewGuid().ToString(),
                     spanId: spanId,
-                    timestamp: spanTimeStamp.ToUnixTimeMilliseconds(),
+                    timestamp:  spanTimeStamp.ToUnixTimeMilliseconds(),
                     parentSpanId: null,
                     attributes: spanAttribs);
 

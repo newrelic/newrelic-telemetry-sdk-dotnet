@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NewRelic.Telemetry;
-using NewRelic.Telemetry.Extensions;
 using NewRelic.Telemetry.Tracing;
 using NewRelic.Telemetry.Transport;
 using OpenTelemetry.Trace;

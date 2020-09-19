@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NewRelic.Telemetry.Extensions;
 using NewRelic.Telemetry.Metrics;
 using NUnit.Framework;
 
@@ -12,9 +11,7 @@ namespace NewRelic.Telemetry.Tests
 { 
     public class MetricBatchJsonTests
     {
-        private readonly DateTime _timestamp = DateTime.UtcNow;
-
-        private long TimestampL => DateTimeExtensions.ToUnixTimeMilliseconds(_timestamp);
+        private readonly long _timestampL = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
         private readonly long _interval = 250L;
 
@@ -32,7 +29,7 @@ namespace NewRelic.Telemetry.Tests
         public void ToJson_EmptyMetricBatch()
         {
             // Arrange
-            var metricBatch = new NewRelicMetricBatch(new List<NewRelicMetric>(), new NewRelicMetricBatchCommonProperties(TimestampL, null, null));
+            var metricBatch = new NewRelicMetricBatch(new List<NewRelicMetric>(), new NewRelicMetricBatchCommonProperties(_timestampL, null, null));
 
             // Act
             var jsonString = metricBatch.ToJson();
@@ -41,7 +38,7 @@ namespace NewRelic.Telemetry.Tests
             var resultMetricBatch = TestHelpers.DeserializeArrayFirstOrDefault(jsonString);
             var resultCommonProps = TestHelpers.DeserializeObject(resultMetricBatch["common"]);
 
-            TestHelpers.AssertForAttribValue(resultCommonProps, "timestamp", TimestampL);
+            TestHelpers.AssertForAttribValue(resultCommonProps, "timestamp", _timestampL);
        }
 
         [Test]
@@ -50,7 +47,7 @@ namespace NewRelic.Telemetry.Tests
             // Arrange
             var metricBatch = new NewRelicMetricBatch(
                 commonProperties: new NewRelicMetricBatchCommonProperties(
-                    timestamp: TimestampL,
+                    timestamp: _timestampL,
                     intervalMs: _interval,
                     attributes: null),
                 metrics: new []
@@ -81,7 +78,7 @@ namespace NewRelic.Telemetry.Tests
             var resultMetricBatch = resultMetricBatches.First();
             var resultCommonProps = TestHelpers.DeserializeObject(resultMetricBatch["common"]);
 
-            TestHelpers.AssertForAttribValue(resultCommonProps, "timestamp", TimestampL);
+            TestHelpers.AssertForAttribValue(resultCommonProps, "timestamp", _timestampL);
             TestHelpers.AssertForAttribValue(resultCommonProps, "interval.ms", _interval);
 
             var resultMetrics = TestHelpers.DeserializeArray(resultMetricBatch["metrics"]);
