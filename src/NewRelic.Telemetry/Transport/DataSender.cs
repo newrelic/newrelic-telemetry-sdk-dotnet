@@ -63,7 +63,7 @@ namespace NewRelic.Telemetry.Transport
             _logger = new TelemetryLogging(loggerFactory);
 
             _httpClient = new HttpClient();
-            _httpClient.Timeout = TimeSpan.FromSeconds(_config.SendTimeout);
+            _httpClient.Timeout = _config.SendTimeout;
 
             // Ensures that DNS expires regularly.
             var sp = ServicePointManager.FindServicePoint(EndpointUrl);

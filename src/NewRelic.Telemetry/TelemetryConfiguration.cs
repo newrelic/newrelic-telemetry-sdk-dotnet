@@ -39,7 +39,7 @@ namespace NewRelic.Telemetry
         /// a New Relic endpoint.  Requests that exceed this limit will be assumed to have
         /// failed.
         /// </summary>
-        public int SendTimeout { get; set; } = 5;
+        public TimeSpan SendTimeout { get; set; } = TimeSpan.FromSeconds(5);
 
         /// <summary>
         /// In the event of a failure, the DataSender will wait a certain amount of time (back-off) and retry.
@@ -123,7 +123,7 @@ namespace NewRelic.Telemetry
             TraceUrl = GetValueUri("TraceUrlOverride", productConfigSection, newRelicConfigSection) ?? TraceUrl;
             MetricUrl = GetValueUri("MetricUrlOverride", productConfigSection, newRelicConfigSection) ?? MetricUrl;
             AuditLoggingEnabled = GetValueBool("AuditLoggingEnabled", productConfigSection, newRelicConfigSection) ?? AuditLoggingEnabled;
-            SendTimeout = GetValueInt("SendTimeoutSeconds", productConfigSection, newRelicConfigSection) ?? SendTimeout;
+            SendTimeout = GetValueTimeSpan("SendTimeoutSeconds", productConfigSection, newRelicConfigSection) ?? SendTimeout;
             MaxRetryAttempts = GetValueInt("MaxRetryAttempts", productConfigSection, newRelicConfigSection) ?? MaxRetryAttempts;
             BackoffMaxSeconds = GetValueInt("BackoffMaxSeconds", productConfigSection, newRelicConfigSection) ?? BackoffMaxSeconds;
             BackoffDelayFactorSeconds = GetValueInt("BackoffDelayFactorSeconds", productConfigSection, newRelicConfigSection) ?? BackoffDelayFactorSeconds;
@@ -133,6 +133,12 @@ namespace NewRelic.Telemetry
         {
             Uri.TryCreate(GetValueString(key, productConfigSection, newRelicConfigSection), UriKind.Absolute, out var uri);
             return uri;
+        }
+
+        private TimeSpan? GetValueTimeSpan(string key, IConfigurationSection? productConfigSection, IConfigurationSection newRelicConfigSection)
+        {
+            var seconds = GetValueInt(key, productConfigSection, newRelicConfigSection);
+            return seconds.HasValue ? TimeSpan.FromSeconds(seconds.Value) : (TimeSpan?)null;
         }
 
         private string? GetValueString(string key, IConfigurationSection? productConfigSection, IConfigurationSection newRelicConfigSection)
