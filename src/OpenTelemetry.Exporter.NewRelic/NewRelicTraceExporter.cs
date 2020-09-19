@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NewRelic.Telemetry;
 using NewRelic.Telemetry.Tracing;
@@ -33,33 +32,11 @@ namespace OpenTelemetry.Exporter.NewRelic
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NewRelicTraceExporter"/> class.
-        /// Configures the Trace Exporter accepting settings from any configuration provider supported by Microsoft.Extensions.Configuration.
-        /// </summary>
-        /// <param name="configProvider"></param>
-        public NewRelicTraceExporter(IConfiguration configProvider)
-            : this(configProvider, null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewRelicTraceExporter"/> class.
-        /// Configures the Trace Exporter accepting settings from any configuration provider supported by Microsoft.Extensions.Configuration.
-        /// Also accepts any logging infrastructure supported by Microsoft.Extensions.Logging.
-        /// </summary>
-        /// <param name="configProvider"></param>
-        /// <param name="loggerFactory"></param>
-        public NewRelicTraceExporter(IConfiguration configProvider, ILoggerFactory? loggerFactory)
-            : this(new TelemetrySdk.TelemetryConfiguration(configProvider), loggerFactory)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewRelicTraceExporter"/> class.
         /// Configures the Trace Exporter accepting configuration settings from an instance of the New Relic Telemetry SDK configuration object.
         /// </summary>
         /// <param name="config"></param>
         public NewRelicTraceExporter(TelemetrySdk.TelemetryConfiguration config)
-            : this(config, null)
+            : this(config, null!)
         {
         }
 
@@ -69,7 +46,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// accepts a logger factory supported by Microsoft.Extensions.Logging.
         /// </summary>
         /// <param name="config"></param>
-        public NewRelicTraceExporter(TelemetrySdk.TelemetryConfiguration config, ILoggerFactory? loggerFactory)
+        public NewRelicTraceExporter(TelemetrySdk.TelemetryConfiguration config, ILoggerFactory loggerFactory)
             : this(new TraceDataSender(config, loggerFactory), config, loggerFactory)
         {
         }
@@ -115,6 +92,19 @@ namespace OpenTelemetry.Exporter.NewRelic
                 default:
                     return ExportResult.Failure;
             }
+        }
+
+        private static string? ActivityKindToString(ActivityKind kind)
+        {
+            return kind switch
+            {
+                ActivityKind.Consumer => "CONSUMER",
+                ActivityKind.Client => "CLIENT",
+                ActivityKind.Internal => "INTERNAL",
+                ActivityKind.Producer => "PRODUCER",
+                ActivityKind.Server => "SERVER",
+                _ => null,
+            };
         }
 
         private List<NewRelicSpan> ToNewRelicSpans(in Batch<Activity> otSpans)
@@ -190,9 +180,15 @@ namespace OpenTelemetry.Exporter.NewRelic
             }
 
             var parentSpanId = null as string;
-            if (openTelemetrySpan.ParentSpanId != EmptyActivitySpanId)
+            if (openTelemetrySpan.ParentSpanId != default && openTelemetrySpan.ParentSpanId != EmptyActivitySpanId)
             {
                 parentSpanId = openTelemetrySpan.ParentSpanId.ToHexString();
+            }
+
+            var spanKind = ActivityKindToString(openTelemetrySpan.Kind);
+            if (spanKind != null)
+            {
+                newRelicSpanAttribs.Add(NewRelicConsts.Tracing.AttribSpanKind, spanKind);
             }
 
             if (openTelemetrySpan.Tags != null)

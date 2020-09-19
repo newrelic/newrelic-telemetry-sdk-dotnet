@@ -10,7 +10,12 @@ using System.Threading.Tasks;
 
 namespace NewRelic.Telemetry.Metrics
 {
-    public class MetricDataSender : DataSender<NewRelicMetricBatch>
+#if INTERNALIZE_TELEMETRY_SDK
+    internal
+#else
+    public
+#endif
+    class MetricDataSender : DataSender<NewRelicMetricBatch>
     {
         protected override Uri EndpointUrl => _config.MetricUrl;
 

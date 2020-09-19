@@ -11,7 +11,12 @@ using NewRelic.Telemetry.Transport;
 
 namespace NewRelic.Telemetry.Tracing
 {
-    public class TraceDataSender : DataSender<NewRelicSpanBatch>
+#if INTERNALIZE_TELEMETRY_SDK
+    internal
+#else
+    public
+#endif
+    class TraceDataSender : DataSender<NewRelicSpanBatch>
     {
         protected override Uri EndpointUrl => _config.TraceUrl;
 

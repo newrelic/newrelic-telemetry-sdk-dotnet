@@ -15,7 +15,12 @@ using System.Threading.Tasks;
 
 namespace NewRelic.Telemetry.Transport
 {
-    public abstract class DataSender<TData>
+#if INTERNALIZE_TELEMETRY_SDK
+    internal
+#else
+    public
+#endif
+    abstract class DataSender<TData>
         where TData : ITelemetryDataType<TData>
     {
         internal string UserAgent { get; private set; }
