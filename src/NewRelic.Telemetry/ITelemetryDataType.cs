@@ -6,7 +6,12 @@ namespace NewRelic.Telemetry
     /// <summary>
     /// Interface used to identify a data type to be sent to a New Relic endpoint.
     /// </summary>
-    public interface ITelemetryDataType<T>
+#if INTERNALIZE_TELEMETRY_SDK
+    internal
+#else
+    public
+#endif
+    interface ITelemetryDataType<T>
         where T : ITelemetryDataType<T>
     {
         string ToJson();

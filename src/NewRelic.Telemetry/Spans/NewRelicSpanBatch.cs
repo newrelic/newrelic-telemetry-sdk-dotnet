@@ -8,7 +8,12 @@ using Utf8Json.Resolvers;
 
 namespace NewRelic.Telemetry.Tracing
 {
-    public readonly struct NewRelicSpanBatch : ITelemetryDataType<NewRelicSpanBatch>
+#if INTERNALIZE_TELEMETRY_SDK
+    internal
+#else
+    public
+#endif
+    readonly struct NewRelicSpanBatch : ITelemetryDataType<NewRelicSpanBatch>
     {
         [DataMember(Name = "common")]
         public NewRelicSpanBatchCommonProperties CommonProperties { get; }
