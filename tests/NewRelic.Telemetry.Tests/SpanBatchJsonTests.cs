@@ -1,22 +1,24 @@
 ﻿// Copyright 2020 New Relic, Inc. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Collections.Generic;
 using System.Linq;
-using NewRelic.Telemetry.Spans;
+using NewRelic.Telemetry.Tracing;
 using NUnit.Framework;
 
 namespace NewRelic.Telemetry.Tests
-{ 
-    internal class SpanBatchJsonTests
+{
+    public class SpanBatchJsonTests
     {
         [Test]
-        public void ToJson_EmptySpanBatch() 
+        public void ToJson_EmptySpanBatch()
         {
             // Arrange
-            var spanBatch = SpanBatchBuilder.Create()
-                .WithTraceId("traceId")
-                .Build();
-            
+            var spanBatch = new NewRelicSpanBatch(
+                spans: new NewRelicSpan[0],
+                commonProperties: new NewRelicSpanBatchCommonProperties(
+                    traceId: "traceId"));
+
             // Act
             var jsonString = spanBatch.ToJson();
 
@@ -25,23 +27,30 @@ namespace NewRelic.Telemetry.Tests
             var resultCommonProps = TestHelpers.DeserializeObject(resultSpanBatch["common"]);
 
             TestHelpers.AssertForAttribValue(resultCommonProps, "trace.id", "traceId");
-       }
+        }
 
         [Test]
         public void ToJson_NonEmptySpanBatch()
         {
             // Arrange
-            var spanBatch = SpanBatchBuilder.Create()
-                .WithTraceId("traceId")
-                .WithSpan(SpanBuilder.Create("span1")
-                    .WithTraceId("traceId")
-                    .WithTimestamp(1L)
-                    .WithServiceName("serviceName")
-                    .WithDurationMs(67)
-                    .WithName("name")
-                    .WithParentId("parentId")
-                    .HasError(true).Build())
-                .Build();
+            var spanBatch = new NewRelicSpanBatch(
+                commonProperties: new NewRelicSpanBatchCommonProperties(
+                    traceId: "traceId"),
+                spans: new NewRelicSpan[]
+                {
+                    new NewRelicSpan(
+                        spanId: "span1",
+                        traceId: "traceId",
+                        timestamp: 1L,
+                        parentSpanId: "parentId",
+                        attributes: new Dictionary<string, object>()
+                        {
+                            { NewRelicConsts.Tracing.AttribNameDurationMs, 67 },
+                            { NewRelicConsts.Tracing.AttribNameServiceName, "serviceName" },
+                            { NewRelicConsts.Tracing.AttribNameName, "name" },
+                            { NewRelicConsts.Tracing.AttribNameHasError, true },
+                        }),
+                });
 
             // Act
             var jsonString = spanBatch.ToJson();
@@ -52,7 +61,7 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForCollectionLength(resultSpanBatches, 1);
 
             var resultSpanBatch = resultSpanBatches.First();
-            
+
             var resultCommonProps = TestHelpers.DeserializeObject(resultSpanBatch["common"]);
 
             TestHelpers.AssertForAttribValue(resultCommonProps, "trace.id", "traceId");
@@ -60,7 +69,7 @@ namespace NewRelic.Telemetry.Tests
             var resultSpans = TestHelpers.DeserializeArray(resultSpanBatch["spans"]);
 
             TestHelpers.AssertForCollectionLength(resultSpans, 1);
-            
+
             var resultSpan = resultSpans.FirstOrDefault();
 
             TestHelpers.AssertForAttribValue(resultSpan, "id", "span1");
@@ -81,35 +90,42 @@ namespace NewRelic.Telemetry.Tests
         [Test]
         public void ToJson_SpanBatchWithMultipleSpans()
         {
-            // Arrange
-            var spanBatchBuilder = SpanBatchBuilder.Create()
-               .WithTraceId("traceId")
-               .WithAttribute("customAtt1", "hello")
-               .WithAttribute("customAtt2", 1)
-               .WithAttribute("customAtt3", 1.2M)
-               .WithAttribute("customAtt4", true);
-
-            spanBatchBuilder.WithSpan(SpanBuilder.Create("span1")
-                   .WithTraceId("traceId1")
-                   .WithTimestamp(1)
-                   .WithServiceName("serviceName1")
-                   .WithDurationMs(100)
-                   .WithName("name1")
-                   .WithParentId("parentId1")
-                   .HasError(true)
-                   .Build());
-
-            spanBatchBuilder.WithSpan(SpanBuilder.Create("span2")
-                   .WithTraceId("traceId2")
-                   .WithTimestamp(2)
-                   .WithServiceName("serviceName2")
-                   .WithDurationMs(200)
-                   .WithName("name2")
-                   .WithParentId("parentId2")
-                   .HasError(false)
-                   .Build());
-
-            var spanBatch = spanBatchBuilder.Build();
+            var spanBatch = new NewRelicSpanBatch(
+                commonProperties: new NewRelicSpanBatchCommonProperties(
+                    traceId: "traceId",
+                    attributes: new Dictionary<string, object>()
+                    {
+                         { "customAtt1", "hello" },
+                         { "customAtt2", 1 },
+                         { "customAtt3", 1.2 },
+                         { "customAtt4", true },
+                    }),
+                spans: new NewRelicSpan[]
+                {
+                    new NewRelicSpan(
+                        spanId: "span1",
+                        traceId: "traceId1",
+                        timestamp: 1L,
+                        parentSpanId: "parentId1",
+                        attributes: new Dictionary<string, object>()
+                        {
+                            { NewRelicConsts.Tracing.AttribNameDurationMs, 100 },
+                            { NewRelicConsts.Tracing.AttribNameServiceName, "serviceName1" },
+                            { NewRelicConsts.Tracing.AttribNameName, "name1" },
+                            { NewRelicConsts.Tracing.AttribNameHasError, true },
+                        }),
+                    new NewRelicSpan(
+                        spanId: "span2",
+                        traceId: "traceId2",
+                        timestamp: 2L,
+                        parentSpanId: "parentId2",
+                        attributes: new Dictionary<string, object>()
+                        {
+                            { NewRelicConsts.Tracing.AttribNameDurationMs, 200 },
+                            { NewRelicConsts.Tracing.AttribNameServiceName, "serviceName2" },
+                            { NewRelicConsts.Tracing.AttribNameName, "name2" },
+                        }),
+                });
 
             // Act
             var jsonString = spanBatch.ToJson();
@@ -130,7 +146,7 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribCount(resultCommonPropAttribs, 4);
             TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt1", "hello");
             TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt2", 1);
-            TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt3", 1.2M);
+            TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt3", 1.2);
             TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt4", true);
 
             var resultSpans = TestHelpers.DeserializeArray(resultSpanBatch["spans"]);
@@ -174,22 +190,31 @@ namespace NewRelic.Telemetry.Tests
         public void ToJson_SpanBatchWithAttributes()
         {
             // Arrange
-            var spanBatch = SpanBatchBuilder.Create()
-                .WithTraceId("traceId")
-                .WithAttribute("customAtt1", "hello")
-                .WithAttribute("customAtt2", 1)
-                .WithAttribute("customAtt3", 1.2M)
-                .WithAttribute("customAtt4", true)
-                .WithSpan(SpanBuilder.Create("span1")
-                    .WithTraceId("traceId")
-                    .WithTimestamp(1)
-                    .WithServiceName("serviceName")
-                    .WithDurationMs(67)
-                    .WithName("name")
-                    .WithParentId("parentId")
-                    .HasError(true)
-                    .Build())
-                .Build();
+            var spanBatch = new NewRelicSpanBatch(
+                commonProperties: new NewRelicSpanBatchCommonProperties(
+                    traceId: "traceId",
+                    attributes: new Dictionary<string, object>()
+                    {
+                         { "customAtt1", "hello" },
+                         { "customAtt2", 1 },
+                         { "customAtt3", 1.2 },
+                         { "customAtt4", true },
+                    }),
+                spans: new NewRelicSpan[]
+                {
+                    new NewRelicSpan(
+                        spanId: "span1",
+                        traceId: "traceId",
+                        timestamp: 1L,
+                        parentSpanId: "parentId",
+                        attributes: new Dictionary<string, object>()
+                        {
+                            { NewRelicConsts.Tracing.AttribNameDurationMs, 67 },
+                            { NewRelicConsts.Tracing.AttribNameServiceName, "serviceName" },
+                            { NewRelicConsts.Tracing.AttribNameName, "name" },
+                            { NewRelicConsts.Tracing.AttribNameHasError, true },
+                        }),
+                });
 
             // Act
             var jsonString = spanBatch.ToJson();
@@ -210,7 +235,7 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribCount(resultCommonPropAttribs, 4);
             TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt1", "hello");
             TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt2", 1);
-            TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt3", 1.2M);
+            TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt3", 1.2);
             TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt4", true);
 
             var resultSpans = TestHelpers.DeserializeArray(resultSpanBatch["spans"]);
@@ -230,77 +255,6 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "name", "name");
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "service.name", "serviceName");
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "parent.id", "parentId");
-            TestHelpers.AssertForAttribValue(resultSpanAttribs, "error", true);
-            TestHelpers.AssertForAttribCount(resultSpanAttribs, 5);
-        }
-
-        [Test]
-        public void ToJson_DuplicatePropertyValuesKeepsLast()
-        {
-            // Arrange
-            var spanBatch = SpanBatchBuilder.Create()
-                .WithTraceId("BadTraceID")
-                .WithTraceId("GoodTraceID")
-                .WithAttribute("customAtt1", "BadAttr1")
-                .WithAttribute("customAtt1", "GoodAttr1")
-                .WithAttribute("customAtt2", -1000)
-                .WithAttribute("customAtt2", 1000)
-                .WithSpan(SpanBuilder.Create("span1")
-                    .WithTraceId("BadTraceID")
-                    .WithTraceId("GoodTraceID")
-                    .WithTimestamp(-100)
-                    .WithTimestamp(100)
-                    .WithServiceName("BadserviceName")
-                    .WithServiceName("GoodServiceName")
-                    .WithDurationMs(-500)
-                    .WithDurationMs(500)
-                    .WithName("BadName")
-                    .WithName("GoodName")
-                    .WithParentId("BadParentId")
-                    .WithParentId("GoodParentId")
-                    .HasError(true)
-                    .HasError(false)
-                    .HasError(true)
-                    .Build())
-                .Build();
-
-            // Act
-            var jsonString = spanBatch.ToJson();
-
-            // Assert
-            var resultSpanBatches = TestHelpers.DeserializeArray(jsonString);
-
-            TestHelpers.AssertForCollectionLength(resultSpanBatches, 1);
-
-            var resultSpanBatch = resultSpanBatches.First();
-
-            var resultCommonProps = TestHelpers.DeserializeObject(resultSpanBatch["common"]);
-
-            TestHelpers.AssertForAttribValue(resultCommonProps, "trace.id", "GoodTraceID");
-
-            var resultCommonPropAttribs = TestHelpers.DeserializeObject(resultCommonProps["attributes"]);
-
-            TestHelpers.AssertForAttribCount(resultCommonPropAttribs, 2);
-            TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt1", "GoodAttr1");
-            TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt2", 1000);
-
-            var resultSpans = TestHelpers.DeserializeArray(resultSpanBatch["spans"]);
-
-            TestHelpers.AssertForCollectionLength(resultSpans, 1);
-
-            var resultSpan = resultSpans.FirstOrDefault();
-
-            TestHelpers.AssertForAttribValue(resultSpan, "id", "span1");
-            TestHelpers.AssertForAttribValue(resultSpan, "trace.id", "GoodTraceID");
-            TestHelpers.AssertForAttribValue(resultSpan, "timestamp", 100);
-            TestHelpers.AssertForAttribCount(resultSpan, 4);
-
-            var resultSpanAttribs = TestHelpers.DeserializeObject(resultSpan["attributes"]);
-
-            TestHelpers.AssertForAttribValue(resultSpanAttribs, "duration.ms", 500);
-            TestHelpers.AssertForAttribValue(resultSpanAttribs, "name", "GoodName");
-            TestHelpers.AssertForAttribValue(resultSpanAttribs, "service.name", "GoodServiceName");
-            TestHelpers.AssertForAttribValue(resultSpanAttribs, "parent.id", "GoodParentId");
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "error", true);
             TestHelpers.AssertForAttribCount(resultSpanAttribs, 5);
         }

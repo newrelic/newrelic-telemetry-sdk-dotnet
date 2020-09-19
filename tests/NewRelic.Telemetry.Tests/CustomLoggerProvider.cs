@@ -12,7 +12,7 @@ namespace NewRelic.Telemetry.Tests
     {
         private readonly ConcurrentDictionary<string, ILogger> _loggers = new ConcurrentDictionary<string, ILogger>();
 
-        private ConcurrentDictionary<string, List<string>> _logOutput;
+        private ConcurrentDictionary<string, List<string>>? _logOutput;
 
         public ConcurrentDictionary<string, List<string>> LogOutput
         {

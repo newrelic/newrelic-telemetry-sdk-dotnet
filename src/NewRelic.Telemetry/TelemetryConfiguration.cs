@@ -15,7 +15,7 @@ namespace NewRelic.Telemetry
         /// New Relic Endpoint. 
         /// </summary>
         /// <see cref="https://docs.newrelic.com/docs/insights/insights-data-sources/custom-data/introduction-event-api#register">for more information.</see>
-        public string ApiKey { get; private set; }
+        public string? ApiKey { get; private set; }
 
         /// <summary>
         /// The New Relic endpoint where Trace/Span information is sent.
@@ -67,12 +67,12 @@ namespace NewRelic.Telemetry
         /// <summary>
         /// Identifies the name of a service for which information is being reported to New Relic.
         /// </summary>
-        public string ServiceName { get; private set; }
+        public string? ServiceName { get; private set; }
 
         /// <summary>
         /// Identifies the source of information that is being sent to New Relic.
         /// </summary>
-        public string InstrumentationProvider { get; private set; }
+        public string? InstrumentationProvider { get; private set; }
 
         /// <summary>
         /// A list of the New Relic endpoints where information is sent.  This collection may be used
@@ -111,7 +111,7 @@ namespace NewRelic.Telemetry
         /// by <see cref="Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration</see>.
         /// </summary>
         /// <param name="configProvider"></param>
-        public TelemetryConfiguration(IConfiguration configProvider, string productSpecificConfig)
+        public TelemetryConfiguration(IConfiguration configProvider, string? productSpecificConfig)
         {
             var newRelicConfigSection = configProvider
                 .GetSection("NewRelic");
@@ -121,21 +121,21 @@ namespace NewRelic.Telemetry
                 return;
             }
 
-            IConfigurationSection productConfigSection = null;
+            IConfigurationSection? productConfigSection = null;
             if (!string.IsNullOrWhiteSpace(productSpecificConfig))
             {
                 productConfigSection = newRelicConfigSection.GetSection(productSpecificConfig);
             }
 
-            ApiKey = GetValue("ApiKey", productConfigSection, newRelicConfigSection, ApiKey);
-            ServiceName = GetValue("ServiceName", productConfigSection, newRelicConfigSection, ServiceName);
-            TraceUrl = GetValue("TraceUrlOverride", productConfigSection, newRelicConfigSection, TraceUrl);
-            MetricUrl = GetValue("MetricUrlOverride", productConfigSection, newRelicConfigSection, MetricUrl);
-            AuditLoggingEnabled = GetValue("AuditLoggingEnabled", productConfigSection, newRelicConfigSection, AuditLoggingEnabled);
-            SendTimeout = GetValue("SendTimeoutSeconds", productConfigSection, newRelicConfigSection, SendTimeout);
-            MaxRetryAttempts = GetValue("MaxRetryAttempts", productConfigSection, newRelicConfigSection, MaxRetryAttempts);
-            BackoffMaxSeconds = GetValue("BackoffMaxSeconds", productConfigSection, newRelicConfigSection, BackoffMaxSeconds);
-            BackoffDelayFactorSeconds = GetValue("BackoffDelayFactorSeconds", productConfigSection, newRelicConfigSection, BackoffDelayFactorSeconds);
+            ApiKey = GetValueString("ApiKey", productConfigSection, newRelicConfigSection) ?? ApiKey;
+            ServiceName = GetValueString("ServiceName", productConfigSection, newRelicConfigSection) ?? ServiceName;
+            TraceUrl = GetValueString("TraceUrlOverride", productConfigSection, newRelicConfigSection) ?? TraceUrl;
+            MetricUrl = GetValueString("MetricUrlOverride", productConfigSection, newRelicConfigSection) ?? MetricUrl;
+            AuditLoggingEnabled = GetValueBool("AuditLoggingEnabled", productConfigSection, newRelicConfigSection) ?? AuditLoggingEnabled;
+            SendTimeout = GetValueInt("SendTimeoutSeconds", productConfigSection, newRelicConfigSection) ?? SendTimeout;
+            MaxRetryAttempts = GetValueInt("MaxRetryAttempts", productConfigSection, newRelicConfigSection) ?? MaxRetryAttempts;
+            BackoffMaxSeconds = GetValueInt("BackoffMaxSeconds", productConfigSection, newRelicConfigSection) ?? BackoffMaxSeconds;
+            BackoffDelayFactorSeconds = GetValueInt("BackoffDelayFactorSeconds", productConfigSection, newRelicConfigSection) ?? BackoffDelayFactorSeconds;
         }
 
         /// <summary>
@@ -249,12 +249,12 @@ namespace NewRelic.Telemetry
             return this;
         }
 
-        private string GetValue(string key, IConfigurationSection productConfigSection, IConfigurationSection newRelicConfigSection, string defaultValue)
+        private string? GetValueString(string key, IConfigurationSection? productConfigSection, IConfigurationSection newRelicConfigSection)
         {
-            return productConfigSection?[key] ?? newRelicConfigSection[key] ?? defaultValue;
+            return productConfigSection?[key] ?? newRelicConfigSection[key];
         }
 
-        private bool GetValue(string key, IConfigurationSection productConfigSection, IConfigurationSection newRelicConfigSection, bool defaultValue)
+        private bool? GetValueBool(string key, IConfigurationSection? productConfigSection, IConfigurationSection newRelicConfigSection)
         {
             string valStr = productConfigSection?[key] ?? newRelicConfigSection[key];
             if (!string.IsNullOrEmpty(valStr) && bool.TryParse(valStr, out var valBool))
@@ -262,10 +262,10 @@ namespace NewRelic.Telemetry
                 return valBool;
             }
 
-            return defaultValue;
+            return null;
         }
 
-        private int GetValue(string key, IConfigurationSection productConfigSection, IConfigurationSection newRelicConfigSection, int defaultValue)
+        private int? GetValueInt(string key, IConfigurationSection? productConfigSection, IConfigurationSection newRelicConfigSection)
         {
             string valStr = productConfigSection?[key] ?? newRelicConfigSection[key];
             if (!string.IsNullOrEmpty(valStr) && int.TryParse(valStr, out var valInt))
@@ -273,7 +273,7 @@ namespace NewRelic.Telemetry
                 return valInt;
             }
 
-            return defaultValue;
+            return null;
         }
     }
 }

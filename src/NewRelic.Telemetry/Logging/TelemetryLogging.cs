@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace NewRelic.Telemetry
 {
@@ -21,37 +22,34 @@ namespace NewRelic.Telemetry
             return $"{Prefix} {state} {error}".Trim();
         }
 
-        internal TelemetryLogging(ILoggerFactory loggerFactory)
+        internal TelemetryLogging(ILoggerFactory? loggerFactory)
         {
-            if (loggerFactory != null)
-            {
-                _logger = loggerFactory.CreateLogger(Category);
-            }
+            _logger = loggerFactory?.CreateLogger(Category) ?? NullLogger.Instance;
         }
 
-        internal void Debug(string message, Exception exception = null)
+        internal void Debug(string message, Exception? exception = null)
         {
-            _logger?.Log(LogLevel.Debug, 0, message, exception, MessageFormatter);
+            _logger.Log(LogLevel.Debug, 0, message, exception, MessageFormatter);
         }
 
-        internal void Error(string message, Exception exception = null)
+        internal void Error(string message, Exception? exception = null)
         {
-            _logger?.Log(LogLevel.Error, 0, message, exception, MessageFormatter);
+            _logger.Log(LogLevel.Error, 0, message, exception, MessageFormatter);
         }
 
         internal void Exception(Exception ex)
         {
-            _logger?.Log(LogLevel.Error, 0, ex.GetType().Name, ex, MessageFormatter);
+            _logger.Log(LogLevel.Error, 0, ex.GetType().Name, ex, MessageFormatter);
         }
 
-        internal void Info(string message, Exception exception = null)
+        internal void Info(string message, Exception? exception = null)
         {
-            _logger?.Log(LogLevel.Information, 0, message, exception, MessageFormatter);
+            _logger.Log(LogLevel.Information, 0, message, exception, MessageFormatter);
         }
 
-        internal void Warning(string message, Exception exception = null)
+        internal void Warning(string message, Exception? exception = null)
         {
-            _logger?.Log(LogLevel.Warning, 0, message, exception, MessageFormatter);
+            _logger.Log(LogLevel.Warning, 0, message, exception, MessageFormatter);
         }
     }
 }

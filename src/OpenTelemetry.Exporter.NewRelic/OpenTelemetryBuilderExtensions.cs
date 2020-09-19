@@ -21,7 +21,7 @@ namespace OpenTelemetry.Trace
         /// <param name="configProvider"></param>
         /// <param name="loggerFactory">Logger Factory supported by Microsoft.Extensions.Logging.</param>
         /// <returns></returns>
-        public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, IConfiguration configProvider, ILoggerFactory loggerFactory)
+        public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, IConfiguration configProvider, ILoggerFactory? loggerFactory)
         {
             builder.AddProcessor(new BatchExportActivityProcessor(new NewRelicTraceExporter(configProvider, loggerFactory)));
             return builder;
@@ -46,7 +46,7 @@ namespace OpenTelemetry.Trace
         /// <param name="config"></param>
         /// <param name="loggerFactory">Logger Factory supported by Microsoft.Extensions.Logging.</param>
         /// <returns></returns>
-        public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, TelemetryConfiguration config, ILoggerFactory loggerFactory)
+        public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, TelemetryConfiguration config, ILoggerFactory? loggerFactory)
         {
             builder.AddProcessor(new BatchExportActivityProcessor(new NewRelicTraceExporter(config, loggerFactory)));
             return builder;
@@ -81,7 +81,7 @@ namespace OpenTelemetry.Trace
         /// <param name="apiKey"></param>
         /// <param name="loggerFactory"></param>
         /// <returns></returns>
-        public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, string apiKey, ILoggerFactory loggerFactory)
+        public static TracerProviderBuilder UseNewRelic(this TracerProviderBuilder builder, string apiKey, ILoggerFactory? loggerFactory)
         {
             return UseNewRelic(builder, new TelemetryConfiguration().WithApiKey(apiKey), loggerFactory);
         }
