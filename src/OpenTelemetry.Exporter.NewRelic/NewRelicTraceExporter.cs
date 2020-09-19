@@ -82,7 +82,7 @@ namespace OpenTelemetry.Exporter.NewRelic
 
             _config = config;
 
-            _config.WithInstrumentationProviderName("opentelemetry");
+            _config.InstrumentationProvider = "opentelemetry";
 
             _nrEndpoints = config.NewRelicEndpoints.Select(x => x.ToLower()).ToArray();
 

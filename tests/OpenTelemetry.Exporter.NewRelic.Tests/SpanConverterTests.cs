@@ -52,7 +52,11 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 
         public SpanConverterTests()
         {
-            _config = new TelemetryConfiguration().WithApiKey("123456").WithServiceName(TestServiceName);
+            _config = new TelemetryConfiguration()
+            {
+                ApiKey = "12345",
+                ServiceName = TestServiceName,
+            };
             var mockDataSender = new TraceDataSender(_config, null);
 
             // Capture the spans that were requested to be sent to New Relic.
