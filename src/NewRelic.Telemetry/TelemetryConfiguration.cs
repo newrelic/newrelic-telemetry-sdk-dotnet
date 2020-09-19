@@ -1,6 +1,7 @@
 ﻿// Copyright 2020 New Relic, Inc. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using Microsoft.Extensions.Configuration;
 
 namespace NewRelic.Telemetry
@@ -20,12 +21,12 @@ namespace NewRelic.Telemetry
         /// <summary>
         /// The New Relic endpoint where Trace/Span information is sent.
         /// </summary>
-        public string TraceUrl { get; set; } = "https://trace-api.newrelic.com/trace/v1";
+        public Uri TraceUrl { get; set; } = new Uri("https://trace-api.newrelic.com/trace/v1");
 
         /// <summary>
         /// The New Relic endpoint where Metric information is sent.
         /// </summary>
-        public string MetricUrl { get; set; } = "https://metric-api.newrelic.com/metric/v1";
+        public Uri MetricUrl { get; set; } = new Uri("https://metric-api.newrelic.com/metric/v1");
 
         /// <summary>
         /// Logs messages sent-to and received-by the New Relic endpoints.  This setting
@@ -119,13 +120,19 @@ namespace NewRelic.Telemetry
 
             ApiKey = GetValueString("ApiKey", productConfigSection, newRelicConfigSection) ?? ApiKey;
             ServiceName = GetValueString("ServiceName", productConfigSection, newRelicConfigSection) ?? ServiceName;
-            TraceUrl = GetValueString("TraceUrlOverride", productConfigSection, newRelicConfigSection) ?? TraceUrl;
-            MetricUrl = GetValueString("MetricUrlOverride", productConfigSection, newRelicConfigSection) ?? MetricUrl;
+            TraceUrl = GetValueUri("TraceUrlOverride", productConfigSection, newRelicConfigSection) ?? TraceUrl;
+            MetricUrl = GetValueUri("MetricUrlOverride", productConfigSection, newRelicConfigSection) ?? MetricUrl;
             AuditLoggingEnabled = GetValueBool("AuditLoggingEnabled", productConfigSection, newRelicConfigSection) ?? AuditLoggingEnabled;
             SendTimeout = GetValueInt("SendTimeoutSeconds", productConfigSection, newRelicConfigSection) ?? SendTimeout;
             MaxRetryAttempts = GetValueInt("MaxRetryAttempts", productConfigSection, newRelicConfigSection) ?? MaxRetryAttempts;
             BackoffMaxSeconds = GetValueInt("BackoffMaxSeconds", productConfigSection, newRelicConfigSection) ?? BackoffMaxSeconds;
             BackoffDelayFactorSeconds = GetValueInt("BackoffDelayFactorSeconds", productConfigSection, newRelicConfigSection) ?? BackoffDelayFactorSeconds;
+        }
+
+        private Uri? GetValueUri(string key, IConfigurationSection? productConfigSection, IConfigurationSection newRelicConfigSection)
+        {
+            Uri.TryCreate(GetValueString(key, productConfigSection, newRelicConfigSection), UriKind.Absolute, out var uri);
+            return uri;
         }
 
         private string? GetValueString(string key, IConfigurationSection? productConfigSection, IConfigurationSection newRelicConfigSection)

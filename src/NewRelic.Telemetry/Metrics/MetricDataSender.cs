@@ -3,6 +3,7 @@
 
 using Microsoft.Extensions.Logging;
 using NewRelic.Telemetry.Transport;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace NewRelic.Telemetry.Metrics
 {
     public class MetricDataSender : DataSender<NewRelicMetricBatch>
     {
-        protected override string EndpointUrl => _config.MetricUrl;
+        protected override Uri EndpointUrl => _config.MetricUrl;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MetricDataSender"/> class.
