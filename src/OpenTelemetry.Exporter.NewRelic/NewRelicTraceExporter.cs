@@ -37,7 +37,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// </summary>
         /// <param name="config"></param>
         public NewRelicTraceExporter(TelemetrySdk.TelemetryConfiguration config)
-            : this(config, null)
+            : this(config, null!)
         {
         }
 
@@ -47,7 +47,7 @@ namespace OpenTelemetry.Exporter.NewRelic
         /// accepts a logger factory supported by Microsoft.Extensions.Logging.
         /// </summary>
         /// <param name="config"></param>
-        public NewRelicTraceExporter(TelemetrySdk.TelemetryConfiguration config, ILoggerFactory? loggerFactory)
+        public NewRelicTraceExporter(TelemetrySdk.TelemetryConfiguration config, ILoggerFactory loggerFactory)
             : this(new TraceDataSender(config, loggerFactory), config, loggerFactory)
         {
         }

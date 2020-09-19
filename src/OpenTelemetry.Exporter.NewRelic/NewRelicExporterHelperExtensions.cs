@@ -21,7 +21,7 @@ namespace OpenTelemetry.Trace
         /// <returns>The instance of <see cref="TracerProviderBuilder"/> to chain the calls.</returns>
         public static TracerProviderBuilder AddNewRelicExporter(this TracerProviderBuilder builder, Action<TelemetryConfiguration> configure)
         {
-            return AddNewRelicExporter(builder, configure, null);
+            return AddNewRelicExporter(builder, configure, null!);
         }
 
         /// <summary>
