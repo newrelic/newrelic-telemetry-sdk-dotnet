@@ -31,10 +31,10 @@ namespace SampleAspNetCoreApp
                 // Adds the New Relic Exporter loading settings from the appsettings.json
                 tracerBuilder
                     .AddNewRelicExporter(options =>
-                        options
-                            .WithApiKey(this.Configuration.GetValue<string>("NewRelic:ApiKey"))
-                            .WithServiceName(this.Configuration.GetValue<string>("NewRelic:ServiceName")),
-                        loggerFactory)
+                    {
+                        options.ApiKey = this.Configuration.GetValue<string>("NewRelic:ApiKey");
+                        options.ServiceName = this.Configuration.GetValue<string>("NewRelic:ServiceName");
+                    }, loggerFactory)
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation();
             });
