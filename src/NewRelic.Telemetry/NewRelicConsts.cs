@@ -3,7 +3,12 @@
 
 namespace NewRelic.Telemetry
 {
-    public static class NewRelicConsts
+#if INTERNALIZE_TELEMETRY_SDK
+    internal
+#else
+    public
+#endif
+    static class NewRelicConsts
     {
         public const string AttribNameInstrumentationProvider = "instrumentation.provider";
 
