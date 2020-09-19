@@ -211,7 +211,7 @@ namespace OpenTelemetry.Exporter.NewRelic
                 traceId: openTelemetrySpan.Context.TraceId.ToHexString(),
                 spanId: openTelemetrySpan.Context.SpanId.ToHexString(),
                 parentSpanId: parentSpanId,
-                timestamp: openTelemetrySpan.StartTimeUtc.ToUnixTimeMilliseconds(),
+                timestamp: new DateTimeOffset(openTelemetrySpan.StartTimeUtc).ToUnixTimeMilliseconds(),
                 attributes: newRelicSpanAttribs);
 
             return newRelicSpan;
