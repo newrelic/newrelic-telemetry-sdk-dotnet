@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using NewRelic.Telemetry.Tracing;
-using NUnit.Framework;
+using Xunit;
 
 namespace NewRelic.Telemetry.Tests
 {
     public class SpanBatchTests
     {
-        [Test]
+        [Fact]
         public void TraceIdIsSet()
         {
             var traceId = "myId";
@@ -17,10 +17,10 @@ namespace NewRelic.Telemetry.Tests
                 commonProperties: new NewRelicSpanBatchCommonProperties(traceId: traceId),
                 spans: new NewRelicSpan[0]);
 
-            Assert.AreEqual(traceId, spanBatch.CommonProperties.TraceId);
+            Assert.Equal(traceId, spanBatch.CommonProperties.TraceId);
         }
 
-        [Test]
+        [Fact]
         public void TraceIdIsNotSet()
         {
             var spanBatch = new NewRelicSpanBatch(
