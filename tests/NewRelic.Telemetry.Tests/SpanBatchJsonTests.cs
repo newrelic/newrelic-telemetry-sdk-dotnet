@@ -17,8 +17,7 @@ namespace NewRelic.Telemetry.Tests
             var spanBatch = new NewRelicSpanBatch(
                 spans: new NewRelicSpan[0],
                 commonProperties: new NewRelicSpanBatchCommonProperties(
-                    traceId: "traceId",
-                    attributes: null));
+                    traceId: "traceId"));
 
             // Act
             var jsonString = spanBatch.ToJson();
@@ -36,16 +35,15 @@ namespace NewRelic.Telemetry.Tests
             // Arrange
             var spanBatch = new NewRelicSpanBatch(
                 commonProperties: new NewRelicSpanBatchCommonProperties(
-                    traceId: "traceId",
-                    attributes: null),
+                    traceId: "traceId"),
                 spans: new NewRelicSpan[]
                 {
                     new NewRelicSpan(
                         spanId: "span1",
                         traceId: "traceId",
                         timestamp: 1L,
-                        parentSpanId : "parentId",
-                        attributes : new Dictionary<string, object>()
+                        parentSpanId: "parentId",
+                        attributes: new Dictionary<string, object>()
                         {
                             { NewRelicConsts.Tracing.AttribNameDurationMs, 67 },
                             { NewRelicConsts.Tracing.AttribNameServiceName, "serviceName" },
@@ -89,7 +87,6 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribCount(resultSpanAttribs, 5);
         }
 
-
         [Test]
         public void ToJson_SpanBatchWithMultipleSpans()
         {
@@ -100,8 +97,8 @@ namespace NewRelic.Telemetry.Tests
                     {
                          { "customAtt1", "hello" },
                          { "customAtt2", 1 },
-                         { "customAtt3", (decimal)1.2 },
-                         { "customAtt4", true }
+                         { "customAtt3", 1.2 },
+                         { "customAtt4", true },
                     }),
                 spans: new NewRelicSpan[]
                 {
@@ -109,20 +106,20 @@ namespace NewRelic.Telemetry.Tests
                         spanId: "span1",
                         traceId: "traceId1",
                         timestamp: 1L,
-                        parentSpanId : "parentId1",
-                        attributes : new Dictionary<string, object>()
+                        parentSpanId: "parentId1",
+                        attributes: new Dictionary<string, object>()
                         {
                             { NewRelicConsts.Tracing.AttribNameDurationMs, 100 },
                             { NewRelicConsts.Tracing.AttribNameServiceName, "serviceName1" },
                             { NewRelicConsts.Tracing.AttribNameName, "name1" },
-                            { NewRelicConsts.Tracing.AttribNameHasError, true }
+                            { NewRelicConsts.Tracing.AttribNameHasError, true },
                         }),
                     new NewRelicSpan(
                         spanId: "span2",
                         traceId: "traceId2",
                         timestamp: 2L,
-                        parentSpanId : "parentId2",
-                        attributes : new Dictionary<string, object>()
+                        parentSpanId: "parentId2",
+                        attributes: new Dictionary<string, object>()
                         {
                             { NewRelicConsts.Tracing.AttribNameDurationMs, 200 },
                             { NewRelicConsts.Tracing.AttribNameServiceName, "serviceName2" },
@@ -149,7 +146,7 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribCount(resultCommonPropAttribs, 4);
             TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt1", "hello");
             TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt2", 1);
-            TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt3", (decimal)1.2);
+            TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt3", 1.2);
             TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt4", true);
 
             var resultSpans = TestHelpers.DeserializeArray(resultSpanBatch["spans"]);
@@ -200,8 +197,8 @@ namespace NewRelic.Telemetry.Tests
                     {
                          { "customAtt1", "hello" },
                          { "customAtt2", 1 },
-                         { "customAtt3", (decimal)1.2 },
-                         { "customAtt4", true }
+                         { "customAtt3", 1.2 },
+                         { "customAtt4", true },
                     }),
                 spans: new NewRelicSpan[]
                 {
@@ -209,14 +206,14 @@ namespace NewRelic.Telemetry.Tests
                         spanId: "span1",
                         traceId: "traceId",
                         timestamp: 1L,
-                        parentSpanId : "parentId",
-                        attributes : new Dictionary<string, object>()
+                        parentSpanId: "parentId",
+                        attributes: new Dictionary<string, object>()
                         {
                             { NewRelicConsts.Tracing.AttribNameDurationMs, 67 },
                             { NewRelicConsts.Tracing.AttribNameServiceName, "serviceName" },
                             { NewRelicConsts.Tracing.AttribNameName, "name" },
                             { NewRelicConsts.Tracing.AttribNameHasError, true },
-                        })
+                        }),
                 });
 
             // Act
@@ -238,7 +235,7 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribCount(resultCommonPropAttribs, 4);
             TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt1", "hello");
             TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt2", 1);
-            TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt3", (decimal)1.2);
+            TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt3", 1.2);
             TestHelpers.AssertForAttribValue(resultCommonPropAttribs, "customAtt4", true);
 
             var resultSpans = TestHelpers.DeserializeArray(resultSpanBatch["spans"]);

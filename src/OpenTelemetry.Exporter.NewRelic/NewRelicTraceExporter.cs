@@ -24,13 +24,13 @@ namespace OpenTelemetry.Exporter.NewRelic
     {
         private const string ProductName = "NewRelic-Dotnet-OpenTelemetry";
 
-        private readonly TraceDataSender _spanDataSender;
         private static readonly ActivitySpanId EmptyActivitySpanId = ActivitySpanId.CreateFromBytes(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, });
         private static readonly string _productVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
+
+        private readonly TraceDataSender _spanDataSender;
         private readonly ILogger? _logger;
         private readonly TelemetrySdk.TelemetryConfiguration _config;
         private readonly string[] _nrEndpoints;
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NewRelicTraceExporter"/> class.
@@ -141,7 +141,9 @@ namespace OpenTelemetry.Exporter.NewRelic
                         {
                             otSpanId = otSpan.Context.SpanId.ToHexString();
                         }
-                        catch { }
+                        catch
+                        {
+                        }
 
                         _logger.LogError(null, ex, $"Error translating Open Telemetry Span {otSpanId} to New Relic Span.");
                     }
@@ -153,8 +155,15 @@ namespace OpenTelemetry.Exporter.NewRelic
 
         private NewRelicSpan ToNewRelicSpan(Activity openTelemetrySpan)
         {
-            if (openTelemetrySpan == default) throw new ArgumentException(nameof(openTelemetrySpan));
-            if (openTelemetrySpan.Context == default) throw new ArgumentException($"{nameof(openTelemetrySpan)}.Context");
+            if (openTelemetrySpan == default)
+            {
+                throw new ArgumentException(nameof(openTelemetrySpan));
+            }
+
+            if (openTelemetrySpan.Context == default)
+            {
+                throw new ArgumentException($"{nameof(openTelemetrySpan)}.Context");
+            }
 
             // Build attributes with required items
             var newRelicSpanAttribs = new Dictionary<string, object>()

@@ -19,8 +19,8 @@ namespace NewRelic.Telemetry.Tests
         {
             var traceId = "123";
             var spanBatch = new NewRelicSpanBatch(
-                spans : new NewRelicSpan[0],
-                commonProperties:  new NewRelicSpanBatchCommonProperties(traceId, null));
+                spans: new NewRelicSpan[0],
+                commonProperties: new NewRelicSpanBatchCommonProperties(traceId));
 
             var dataSender = new TraceDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
 
@@ -47,12 +47,12 @@ namespace NewRelic.Telemetry.Tests
                 parentSpanId: null,
                 attributes: new Dictionary<string, object>()
                 {
-                    { NewRelicConsts.Tracing.AttribNameName, "TestSpan" }
+                    { NewRelicConsts.Tracing.AttribNameName, "TestSpan" },
                 });
 
             var spanBatch = new NewRelicSpanBatch(
                 spans: new[] { span }, 
-                commonProperties: new NewRelicSpanBatchCommonProperties(traceId, null));
+                commonProperties: new NewRelicSpanBatchCommonProperties(traceId));
 
             var dataSender = new TraceDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
 
@@ -98,7 +98,6 @@ namespace NewRelic.Telemetry.Tests
             {
                 capturedSpanbatch = spanBatch;
             });
-
 
             var response = dataSender.SendDataAsync(spanBatch).Result;
 

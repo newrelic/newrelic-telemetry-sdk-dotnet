@@ -40,10 +40,10 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 
         public NewRelicExporterTests()
         {
-            this._testServer = TestHttpServer.RunServer(
+            _testServer = TestHttpServer.RunServer(
                 ctx => ProcessServerRequest(ctx),
-                out this._testServerHost,
-                out this._testServerPort);
+                out _testServerHost,
+                out _testServerPort);
 
             static void ProcessServerRequest(HttpListenerContext context)
             {
@@ -63,7 +63,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 
         public void Dispose()
         {
-            this._testServer?.Dispose();
+            _testServer?.Dispose();
         }
 
         [Fact]
@@ -82,10 +82,11 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
                 };
 
             var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string> {
+                .AddInMemoryCollection(new Dictionary<string, string>
+                {
                     { "NewRelic:ServiceName", "test-newrelic" },
                     { "NewRelic:ApiKey", "my-apikey" },
-                    { "NewRelic:TraceUrlOverride", $"http://{this._testServerHost}:{this._testServerPort}/trace/v1?requestId={requestId}" },
+                    { "NewRelic:TraceUrlOverride", $"http://{_testServerHost}:{_testServerPort}/trace/v1?requestId={requestId}" },
                 })
                 .Build();
 

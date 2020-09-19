@@ -23,7 +23,7 @@ namespace NewRelic.Telemetry.Tests
                 attributes: new Dictionary<string, object>
                     {
                         { "attrKey", "attrValue" },
-                        { "adsfasdf", 12 }
+                        { "adsfasdf", 12 },
                     },
                 value: value,
                 intervalMs: interval);
@@ -48,7 +48,7 @@ namespace NewRelic.Telemetry.Tests
                 attributes: new Dictionary<string, object>
                     {
                         { "attrKey", "attrValue" },
-                        { "adsfasdf", 12 }
+                        { "adsfasdf", 12 },
                     },
                 value: value);
 
@@ -97,7 +97,6 @@ namespace NewRelic.Telemetry.Tests
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             var interval = 33L;
             var value = new NewRelicMetricSummaryValue(10d, 64, 3, 15);
-
 
             var metric = NewRelicMetric.CreateSummaryMetric(
                 name: "metricName",

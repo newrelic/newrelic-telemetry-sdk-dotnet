@@ -144,22 +144,22 @@ namespace NewRelic.Telemetry.Tests
 
             // Mock the behavior to return EntityTooLarge for any span batch that has a span with an 
             // id that starts with TooLarge.
-            dataSender.WithCaptureSendDataAsyncDelegate((NewRelicSpanBatch, retryNum) =>
+            dataSender.WithCaptureSendDataAsyncDelegate((newRelicSpanBatch, retryNum) =>
             {
                 actualCountCallsSendData++;
 
-                if (NewRelicSpanBatch.Spans == null)
+                if (newRelicSpanBatch.Spans == null)
                 {
                     return;
                 }
 
-                if (NewRelicSpanBatch.Spans.Any(x => x.Id.StartsWith(traceID_SplitBatch_Prefix)))
+                if (newRelicSpanBatch.Spans.Any(x => x.Id.StartsWith(traceID_SplitBatch_Prefix)))
                 {
-                    shouldSplitJsons.Add(NewRelicSpanBatch.ToJson());
+                    shouldSplitJsons.Add(newRelicSpanBatch.ToJson());
                 }
                 else
                 {
-                    successfulSpans.AddRange(NewRelicSpanBatch.Spans);
+                    successfulSpans.AddRange(newRelicSpanBatch.Spans);
                 }
             });
 
@@ -215,7 +215,7 @@ namespace NewRelic.Telemetry.Tests
                 return;
             });
 
-            dataSender.WithCaptureSendDataAsyncDelegate((NewRelicSpanBatch, retryNum) =>
+            dataSender.WithCaptureSendDataAsyncDelegate((newRelicSpanBatch, retryNum) =>
             {
                 actualCountCallsSendData++;
             });
@@ -267,7 +267,7 @@ namespace NewRelic.Telemetry.Tests
             });
 
             var actualCountCallsSendData = 0;
-            dataSender.WithCaptureSendDataAsyncDelegate((NewRelicSpanBatch, retryNum) =>
+            dataSender.WithCaptureSendDataAsyncDelegate((newRelicSpanBatch, retryNum) =>
             {
                 actualCountCallsSendData++;
             });
@@ -317,12 +317,12 @@ namespace NewRelic.Telemetry.Tests
                 delayMS,
                 delayMS,
                 delayMS,
-                delayMS
+                delayMS,
             };
 
             var actualBackoffSequenceFromTestRun = new List<uint>();
 
-            var dataSender = new TraceDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
+            var dataSender = new TraceDataSender(new TelemetryConfiguration().WithApiKey("123456"), default);
             dataSender.WithDelayFunction(async (uint milliSecondsDelay) =>
             {
                 actualBackoffSequenceFromTestRun.Add(milliSecondsDelay);
@@ -331,7 +331,7 @@ namespace NewRelic.Telemetry.Tests
             });
 
             var actualCountCallsSendData = 0;
-            dataSender.WithCaptureSendDataAsyncDelegate((NewRelicSpanBatch, retryNum) =>
+            dataSender.WithCaptureSendDataAsyncDelegate((newRelicSpanBatch, retryNum) =>
             {
                 actualCountCallsSendData++;
             });
@@ -343,7 +343,6 @@ namespace NewRelic.Telemetry.Tests
 
                 return Task.FromResult(httpResponse);
             });
-
 
             var spans = new List<NewRelicSpan>()
             {
@@ -371,7 +370,7 @@ namespace NewRelic.Telemetry.Tests
             const int expectedNumSendBatchAsyncCall = 2;
             var expectedBackoffSequenceFromTestRun = new List<int>()
             {
-                delayMS
+                delayMS,
             };
 
             var actualBackoffSequenceFromTestRun = new List<uint>();
@@ -404,7 +403,6 @@ namespace NewRelic.Telemetry.Tests
                 return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK));
             });
 
-
             var spans = new List<NewRelicSpan>()
             {
                 new NewRelicSpan(
@@ -419,7 +417,6 @@ namespace NewRelic.Telemetry.Tests
 
             var result = await dataSender.SendDataAsync(spanBatch);
 
-
             Assert.AreEqual(NewRelicResponseStatus.Success, result.ResponseStatus);
             Assert.AreEqual(expectedNumSendBatchAsyncCall, actualCountCallsSendData, "Unexpected Number of SendDataAsync calls");
             CollectionAssert.AreEqual(expectedBackoffSequenceFromTestRun, actualBackoffSequenceFromTestRun);
@@ -429,6 +426,7 @@ namespace NewRelic.Telemetry.Tests
         public async Task RetryOn429WithSpecificDate_429HappensOnce()
         {
             const int delayMs = 10000;
+
             // The actual retry delay will be slightly less than delayMs since UtcNow is recalculated in RetryWithServerDelay()
             var errorMargin = TimeSpan.FromMilliseconds(50).TotalMilliseconds;
             var actualResponseFromTestRun = new List<Response>();
@@ -452,7 +450,6 @@ namespace NewRelic.Telemetry.Tests
 
                 return Task.FromResult(httpResponse);
             });
-
 
             var spans = new List<NewRelicSpan>()
             {
@@ -485,7 +482,7 @@ namespace NewRelic.Telemetry.Tests
             });
 
             var actualCountCallsSendData = 0;
-            dataSender.WithCaptureSendDataAsyncDelegate((NewRelicSpanBatch, retryNum) =>
+            dataSender.WithCaptureSendDataAsyncDelegate((newRelicSpanBatch, retryNum) =>
             {
                 actualCountCallsSendData++;
             });
@@ -515,7 +512,6 @@ namespace NewRelic.Telemetry.Tests
             Assert.AreEqual(expectedNumSendBatchAsyncCall, actualCountCallsSendData, "Unexpected Number of SendDataAsync calls");
         }
 
-
         [Test]
         public async Task SendDataAsyncThrowsNonHttpException()
         {
@@ -543,7 +539,6 @@ namespace NewRelic.Telemetry.Tests
                 actualCallsHttpHandler++;
                 return Task.FromResult(new HttpResponseMessage() { StatusCode = HttpStatusCode.OK });
             });
-
 
             var spans = new List<NewRelicSpan>()
             {

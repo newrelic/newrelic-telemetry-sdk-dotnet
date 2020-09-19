@@ -19,7 +19,6 @@ namespace NewRelic.Telemetry.Tests
             var metricBatch = new NewRelicMetricBatch(
                 commonProperties: new NewRelicMetricBatchCommonProperties(
                     timestamp: timestamp,
-                    
                     intervalMs: null,
                     attributes: null),
                 metrics: new NewRelicMetric[0]);
@@ -43,7 +42,7 @@ namespace NewRelic.Telemetry.Tests
                     intervalMs: interval,
                     attributes: new Dictionary<string, object>()
                     {
-                        { "attr1Key", "attr1Value" }
+                        { "attr1Key", "attr1Value" },
                     }),
                 metrics: new[]
                 {
@@ -57,7 +56,7 @@ namespace NewRelic.Telemetry.Tests
                         name: "GaugeMetric",
                         timestamp: null,
                         attributes: null,
-                        value: gaugeValue)
+                        value: gaugeValue),
                 });
 
             var actualMetrics = metricBatch.Metrics.ToArray();
@@ -87,7 +86,7 @@ namespace NewRelic.Telemetry.Tests
                     intervalMs: commonInterval,
                     attributes: new Dictionary<string, object>
                     {
-                        { "Attr1Key", "comAttr1Value" }
+                        { "Attr1Key", "comAttr1Value" },
                     }),
                 metrics: new[]
                 {
@@ -96,10 +95,10 @@ namespace NewRelic.Telemetry.Tests
                         timestamp: metricTimestamp,
                         attributes: new Dictionary<string, object>()
                         {
-                            { "Attr1Key", "metAttr1Value" }
+                            { "Attr1Key", "metAttr1Value" },
                         },
                         value: countValue,
-                        intervalMs: metricInterval)
+                        intervalMs: metricInterval),
                 });
 
             var actualMetrics = metricBatch.Metrics.ToArray();
@@ -122,7 +121,7 @@ namespace NewRelic.Telemetry.Tests
             var gaugeValue = 213d;
 
             var metricBatch = new NewRelicMetricBatch(
-                metrics: new []
+                metrics: new[]
                 {
                     NewRelicMetric.CreateSummaryMetric(
                         name: "SummaryMetric",
@@ -138,15 +137,13 @@ namespace NewRelic.Telemetry.Tests
                         name: "GaugeMetric",
                         timestamp: timestampL,
                         attributes: null,
-                        value: gaugeValue)
+                        value: gaugeValue),
                 });
-
 
             var actualMetrics = metricBatch.Metrics.ToArray();
 
             Assert.AreEqual(2, actualMetrics.Length, $"MetricBatch Metrics count - expected: 2, actual: {actualMetrics.Length}");
             Assert.IsNotNull(metricBatch.CommonProperties, $"MetricBatch CommonProperties - expected: null, actual: not null");
         }
-
     }
 }

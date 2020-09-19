@@ -155,7 +155,6 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             Assert.NotEqual(resultNRSpan0.TraceId, resultNRSpan2.TraceId);
             Assert.NotEqual(resultNRSpan0.TraceId, resultNRSpan3.TraceId);
             Assert.NotEqual(resultNRSpan2.TraceId, resultNRSpan3.TraceId);
-
         }
 
         [Fact]

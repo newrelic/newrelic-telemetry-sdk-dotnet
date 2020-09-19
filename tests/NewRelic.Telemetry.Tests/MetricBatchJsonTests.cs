@@ -50,7 +50,7 @@ namespace NewRelic.Telemetry.Tests
                     timestamp: _timestampL,
                     intervalMs: _interval,
                     attributes: null),
-                metrics: new []
+                metrics: new[]
                 {
                     NewRelicMetric.CreateCountMetric(
                         name: "metric1",
@@ -63,7 +63,7 @@ namespace NewRelic.Telemetry.Tests
                         timestamp: null,
                         attributes: null,
                         interval: _interval,
-                        summaryValue: _summaryValue)
+                        summaryValue: _summaryValue),
                 });
 
             // Act
@@ -93,7 +93,6 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribValue(countMetric, "type", "count");
             TestHelpers.AssertForAttribValue(countMetric, "value", _countValue);
             TestHelpers.AssertForAttribValue(countMetric, "interval.ms", _interval);
-
 
             var countMetricAttribs = TestHelpers.DeserializeObject(countMetric["attributes"]);
             TestHelpers.AssertForAttribCount(countMetricAttribs, 1);
