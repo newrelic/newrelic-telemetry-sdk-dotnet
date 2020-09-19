@@ -8,10 +8,10 @@ using Utf8Json.Resolvers;
 
 namespace NewRelic.Telemetry.Metrics
 {
-    public struct NewRelicMetricBatch : ITelemetryDataType<NewRelicMetricBatch>
+    public readonly struct NewRelicMetricBatch : ITelemetryDataType<NewRelicMetricBatch>
     {
         [DataMember(Name = "common")]
-        public NewRelicMetricBatchCommonProperties CommonProperties { get; private set; }
+        public NewRelicMetricBatchCommonProperties CommonProperties { get; }
 
         public IEnumerable<NewRelicMetric> Metrics { get; }
 
