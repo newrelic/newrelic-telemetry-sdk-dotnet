@@ -3,13 +3,13 @@
 
 using System.Collections.Generic;
 using NewRelic.Telemetry.Tracing;
-using NUnit.Framework;
+using Xunit;
 
 namespace NewRelic.Telemetry.Tests
 {
     public class SpanBuilderTests
     {
-        [Test]
+        [Fact]
         public void BuildSpan()
         {
             var span = new NewRelicSpan(
@@ -27,15 +27,15 @@ namespace NewRelic.Telemetry.Tests
                     { NewRelicConsts.Tracing.AttribNameName, "name" },
                 });
 
-            Assert.AreEqual("spanId", span.Id);
-            Assert.AreEqual("traceId", span.TraceId);
-            Assert.AreEqual(1L, span.Timestamp);
-            Assert.AreEqual("serviceName", span.Attributes?["service.name"]);
-            Assert.AreEqual(true, span.Attributes?["error"]);
-            Assert.AreEqual(67, span.Attributes?["duration.ms"]);
-            Assert.AreEqual("name", span.Attributes?["name"]);
-            Assert.AreEqual("parentId", span.Attributes?["parent.id"]);
-            Assert.AreEqual("attrValue", span.Attributes?["attrKey"]);
+            Assert.Equal("spanId", span.Id);
+            Assert.Equal("traceId", span.TraceId);
+            Assert.Equal(1L, span.Timestamp);
+            Assert.Equal("serviceName", span.Attributes?["service.name"]);
+            Assert.Equal(true, span.Attributes?["error"]);
+            Assert.Equal(67, span.Attributes?["duration.ms"]);
+            Assert.Equal("name", span.Attributes?["name"]);
+            Assert.Equal("parentId", span.Attributes?["parent.id"]);
+            Assert.Equal("attrValue", span.Attributes?["attrKey"]);
         }
     }
 }
