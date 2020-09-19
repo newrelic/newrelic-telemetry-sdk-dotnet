@@ -4,13 +4,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using NewRelic.Telemetry.Tracing;
-using NUnit.Framework;
+using Xunit;
 
 namespace NewRelic.Telemetry.Tests
 {
     public class SpanBatchJsonTests
     {
-        [Test]
+        [Fact]
         public void ToJson_EmptySpanBatch()
         {
             // Arrange
@@ -29,7 +29,7 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribValue(resultCommonProps, "trace.id", "traceId");
         }
 
-        [Test]
+        [Fact]
         public void ToJson_NonEmptySpanBatch()
         {
             // Arrange
@@ -87,7 +87,7 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribCount(resultSpanAttribs, 5);
         }
 
-        [Test]
+        [Fact]
         public void ToJson_SpanBatchWithMultipleSpans()
         {
             var spanBatch = new NewRelicSpanBatch(
@@ -186,7 +186,7 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribCount(secondSpanAttribs, 4);
         }
 
-        [Test]
+        [Fact]
         public void ToJson_SpanBatchWithAttributes()
         {
             // Arrange
