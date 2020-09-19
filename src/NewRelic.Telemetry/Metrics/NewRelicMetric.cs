@@ -6,7 +6,12 @@ using System.Runtime.Serialization;
 
 namespace NewRelic.Telemetry.Metrics
 {
-    public readonly struct NewRelicMetric
+#if INTERNALIZE_TELEMETRY_SDK
+    internal
+#else
+    public
+#endif
+    readonly struct NewRelicMetric
     {
         public string Type { get; }
 

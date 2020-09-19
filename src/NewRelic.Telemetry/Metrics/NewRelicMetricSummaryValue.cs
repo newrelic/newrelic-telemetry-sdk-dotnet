@@ -3,7 +3,12 @@
 
 namespace NewRelic.Telemetry.Metrics
 {
-    public readonly struct NewRelicMetricSummaryValue
+#if INTERNALIZE_TELEMETRY_SDK
+    internal
+#else
+    public
+#endif
+    readonly struct NewRelicMetricSummaryValue
     {
         public double Count { get; }
 

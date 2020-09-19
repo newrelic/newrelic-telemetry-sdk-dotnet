@@ -3,13 +3,19 @@
 
 namespace NewRelic.Telemetry
 {
-    public static class NewRelicConsts
+#if INTERNALIZE_TELEMETRY_SDK
+    internal
+#else
+    public
+#endif
+    static class NewRelicConsts
     {
         public const string AttribNameInstrumentationProvider = "instrumentation.provider";
 
         public static class Tracing
         {
             public const string AttribNameServiceName = "service.name";
+            public const string AttribSpanKind = "span.kind";
             public const string AttribNameDurationMs = "duration.ms";
             public const string AttribNameName = "name";
             public const string AttribNameParentId = "parent.id";

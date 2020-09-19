@@ -6,7 +6,12 @@ using System.Runtime.Serialization;
 
 namespace NewRelic.Telemetry.Tracing
 {
-    public readonly struct NewRelicSpan
+#if INTERNALIZE_TELEMETRY_SDK
+    internal
+#else
+    public
+#endif
+    readonly struct NewRelicSpan
     {
         public string Id { get; }
 

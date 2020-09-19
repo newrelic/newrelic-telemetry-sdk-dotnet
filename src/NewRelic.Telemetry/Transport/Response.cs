@@ -6,7 +6,12 @@ using System.Net;
 
 namespace NewRelic.Telemetry.Transport
 {
-    public enum NewRelicResponseStatus
+#if INTERNALIZE_TELEMETRY_SDK
+    internal
+#else
+    public
+#endif
+    enum NewRelicResponseStatus
     {
         /// <summary>
         /// A request was made to send data to New Relic with an empty payload.  This is not an
@@ -29,7 +34,12 @@ namespace NewRelic.Telemetry.Transport
     /// <summary>
     /// Provides information regarding the outcome of a request to send data to a New Relic endpoint.
     /// </summary>
-    public class Response
+#if INTERNALIZE_TELEMETRY_SDK
+    internal
+#else
+    public
+#endif
+    class Response
     {
         internal static readonly Response _didNotSend = new Response(NewRelicResponseStatus.DidNotSend_NoData);
         internal static readonly Response _success = new Response(NewRelicResponseStatus.Success);

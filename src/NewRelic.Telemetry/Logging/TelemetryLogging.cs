@@ -7,10 +7,15 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace NewRelic.Telemetry
 {
-     /// <summary>
-     /// Manages logging within the Telemetry SDK.
-     /// </summary>
-    public class TelemetryLogging
+    /// <summary>
+    /// Manages logging within the Telemetry SDK.
+    /// </summary>
+#if INTERNALIZE_TELEMETRY_SDK
+    internal
+#else
+    public
+#endif
+    class TelemetryLogging
     {
         private const string Prefix = "NewRelic Telemetry:";
         private const string Category = "NewRelic.Telemetry";

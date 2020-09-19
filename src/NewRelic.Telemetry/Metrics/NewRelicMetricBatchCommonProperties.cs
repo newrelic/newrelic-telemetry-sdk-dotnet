@@ -6,7 +6,12 @@ using System.Runtime.Serialization;
 
 namespace NewRelic.Telemetry.Metrics
 {
-    public readonly struct NewRelicMetricBatchCommonProperties
+#if INTERNALIZE_TELEMETRY_SDK
+    internal
+#else
+    public
+#endif
+    readonly struct NewRelicMetricBatchCommonProperties
     {
         public long? Timestamp { get; }
 
