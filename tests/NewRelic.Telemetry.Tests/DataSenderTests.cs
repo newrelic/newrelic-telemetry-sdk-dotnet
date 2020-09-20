@@ -41,8 +41,6 @@ namespace NewRelic.Telemetry.Tests
             const int expectedCountSpans = 9;
             const int expectedCountCallsSendData = 7;
             const int expectedCountSuccessfulSpanBatches = 4;
-            const int expectedCountDistinctTraceIds = 1;
-            const int expectedCountSpanBatchAttribSets = 1;
             const string expectedTraceID = "TestTrace";
 
             var actualCountCallsSendData = 0;
@@ -101,9 +99,9 @@ namespace NewRelic.Telemetry.Tests
             Assert.Equal(expectedCountSpans, successfulSpanBatches.SelectMany(x => x.Spans).Select(x => x.Id).Distinct().Count());
 
             // Test the attributes on the NewRelicSpanBatch
-            Assert.Equal(expectedCountDistinctTraceIds, successfulSpanBatches.Select(x => x.CommonProperties.TraceId).Distinct().Count());
+            Assert.Single(successfulSpanBatches.Select(x => x.CommonProperties.TraceId).Distinct());
             Assert.Equal(expectedTraceID, successfulSpanBatches.FirstOrDefault().CommonProperties.TraceId);
-            Assert.Equal(expectedCountSpanBatchAttribSets, successfulSpanBatches.Select(x => x.CommonProperties.Attributes).Distinct().Count());
+            Assert.Single(successfulSpanBatches.Select(x => x.CommonProperties.Attributes).Distinct());
             Assert.Equal(attribs, successfulSpanBatches.Select(x => x.CommonProperties.Attributes).FirstOrDefault());
         }
 
@@ -131,7 +129,6 @@ namespace NewRelic.Telemetry.Tests
         public async Task RequestTooLarge_SplitFail()
         {
             const int expectedCountCallsSendData = 7;
-            const int expectedCountSuccessfulSpanBatches = 1;
             const string traceID_Success = "OK";
             const string traceID_SplitBatch_Prefix = "TooLarge";
 
@@ -184,7 +181,7 @@ namespace NewRelic.Telemetry.Tests
             // Assert
             Assert.Equal(NewRelicResponseStatus.Failure, result.ResponseStatus);
             Assert.Equal(expectedCountCallsSendData, actualCountCallsSendData);
-            Assert.Equal(expectedCountSuccessfulSpanBatches, successfulSpans.Count);
+            Assert.Single(successfulSpans);
             Assert.Equal(traceID_Success, successfulSpans[0].Id);
         }
 
