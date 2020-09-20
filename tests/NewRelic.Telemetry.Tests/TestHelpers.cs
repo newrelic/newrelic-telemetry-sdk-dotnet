@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using NewRelic.Telemetry.Metrics;
-using NUnit.Framework;
+using Xunit;
 
 namespace NewRelic.Telemetry.Tests
 {
@@ -47,12 +47,12 @@ namespace NewRelic.Telemetry.Tests
 
         public static void AssertForCollectionLength(Dictionary<string, JsonElement>[] dic, int length)
         {
-            Assert.IsTrue(dic.Length == length, $"There should be {length} items, actual {dic?.Length}.");
+            Assert.True(dic.Length == length, $"There should be {length} items, actual {dic?.Length}.");
         }
 
         public static void AssertForAttribCount(Dictionary<string, JsonElement> dic, int length)
         {
-            Assert.IsTrue(dic.Count == length, $"There should be {length} properties, actual {dic?.Count}.");
+            Assert.True(dic.Count == length, $"There should be {length} properties, actual {dic?.Count}.");
         }
 
         public static void AssertForAttribNotPresent(Dictionary<string, JsonElement> dic, string attribName)
@@ -60,7 +60,7 @@ namespace NewRelic.Telemetry.Tests
             if (dic.ContainsKey(attribName))
             {
                 var realVal = dic[attribName];
-                Assert.Fail($"Attribute {attribName}, was NOT expected, but was present with value {realVal}");
+                Assert.True(false, $"Attribute {attribName}, was NOT expected, but was present with value {realVal}");
             }
         }
 
@@ -73,38 +73,38 @@ namespace NewRelic.Telemetry.Tests
                     return;     // This is OK
                 }
 
-                Assert.Fail($"Attribute {attribName}, expected {expectedValueObj}, actual NULL/missing");
+                Assert.True(false, $"Attribute {attribName}, expected {expectedValueObj}, actual NULL/missing");
             }
 
             var actualValJson = dic[attribName];
 
             if (expectedValueObj is string)
             {
-                Assert.IsTrue((string)expectedValueObj == actualValJson.GetString(), $"Attribute {attribName}, expected {expectedValueObj}, actual {actualValJson}");
+                Assert.True((string)expectedValueObj == actualValJson.GetString(), $"Attribute {attribName}, expected {expectedValueObj}, actual {actualValJson}");
                 return;
             }
 
             if (expectedValueObj is int || expectedValueObj is long || expectedValueObj is short)
             {
-                Assert.IsTrue(Convert.ToInt64(expectedValueObj) == actualValJson.GetInt64(), $"Attribute {attribName}, expected {expectedValueObj}, actual {actualValJson}");
+                Assert.True(Convert.ToInt64(expectedValueObj) == actualValJson.GetInt64(), $"Attribute {attribName}, expected {expectedValueObj}, actual {actualValJson}");
                 return;
             }
 
             if (expectedValueObj is bool)
             {
-                Assert.IsTrue((bool)expectedValueObj == actualValJson.GetBoolean(), $"Attribute {attribName}, expected {expectedValueObj}, actual {actualValJson}");
+                Assert.True((bool)expectedValueObj == actualValJson.GetBoolean(), $"Attribute {attribName}, expected {expectedValueObj}, actual {actualValJson}");
                 return;
             }
 
             if (expectedValueObj is decimal)
             {
-                Assert.IsTrue((decimal)expectedValueObj == actualValJson.GetDecimal(), $"Attribute {attribName}, expected {expectedValueObj}, actual {actualValJson}");
+                Assert.True((decimal)expectedValueObj == actualValJson.GetDecimal(), $"Attribute {attribName}, expected {expectedValueObj}, actual {actualValJson}");
                 return;
             }
 
             if (expectedValueObj is double || expectedValueObj is float)
             {
-                Assert.IsTrue((double)expectedValueObj == actualValJson.GetDouble(), $"Attribute {attribName}, expected {expectedValueObj}, actual {actualValJson}");
+                Assert.True((double)expectedValueObj == actualValJson.GetDouble(), $"Attribute {attribName}, expected {expectedValueObj}, actual {actualValJson}");
                 return;
             }
 
@@ -135,13 +135,13 @@ namespace NewRelic.Telemetry.Tests
                             throw new Exception($"Unexpected property {actualValProp.Name}.");
                     }
 
-                    Assert.AreEqual(expectedPropValue, actualPropValue, $"Mismatch on {actualValProp.Name} property: Expected: {expectedPropValue}, Actual: {actualPropValue}");
+                    Assert.Equal(expectedPropValue, actualPropValue);
                 }
                 
                 return;
             }
 
-            Assert.Fail("Not Implemented");
+            Assert.True(false, "Not Implemented");
         }
     }
 }
