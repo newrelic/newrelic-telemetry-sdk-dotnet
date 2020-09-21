@@ -9,7 +9,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using NewRelic.Telemetry.Tracing;
 using NewRelic.Telemetry.Transport;
-using NUnit.Framework;
+using Xunit;
 
 namespace NewRelic.Telemetry.Tests
 {
@@ -35,14 +35,12 @@ namespace NewRelic.Telemetry.Tests
         ///         --------------------------------------------------------------------------
         ///             Total = 7 Requests/Batches              9 spans
         /// </summary>
-        [Test]
+        [Fact]
         public async Task RequestTooLarge_SplitSuccess()
         {
             const int expectedCountSpans = 9;
             const int expectedCountCallsSendData = 7;
             const int expectedCountSuccessfulSpanBatches = 4;
-            const int expectedCountDistinctTraceIds = 1;
-            const int expectedCountSpanBatchAttribSets = 1;
             const string expectedTraceID = "TestTrace";
 
             var actualCountCallsSendData = 0;
@@ -93,18 +91,18 @@ namespace NewRelic.Telemetry.Tests
             await dataSender.SendDataAsync(spanBatch);
 
             // Assert
-            Assert.AreEqual(expectedCountCallsSendData, actualCountCallsSendData);
+            Assert.Equal(expectedCountCallsSendData, actualCountCallsSendData);
 
             // Test the Spans
-            Assert.AreEqual(expectedCountSuccessfulSpanBatches, successfulSpanBatches.Count, "Unexpected number of calls");
-            Assert.AreEqual(expectedCountSpans, successfulSpanBatches.SelectMany(x => x.Spans).Count(), "Unexpected number of successful Spans");
-            Assert.AreEqual(expectedCountSpans, successfulSpanBatches.SelectMany(x => x.Spans).Select(x => x.Id).Distinct().Count(), "All Spans should be unique (spanId)");
+            Assert.Equal(expectedCountSuccessfulSpanBatches, successfulSpanBatches.Count);
+            Assert.Equal(expectedCountSpans, successfulSpanBatches.SelectMany(x => x.Spans).Count());
+            Assert.Equal(expectedCountSpans, successfulSpanBatches.SelectMany(x => x.Spans).Select(x => x.Id).Distinct().Count());
 
             // Test the attributes on the NewRelicSpanBatch
-            Assert.AreEqual(expectedCountDistinctTraceIds, successfulSpanBatches.Select(x => x.CommonProperties.TraceId).Distinct().Count(), "The traceId on split batches are not the same");
-            Assert.AreEqual(expectedTraceID, successfulSpanBatches.FirstOrDefault().CommonProperties.TraceId, "The traceId on split batches does not match the original traceId");
-            Assert.AreEqual(expectedCountSpanBatchAttribSets, successfulSpanBatches.Select(x => x.CommonProperties.Attributes).Distinct().Count(), "The attributes on all span batches should be the same");
-            Assert.AreEqual(attribs, successfulSpanBatches.Select(x => x.CommonProperties.Attributes).FirstOrDefault(), "The Span Batch attribute values on split batches do not match the attributes of the original span batch.");
+            Assert.Single(successfulSpanBatches.Select(x => x.CommonProperties.TraceId).Distinct());
+            Assert.Equal(expectedTraceID, successfulSpanBatches.FirstOrDefault().CommonProperties.TraceId);
+            Assert.Single(successfulSpanBatches.Select(x => x.CommonProperties.Attributes).Distinct());
+            Assert.Equal(attribs, successfulSpanBatches.Select(x => x.CommonProperties.Attributes).FirstOrDefault());
         }
 
         /// <summary>
@@ -127,11 +125,10 @@ namespace NewRelic.Telemetry.Tests
         ///         ----------------------------------------------------------------------------------------------------------------------
         ///             Total = 7 Requests/Batches      4 spans requested, 1 span successful
         /// </summary>
-        [Test]
+        [Fact]
         public async Task RequestTooLarge_SplitFail()
         {
             const int expectedCountCallsSendData = 7;
-            const int expectedCountSuccessfulSpanBatches = 1;
             const string traceID_Success = "OK";
             const string traceID_SplitBatch_Prefix = "TooLarge";
 
@@ -182,17 +179,17 @@ namespace NewRelic.Telemetry.Tests
             var result = await dataSender.SendDataAsync(spans);
 
             // Assert
-            Assert.AreEqual(NewRelicResponseStatus.Failure, result.ResponseStatus);
-            Assert.AreEqual(expectedCountCallsSendData, actualCountCallsSendData, "Unexpected number of calls");
-            Assert.AreEqual(expectedCountSuccessfulSpanBatches, successfulSpans.Count, $"Only {expectedCountSuccessfulSpanBatches} span should have successfully sent");
-            Assert.AreEqual(traceID_Success, successfulSpans[0].Id, "Incorrect span was sent");
+            Assert.Equal(NewRelicResponseStatus.Failure, result.ResponseStatus);
+            Assert.Equal(expectedCountCallsSendData, actualCountCallsSendData);
+            Assert.Single(successfulSpans);
+            Assert.Equal(traceID_Success, successfulSpans[0].Id);
         }
 
-        [Test]
+        [Fact]
         public async Task RetryBackoffSequence_RetriesExceeded()
         {
             var expectedNumSendBatchAsyncCall = 9; // 1 first call + 8 calls from retries
-            var expectedBackoffSequenceFromTestRun = new List<int>()
+            var expectedBackoffSequenceFromTestRun = new List<uint>()
             {
                 5000,
                 10000,
@@ -239,17 +236,17 @@ namespace NewRelic.Telemetry.Tests
 
             var result = await dataSender.SendDataAsync(spanBatch);
 
-            Assert.AreEqual(NewRelicResponseStatus.Failure, result.ResponseStatus);
-            Assert.AreEqual(HttpStatusCode.RequestTimeout, result.HttpStatusCode);
-            Assert.AreEqual(expectedNumSendBatchAsyncCall, actualCountCallsSendData, "Unexpected Number of SendDataAsync calls");
-            CollectionAssert.AreEqual(expectedBackoffSequenceFromTestRun, actualBackoffSequenceFromTestRun);
+            Assert.Equal(NewRelicResponseStatus.Failure, result.ResponseStatus);
+            Assert.Equal(HttpStatusCode.RequestTimeout, result.HttpStatusCode);
+            Assert.Equal(expectedNumSendBatchAsyncCall, actualCountCallsSendData);
+            Assert.Equal(expectedBackoffSequenceFromTestRun, actualBackoffSequenceFromTestRun);
         }
 
-        [Test]
+        [Fact]
         public async Task RetryBackoffSequence_IntermittentTimeoutEventuallySucceeds()
         {
             var expectedNumSendBatchAsyncCall = 4; // 1 first call + 3 calls from retries
-            var expectedBackoffSequenceFromTestRun = new List<int>()
+            var expectedBackoffSequenceFromTestRun = new List<uint>()
             {
                 5000,
                 10000,
@@ -298,17 +295,17 @@ namespace NewRelic.Telemetry.Tests
 
             var result = await dataSender.SendDataAsync(spanBatch);
 
-            Assert.AreEqual(NewRelicResponseStatus.Success, result.ResponseStatus);
-            Assert.AreEqual(expectedNumSendBatchAsyncCall, actualCountCallsSendData, "Unexpected Number of SendDataAsync calls");
-            CollectionAssert.AreEqual(expectedBackoffSequenceFromTestRun, actualBackoffSequenceFromTestRun);
+            Assert.Equal(NewRelicResponseStatus.Success, result.ResponseStatus);
+            Assert.Equal(expectedNumSendBatchAsyncCall, actualCountCallsSendData);
+            Assert.Equal(expectedBackoffSequenceFromTestRun, actualBackoffSequenceFromTestRun);
         }
 
-        [Test]
+        [Fact]
         public async Task RetryOn429_RetriesExceeded()
         {
             const int delayMS = 10000;
             const int expectedNumSendBatchAsyncCall = 9; // 1 first call + 3 calls from retries
-            var expectedBackoffSequenceFromTestRun = new List<int>()
+            var expectedBackoffSequenceFromTestRun = new List<uint>()
             {
                 delayMS,
                 delayMS,
@@ -358,17 +355,17 @@ namespace NewRelic.Telemetry.Tests
 
             var result = await dataSender.SendDataAsync(spanBatch);
 
-            Assert.AreEqual(NewRelicResponseStatus.Failure, result.ResponseStatus);
-            Assert.AreEqual(expectedNumSendBatchAsyncCall, actualCountCallsSendData, "Unexpected Number of SendDataAsync calls");
-            CollectionAssert.AreEqual(expectedBackoffSequenceFromTestRun, actualBackoffSequenceFromTestRun);
+            Assert.Equal(NewRelicResponseStatus.Failure, result.ResponseStatus);
+            Assert.Equal(expectedNumSendBatchAsyncCall, actualCountCallsSendData);
+            Assert.Equal(expectedBackoffSequenceFromTestRun, actualBackoffSequenceFromTestRun);
         }
 
-        [Test]
+        [Fact]
         public async Task RetryOn429WithDuration_429HappensOnce()
         {
             const int delayMS = 10000;
             const int expectedNumSendBatchAsyncCall = 2;
-            var expectedBackoffSequenceFromTestRun = new List<int>()
+            var expectedBackoffSequenceFromTestRun = new List<uint>()
             {
                 delayMS,
             };
@@ -417,12 +414,12 @@ namespace NewRelic.Telemetry.Tests
 
             var result = await dataSender.SendDataAsync(spanBatch);
 
-            Assert.AreEqual(NewRelicResponseStatus.Success, result.ResponseStatus);
-            Assert.AreEqual(expectedNumSendBatchAsyncCall, actualCountCallsSendData, "Unexpected Number of SendDataAsync calls");
-            CollectionAssert.AreEqual(expectedBackoffSequenceFromTestRun, actualBackoffSequenceFromTestRun);
+            Assert.Equal(NewRelicResponseStatus.Success, result.ResponseStatus);
+            Assert.Equal(expectedNumSendBatchAsyncCall, actualCountCallsSendData);
+            Assert.Equal(expectedBackoffSequenceFromTestRun, actualBackoffSequenceFromTestRun);
         }
 
-        [Test]
+        [Fact]
         public async Task RetryOn429WithSpecificDate_429HappensOnce()
         {
             const int delayMs = 10000;
@@ -465,10 +462,10 @@ namespace NewRelic.Telemetry.Tests
 
             var result = await dataSender.SendDataAsync(spanBatch);
 
-            Assert.IsTrue(actualDelayFromTestRun >= delayMs - errorMargin && actualDelayFromTestRun <= delayMs + errorMargin, $"Expected delay: {delayMs}, margin: +/-{errorMargin}, actual delay: {actualDelayFromTestRun}");
+            Assert.True(actualDelayFromTestRun >= delayMs - errorMargin && actualDelayFromTestRun <= delayMs + errorMargin, $"Expected delay: {delayMs}, margin: +/-{errorMargin}, actual delay: {actualDelayFromTestRun}");
         }
 
-        [Test]
+        [Fact]
         public async Task SendDataAsyncThrowsHttpException()
         {
             const int expectedNumSendBatchAsyncCall = 1;
@@ -506,13 +503,13 @@ namespace NewRelic.Telemetry.Tests
 
             var result = await dataSender.SendDataAsync(spanBatch);
 
-            Assert.AreEqual(NewRelicResponseStatus.Failure, result.ResponseStatus);
-            Assert.AreEqual("Inner exception message", result.Message);
-            Assert.IsNull(result.HttpStatusCode);
-            Assert.AreEqual(expectedNumSendBatchAsyncCall, actualCountCallsSendData, "Unexpected Number of SendDataAsync calls");
+            Assert.Equal(NewRelicResponseStatus.Failure, result.ResponseStatus);
+            Assert.Equal("Inner exception message", result.Message);
+            Assert.Null(result.HttpStatusCode);
+            Assert.Equal(expectedNumSendBatchAsyncCall, actualCountCallsSendData);
         }
 
-        [Test]
+        [Fact]
         public async Task SendDataAsyncThrowsNonHttpException()
         {
             const int expectedNumSendBatchAsyncCall = 1;
@@ -554,21 +551,22 @@ namespace NewRelic.Telemetry.Tests
 
             var result = await dataSender.SendDataAsync(spanBatch);
 
-            Assert.AreEqual(NewRelicResponseStatus.Failure, result.ResponseStatus);
-            Assert.AreEqual("Test Exception", result.Message);
-            Assert.IsNull(result.HttpStatusCode);
+            Assert.Equal(NewRelicResponseStatus.Failure, result.ResponseStatus);
+            Assert.Equal("Test Exception", result.Message);
+            Assert.Null(result.HttpStatusCode);
 
-            Assert.AreEqual(expectedNumSendBatchAsyncCall, actualCountCallsSendData, "Unexpected Number of SendDataAsync calls");
-            Assert.AreEqual(expectedNumHttpHandlerCall, actualCallsHttpHandler, "Unexpected Number of Http Handler calls");
+            Assert.Equal(expectedNumSendBatchAsyncCall, actualCountCallsSendData);
+            Assert.Equal(expectedNumHttpHandlerCall, actualCallsHttpHandler);
         }
 
-        [TestCase(null, "1.0.0")]
-        [TestCase("productName", null)]
-        [TestCase("", "")]
-        [TestCase(null, null)]
-        [TestCase("", null)]
-        [TestCase(null, "")]
-        [TestCase("productName", "1.0.0")]
+        [Theory]
+        [InlineData(null, "1.0.0")]
+        [InlineData("productName", null)]
+        [InlineData("", "")]
+        [InlineData(null, null)]
+        [InlineData("", null)]
+        [InlineData(null, "")]
+        [InlineData("productName", "1.0.0")]
         public void AddVersionInfo(string productName, string productVersion)
         {
             var dataSender = new TraceDataSender(new TelemetryConfiguration() { ApiKey = "123456" }, null);
@@ -584,7 +582,7 @@ namespace NewRelic.Telemetry.Tests
 
             var userAgentValueAfter = dataSender.UserAgent;
 
-            Assert.AreEqual(expectedUserAgentValue, userAgentValueAfter);
+            Assert.Equal(expectedUserAgentValue, userAgentValueAfter);
         }
     }
 }

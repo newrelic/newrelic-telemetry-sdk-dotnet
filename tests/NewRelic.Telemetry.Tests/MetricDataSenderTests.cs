@@ -5,13 +5,13 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using NewRelic.Telemetry.Metrics;
 using NewRelic.Telemetry.Transport;
-using NUnit.Framework;
+using Xunit;
 
 namespace NewRelic.Telemetry.Tests
 {
     public class MetricDataSenderTests
     {
-        [Test]
+        [Fact]
         public void SendAnEmptyMetricBatch()
         {
             var spanBatch = new NewRelicMetricBatch(
@@ -27,10 +27,10 @@ namespace NewRelic.Telemetry.Tests
 
             var response = dataSender.SendDataAsync(spanBatch).Result;
 
-            Assert.AreEqual(NewRelicResponseStatus.DidNotSend_NoData, response.ResponseStatus);
+            Assert.Equal(NewRelicResponseStatus.DidNotSend_NoData, response.ResponseStatus);
         }
 
-        [Test]
+        [Fact]
         public void SendANonEmptyMetricBatch()
         {
             var metricBatch = new NewRelicMetricBatch(
@@ -53,7 +53,7 @@ namespace NewRelic.Telemetry.Tests
 
             var response = dataSender.SendDataAsync(metricBatch).Result;
 
-            Assert.AreEqual(NewRelicResponseStatus.Success, response.ResponseStatus);
+            Assert.Equal(NewRelicResponseStatus.Success, response.ResponseStatus);
         }
     }
 }

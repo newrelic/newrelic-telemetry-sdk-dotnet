@@ -8,13 +8,13 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using NewRelic.Telemetry.Tracing;
 using NewRelic.Telemetry.Transport;
-using NUnit.Framework;
+using Xunit;
 
 namespace NewRelic.Telemetry.Tests
 {
     public class SpanDataSenderTests
     {
-        [Test]
+        [Fact]
         public void SendAnEmptySpanBatch()
         {
             var traceId = "123";
@@ -32,10 +32,10 @@ namespace NewRelic.Telemetry.Tests
 
             var response = dataSender.SendDataAsync(spanBatch).Result;
 
-            Assert.AreEqual(NewRelicResponseStatus.DidNotSend_NoData, response.ResponseStatus);
+            Assert.Equal(NewRelicResponseStatus.DidNotSend_NoData, response.ResponseStatus);
         }
 
-        [Test]
+        [Fact]
         public void SendANonEmptySpanBatch()
         {
             var traceId = "123";
@@ -64,10 +64,10 @@ namespace NewRelic.Telemetry.Tests
 
             var response = dataSender.SendDataAsync(spanBatch).Result;
 
-            Assert.AreEqual(NewRelicResponseStatus.Success, response.ResponseStatus);
+            Assert.Equal(NewRelicResponseStatus.Success, response.ResponseStatus);
         }
 
-        [Test]
+        [Fact]
         public void InstrumentationProviderSuppliedWhenConfigured()
         {
             const string traceId = "123";
@@ -103,14 +103,14 @@ namespace NewRelic.Telemetry.Tests
 
             var response = dataSender.SendDataAsync(spanBatch).Result;
 
-            Assert.IsNotNull(spanBatch);
+            Assert.NotNull(capturedSpanbatch);
 
             var actualSpans = spanBatch.Spans.ToArray();
 
-            Assert.AreEqual(1, actualSpans.Length);
-            Assert.IsNotNull(spanBatch.CommonProperties.Attributes);
-            Assert.IsTrue(spanBatch.CommonProperties.Attributes.ContainsKey("instrumentation.provider"));
-            Assert.AreEqual(instrumentationProvider, spanBatch.CommonProperties.Attributes["instrumentation.provider"]);
+            Assert.Single(actualSpans);
+            Assert.NotNull(spanBatch.CommonProperties.Attributes);
+            Assert.True(spanBatch.CommonProperties.Attributes.ContainsKey("instrumentation.provider"));
+            Assert.Equal(instrumentationProvider, spanBatch.CommonProperties.Attributes["instrumentation.provider"]);
         }
     }
 }

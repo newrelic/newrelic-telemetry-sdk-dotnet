@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NewRelic.Telemetry.Metrics;
-using NUnit.Framework;
+using Xunit;
 
 namespace NewRelic.Telemetry.Tests
 { 
@@ -25,7 +25,7 @@ namespace NewRelic.Telemetry.Tests
 
         private readonly Dictionary<string, object> _customAttributes = new Dictionary<string, object>() { { "attr1Key", "attr1Value" } };
 
-        [Test]
+        [Fact]
         public void ToJson_EmptyMetricBatch()
         {
             // Arrange
@@ -41,7 +41,7 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribValue(resultCommonProps, "timestamp", _timestampL);
        }
 
-        [Test]
+        [Fact]
         public void ToJson_NonEmptyMetricBatch()
         {
             // Arrange
