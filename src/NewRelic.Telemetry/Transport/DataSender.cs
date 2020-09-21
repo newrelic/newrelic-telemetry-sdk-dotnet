@@ -1,7 +1,9 @@
 ﻿// Copyright 2020 New Relic, Inc. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+#if !INTERNALIZE_TELEMETRY_SDK
 using Microsoft.Extensions.Configuration;
+#endif
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
@@ -44,6 +46,7 @@ namespace NewRelic.Telemetry.Transport
 
         protected abstract bool ContainsNoData(TData dataToCheck);
 
+#if !INTERNALIZE_TELEMETRY_SDK
         protected DataSender(IConfiguration configProvider)
             : this(configProvider, null)
         {
@@ -53,7 +56,8 @@ namespace NewRelic.Telemetry.Transport
             : this(new TelemetryConfiguration(configProvider), loggerFactory)
         {
         }
-        
+#endif
+
         protected DataSender(TelemetryConfiguration config)
             : this(config, null)
         {

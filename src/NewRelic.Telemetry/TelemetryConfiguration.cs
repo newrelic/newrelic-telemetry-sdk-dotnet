@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+#if !INTERNALIZE_TELEMETRY_SDK
 using Microsoft.Extensions.Configuration;
+#endif
 
 namespace NewRelic.Telemetry
 {
@@ -83,6 +85,7 @@ namespace NewRelic.Telemetry
         {
         }
 
+#if !INTERNALIZE_TELEMETRY_SDK
         /// <summary>
         /// Initializes a new instance of the <see cref="TelemetryConfiguration"/> class.
         /// Constructs a new configuration object using a configuration provider. Allows for an overall
@@ -167,5 +170,6 @@ namespace NewRelic.Telemetry
 
             return null;
         }
+#endif
     }
 }
