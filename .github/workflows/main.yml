@@ -70,9 +70,9 @@ jobs:
       run: |
         nuget setapikey ${{ secrets.MYGET_APIKEY }} -source {{ secrets.MYGET_URL }}
         foreach ($file in Get-ChildItem -Path "${{ env.telemetrysdk_path }}\*" -File -Include *.nupkg) {
-          nuget push $file.name -Source ${{ secrets.MYGET_URL }} }
+          nuget push $file.fullname -Source ${{ secrets.MYGET_URL }} }
         foreach ($file in Get-ChildItem -Path "${{ env.exporter_path }}\*" -File -Include *.nupkg) {
-          nuget push $file.name -Source ${{ secrets.MYGET_URL }} }
+          nuget push $file.fullname -Source ${{ secrets.MYGET_URL }} }
       shell: powershell
 
     - name: Publish Symbols to MyGet
@@ -80,7 +80,7 @@ jobs:
       run: |
         nuget setapikey ${{ secrets.MYGET_APIKEY }} -source {{ secrets.MYGET_URL_SYMBOLS }}
         foreach ($file in Get-ChildItem -Path "${{ env.telemetrysdk_path }}\*" -File -Include *.snupkg) {
-          nuget push $file.name -Source ${{ secrets.MYGET_URL_SYMBOLS }} }
+          nuget push $file.fullname -Source ${{ secrets.MYGET_URL_SYMBOLS }} }
         foreach ($file in Get-ChildItem -Path "${{ env.exporter_path }}\*" -File -Include *.snupkg) {
-          nuget push $file.name -Source ${{ secrets.MYGET_URL_SYMBOLS }} }
+          nuget push $file.fullname -Source ${{ secrets.MYGET_URL_SYMBOLS }} }
       shell: powershell
