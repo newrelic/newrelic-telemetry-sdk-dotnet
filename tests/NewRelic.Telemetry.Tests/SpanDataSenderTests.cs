@@ -22,7 +22,7 @@ namespace NewRelic.Telemetry.Tests
                 spans: new NewRelicSpan[0],
                 commonProperties: new NewRelicSpanBatchCommonProperties(traceId));
 
-            var dataSender = new TraceDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
+            var dataSender = new TraceDataSender(new TelemetryConfiguration() { ApiKey = "123456" }, null);
 
             dataSender.WithHttpHandlerImpl((serializedJson) =>
             {
@@ -54,7 +54,7 @@ namespace NewRelic.Telemetry.Tests
                 spans: new[] { span }, 
                 commonProperties: new NewRelicSpanBatchCommonProperties(traceId));
 
-            var dataSender = new TraceDataSender(new TelemetryConfiguration().WithApiKey("123456"), null);
+            var dataSender = new TraceDataSender(new TelemetryConfiguration() { ApiKey = "123456" }, null);
 
             dataSender.WithHttpHandlerImpl((serializedJson) =>
             {
@@ -89,8 +89,10 @@ namespace NewRelic.Telemetry.Tests
 
             var dataSender = new TraceDataSender(
                 new TelemetryConfiguration()
-                .WithApiKey("123456")
-                .WithInstrumentationProviderName(instrumentationProvider), null);
+                {
+                    ApiKey = "123456",
+                    InstrumentationProvider = instrumentationProvider,
+                }, null);
 
             NewRelicSpanBatch? capturedSpanbatch = null;
 

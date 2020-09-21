@@ -38,7 +38,7 @@ namespace NewRelic.Telemetry.Transport
         private Func<uint, Task> _delayerImpl = new Func<uint, Task>(async (uint milliseconds) => await Task.Delay((int)milliseconds));
         private Action<TData, int>? _captureSendDataAsyncCallDelegate = null;
 
-        protected abstract string EndpointUrl { get; }
+        protected abstract Uri EndpointUrl { get; }
 
         protected abstract TData[] Split(TData dataToSplit);
 
@@ -68,10 +68,10 @@ namespace NewRelic.Telemetry.Transport
             _logger = new TelemetryLogging(loggerFactory);
 
             _httpClient = new HttpClient();
-            _httpClient.Timeout = TimeSpan.FromSeconds(_config.SendTimeout);
+            _httpClient.Timeout = _config.SendTimeout;
 
             // Ensures that DNS expires regularly.
-            var sp = ServicePointManager.FindServicePoint(new Uri(EndpointUrl));
+            var sp = ServicePointManager.FindServicePoint(EndpointUrl);
             sp.ConnectionLeaseTimeout = 60000;  // 1 minute
 
             _httpHandlerImpl = SendDataAsync;

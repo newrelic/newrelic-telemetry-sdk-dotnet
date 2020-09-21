@@ -39,7 +39,7 @@ namespace ASPNetFrameworkApiApplication.Controllers
             
             // Create a new Telemetry Configuration Object with the API Key retrieved
             // from the Web.Config
-            var telemetryConfig = new TelemetryConfiguration().WithApiKey(apiKey);
+            var telemetryConfig = new TelemetryConfiguration() { ApiKey = apiKey };
 
             // Instantiate the SpanDataSender which manages the communication with New
             // Relic endpoints

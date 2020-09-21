@@ -29,7 +29,6 @@ namespace OpenTelemetry.Exporter.NewRelic
         private readonly TraceDataSender _spanDataSender;
         private readonly ILogger? _logger;
         private readonly TelemetrySdk.TelemetryConfiguration _config;
-        private readonly string[] _nrEndpoints;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NewRelicTraceExporter"/> class.
@@ -59,9 +58,7 @@ namespace OpenTelemetry.Exporter.NewRelic
 
             _config = config;
 
-            _config.WithInstrumentationProviderName("opentelemetry");
-
-            _nrEndpoints = config.NewRelicEndpoints.Select(x => x.ToLower()).ToArray();
+            _config.InstrumentationProvider = "opentelemetry";
 
             if (loggerFactory != null)
             {
