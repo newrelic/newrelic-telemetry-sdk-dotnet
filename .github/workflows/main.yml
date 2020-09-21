@@ -4,6 +4,7 @@ on:
   pull_request:
     branches: [ main ]
   push:
+    branches: [ main ]
     tags:
       - refs/tags/v*.*.*      # v1.0.0
       - refs/tags/v*.*.*-*    # v1.0.0-alpha
