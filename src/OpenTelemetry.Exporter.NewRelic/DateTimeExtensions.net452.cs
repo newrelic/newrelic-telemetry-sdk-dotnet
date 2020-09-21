@@ -1,6 +1,7 @@
 ﻿// Copyright 2020 New Relic, Inc. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+#if NET452
 using System;
 
 namespace OpenTelemetry.Exporter.NewRelic
@@ -24,11 +25,10 @@ namespace OpenTelemetry.Exporter.NewRelic
         private const long UnixEpochTicks = DaysTo1970 * TicksPerDay;
         private const long UnixEpochMilliseconds = UnixEpochTicks / TicksPerMillisecond; // 62,135,596,800,000
 
-        private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-        public static long ToUnixTimeMilliseconds(this DateTime dateTime)
+        public static long ToUnixTimeMilliseconds(this DateTimeOffset dateTimeOffset)
         {
-            return (dateTime.ToUniversalTime().Ticks / TicksPerMillisecond) - UnixEpochMilliseconds;
+            return (dateTimeOffset.ToUniversalTime().Ticks / TicksPerMillisecond) - UnixEpochMilliseconds;
         }
     }
 }
+#endif
