@@ -1,6 +1,7 @@
 ﻿// Copyright 2020 New Relic, Inc. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
@@ -27,8 +28,6 @@ namespace NewRelic.Telemetry.Tests
         private const string ApiKeyDiffProductvalue = "ABCDEFG";
         private const string ApiKeyDefaultValue = null;
 
-        private const int SendTimeoutSecondsProdValue = 124;
-        private const int SendTimeoutSecondsDefaultValue = 5;
         private const int SendTimeoutSecondsDiffProdValue = 500;
 
         private const bool AuditLoggingEnabledProdValue = true;
@@ -39,6 +38,9 @@ namespace NewRelic.Telemetry.Tests
         private const string ServiceNameDefaultValue = null;
 
         private const int BackoffMaxSecondsDefaultValue = 80;
+
+        private TimeSpan _sendTimeoutSecondsProdValue = TimeSpan.FromSeconds(124);
+        private TimeSpan _sendTimeoutSecondsDefaultValue = TimeSpan.FromSeconds(5);
 
         /// <summary>
         /// Uses a dictionary to produce an example appsettings.json configuration.  This 
@@ -67,7 +69,7 @@ namespace NewRelic.Telemetry.Tests
                 {
                     { "ApiKey", ApiKeyProdValue },
                     { "AuditLoggingEnabled", AuditLoggingEnabledProdValue },
-                    { "SendTimeoutSeconds", SendTimeoutSecondsProdValue },
+                    { "SendTimeoutSeconds", _sendTimeoutSecondsProdValue },
                 };
 
                 var nonNewRelicConfigSection = new Dictionary<string, object>()
@@ -136,7 +138,7 @@ namespace NewRelic.Telemetry.Tests
                 {
                     { "ApiKey", ApiKeyProdValue },
                     { "AuditLoggingEnabled", AuditLoggingEnabledProdValue },
-                    { "SendTimeoutSeconds", SendTimeoutSecondsProdValue },
+                    { "SendTimeoutSeconds", _sendTimeoutSecondsProdValue.TotalSeconds },
                 };
 
                 var altProductConfig = new Dictionary<string, object>()
@@ -190,7 +192,7 @@ namespace NewRelic.Telemetry.Tests
         {
             var telemetryConfig = new TelemetryConfiguration(ConfigExample_NewRelicConfig, ProductName);
             Assert.Equal(ApiKeyProdValue, telemetryConfig.ApiKey);
-            Assert.Equal(SendTimeoutSecondsProdValue, telemetryConfig.SendTimeout);
+            Assert.Equal(_sendTimeoutSecondsProdValue, telemetryConfig.SendTimeout);
             Assert.Equal(ServiceNameNewRelicValue, telemetryConfig.ServiceName);
             Assert.Equal(BackoffMaxSecondsDefaultValue, telemetryConfig.BackoffMaxSeconds);
         }
@@ -206,7 +208,7 @@ namespace NewRelic.Telemetry.Tests
             var telemetryConfig = new TelemetryConfiguration(ConfigExample_NewRelicConfig);
 
             Assert.Equal(ApiKeyNewRelicValue, telemetryConfig.ApiKey);
-            Assert.Equal(SendTimeoutSecondsDefaultValue, telemetryConfig.SendTimeout);
+            Assert.Equal(_sendTimeoutSecondsDefaultValue, telemetryConfig.SendTimeout);
             Assert.Equal(ServiceNameNewRelicValue, telemetryConfig.ServiceName);
             Assert.Equal(BackoffMaxSecondsDefaultValue, telemetryConfig.BackoffMaxSeconds);
         }
@@ -223,7 +225,7 @@ namespace NewRelic.Telemetry.Tests
             var telemetryConfig = new TelemetryConfiguration(ConfigExample_NewRelicConfig, MissingProductName);
 
             Assert.Equal(ApiKeyNewRelicValue, telemetryConfig.ApiKey);
-            Assert.Equal(SendTimeoutSecondsDefaultValue, telemetryConfig.SendTimeout);
+            Assert.Equal(_sendTimeoutSecondsDefaultValue, telemetryConfig.SendTimeout);
             Assert.Equal(ServiceNameNewRelicValue, telemetryConfig.ServiceName);
             Assert.Equal(BackoffMaxSecondsDefaultValue, telemetryConfig.BackoffMaxSeconds);
         }
@@ -238,7 +240,7 @@ namespace NewRelic.Telemetry.Tests
             var telemetryConfig = new TelemetryConfiguration(ConfigExample_NewRelicConfigMissing);
 
             Assert.Equal(ApiKeyDefaultValue, telemetryConfig.ApiKey);
-            Assert.Equal(SendTimeoutSecondsDefaultValue, telemetryConfig.SendTimeout);
+            Assert.Equal(_sendTimeoutSecondsDefaultValue, telemetryConfig.SendTimeout);
             Assert.Equal(ServiceNameDefaultValue, telemetryConfig.ServiceName);
             Assert.Equal(BackoffMaxSecondsDefaultValue, telemetryConfig.BackoffMaxSeconds);
         }
