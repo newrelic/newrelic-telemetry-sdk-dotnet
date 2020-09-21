@@ -69,18 +69,22 @@ jobs:
       if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags') }}
       run: |
         nuget setapikey ${{ secrets.MYGET_APIKEY }} -source ${{ secrets.MYGET_URL }}
+
         foreach ($file in Get-ChildItem -Path "${{ env.telemetrysdk_path }}\*" -File -Include *.nupkg) {
-          nuget push $file.fullname -Source ${{ secrets.MYGET_URL }} } -NoSymbols
+          nuget push $file.fullname -Source ${{ secrets.MYGET_URL }} -NoSymbols }
+
         foreach ($file in Get-ChildItem -Path "${{ env.exporter_path }}\*" -File -Include *.nupkg) {
-          nuget push $file.fullname -Source ${{ secrets.MYGET_URL }} } -NoSymbols
+          nuget push $file.fullname -Source ${{ secrets.MYGET_URL }} -NoSymbols }
       shell: powershell
 
     - name: Publish Symbols to MyGet
       if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags') }}
       run: |
         nuget setapikey ${{ secrets.MYGET_APIKEY }} -source ${{ secrets.MYGET_URL_SYMBOLS }}
+
         foreach ($file in Get-ChildItem -Path "${{ env.telemetrysdk_path }}\*" -File -Include *.snupkg) {
           nuget push $file.fullname -Source ${{ secrets.MYGET_URL_SYMBOLS }} }
+
         foreach ($file in Get-ChildItem -Path "${{ env.exporter_path }}\*" -File -Include *.snupkg) {
           nuget push $file.fullname -Source ${{ secrets.MYGET_URL_SYMBOLS }} }
       shell: powershell
