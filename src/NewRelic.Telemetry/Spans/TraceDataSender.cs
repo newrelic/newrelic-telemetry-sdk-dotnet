@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+#if !INTERNALIZE_TELEMETRY_SDK
 using Microsoft.Extensions.Configuration;
+#endif
 using Microsoft.Extensions.Logging;
 using NewRelic.Telemetry.Transport;
 
@@ -53,10 +55,12 @@ namespace NewRelic.Telemetry.Tracing
         {
         }
 
+#if !INTERNALIZE_TELEMETRY_SDK
         public TraceDataSender(IConfiguration config, ILoggerFactory? loggerFactory)
             : base(config, loggerFactory)
         {
         }
+#endif
 
         public async Task<Response> SendDataAsync(IEnumerable<NewRelicSpan> spans)
         {
