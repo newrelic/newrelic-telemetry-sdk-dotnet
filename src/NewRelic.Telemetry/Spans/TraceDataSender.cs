@@ -1,6 +1,7 @@
 ﻿// Copyright 2020 New Relic, Inc. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace NewRelic.Telemetry.Tracing
 #endif
     class TraceDataSender : DataSender<NewRelicSpanBatch>
     {
-        protected override string EndpointUrl => _config.TraceUrl;
+        protected override Uri EndpointUrl => _config.TraceUrl;
 
         protected override bool ContainsNoData(NewRelicSpanBatch dataToCheck)
         {
