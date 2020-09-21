@@ -26,10 +26,6 @@
     <PackageReference Include="Utf8Json" Version="1.3.7" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
-    <Reference Include="System.Net.Http" />
-  </ItemGroup>
-
   <ItemGroup>
     <AssemblyAttribute Include="NewRelic.Telemetry.PackageVersion">
       <_Parameter1>$(PackageVersion)</_Parameter1>
