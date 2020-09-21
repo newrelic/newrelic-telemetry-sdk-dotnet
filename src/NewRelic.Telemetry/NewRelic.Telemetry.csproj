@@ -1,19 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
     <Title>New Relic Telemetry SDK</Title>
     <Description>.NET library for sending telemetry data to New Relic</Description>
-    <PackageReleaseNotes>https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/blob/master/CHANGELOG.md</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/blob/main/src/NewRelic.Telemetry/CHANGELOG.md</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="Utf8Json" Version="1.3.7" />
   </ItemGroup>
 
@@ -22,13 +17,4 @@
       <_Parameter1>$(PackageVersion)</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
-
-  <!-- There is an integration test that relies on pushing NuGet packages
-       to a local package source. The integration test is still a work in
-       progress, so for now we're not performing the local NuGet package push.
-  -->
-  <!--<Target Name="PublishNugetPackage" AfterTargets="Pack">
-    <MakeDir Directories="$(MSBuildProjectDirectory)\..\LocalNugetPackageSource"/>
-    <Exec Command="dotnet nuget push &quot;$(MSBuildProjectDirectory)/bin/$(Configuration)/*.nupkg&quot; -s &quot;$(MSBuildProjectDirectory)/../LocalNugetPackageSource&quot;" />
-  </Target>-->
 </Project>
