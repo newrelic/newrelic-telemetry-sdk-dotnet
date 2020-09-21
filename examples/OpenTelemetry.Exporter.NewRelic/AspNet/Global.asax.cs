@@ -20,9 +20,10 @@ namespace SampleAspNetFrameworkApp
             // Initialize OpenTelemetry and register the New Relic Exporter
             this.openTelemetry = Sdk.CreateTracerProviderBuilder()
                 .AddNewRelicExporter(config =>
-                    config
-                        .WithApiKey(apiKey)
-                        .WithServiceName("aspnet-example"))
+                {
+                    config.ApiKey = apiKey;
+                    config.ServiceName = "aspnet-example";
+                })
                 .AddAspNetInstrumentation()
                 .AddHttpClientInstrumentation()
                 .Build();
