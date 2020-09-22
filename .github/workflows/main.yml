@@ -64,27 +64,19 @@ jobs:
           ${{ env.telemetrysdk_path }}
           ${{ env.exporter_path }}
 
-      # These two steps will only run on a build of master or a tag is created.
+    # This step will only run on a build of master or a tag is created.
     - name: Publish Packages to MyGet
       if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags') }}
       run: |
-        nuget setapikey ${{ secrets.MYGET_APIKEY }} -source ${{ secrets.MYGET_URL }}
-
         foreach ($file in Get-ChildItem -Path "${{ env.telemetrysdk_path }}\*" -File -Include *.nupkg) {
-          nuget push $file.fullname -Source ${{ secrets.MYGET_URL }} -NoSymbols }
+          nuget push $file.fullname -ApiKey ${{ secrets.MYGET_APIKEY }} -Source https://www.myget.org/F/newrelic/api/v2/package -NoSymbols }
 
         foreach ($file in Get-ChildItem -Path "${{ env.exporter_path }}\*" -File -Include *.nupkg) {
-          nuget push $file.fullname -Source ${{ secrets.MYGET_URL }} -NoSymbols }
-      shell: powershell
-
-    - name: Publish Symbols to MyGet
-      if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags') }}
-      run: |
-        nuget setapikey ${{ secrets.MYGET_APIKEY }} -source ${{ secrets.MYGET_URL_SYMBOLS }}
+          nuget push $file.fullname -ApiKey ${{ secrets.MYGET_APIKEY }} -Source https://www.myget.org/F/newrelic/api/v2/package -NoSymbols }
 
         foreach ($file in Get-ChildItem -Path "${{ env.telemetrysdk_path }}\*" -File -Include *.snupkg) {
-          nuget push $file.fullname -Source ${{ secrets.MYGET_URL_SYMBOLS }} }
+          nuget push $file.fullname -ApiKey ${{ secrets.MYGET_APIKEY }} -Source https://www.myget.org/F/newrelic/api/v3/index.json }
 
         foreach ($file in Get-ChildItem -Path "${{ env.exporter_path }}\*" -File -Include *.snupkg) {
-          nuget push $file.fullname -Source ${{ secrets.MYGET_URL_SYMBOLS }} }
+          nuget push $file.fullname -ApiKey ${{ secrets.MYGET_APIKEY }} -Source https://www.myget.org/F/newrelic/api/v3/index.json }
       shell: powershell
