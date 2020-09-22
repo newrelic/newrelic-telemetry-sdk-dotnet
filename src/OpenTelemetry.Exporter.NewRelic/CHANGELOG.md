@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+## 1.0.0-beta.191 - 2020-09-21
+
 * Update to OpenTelemetry 0.6.0-beta.1 ([#119](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/119)).
 * Fix `span.kind` not sent on spans ([#117](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/117)).
 * Removed dependency on NewRelic.Telemetry and
