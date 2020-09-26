@@ -2,7 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
-using System.Runtime.Serialization;
+#if NETFRAMEWORK
+using Newtonsoft.Json;
+#else
+using System.Text.Json.Serialization;
+#endif
 
 namespace NewRelic.Telemetry.Metrics
 {
@@ -21,16 +25,24 @@ namespace NewRelic.Telemetry.Metrics
 
         public string Name { get; }
 
-        [DataMember(Name = "interval.ms")]
+#if NETFRAMEWORK
+        [JsonProperty("interval.ms")]
+#else
+        [JsonPropertyName("interval.ms")]
+#endif
         public long? IntervalMs { get; }
 
-        [DataMember(Name = "value")]
+#if NETFRAMEWORK
+        [JsonProperty("value")]
+#else
+        [JsonPropertyName("value")]
+#endif
         public object? ValueForSerialization => SummaryValue ?? Value as object;
 
-        [IgnoreDataMember]
+        [JsonIgnore]
         public double? Value { get; }
 
-        [IgnoreDataMember]
+        [JsonIgnore]
         public NewRelicMetricSummaryValue? SummaryValue { get; }
 
         private NewRelicMetric(string type, long? timestamp, string name, Dictionary<string, object>? attributes, long? intervalMs, double? value, NewRelicMetricSummaryValue? summaryValue)
