@@ -2,9 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
-using System.Runtime.Serialization;
-using Utf8Json;
-using Utf8Json.Resolvers;
+#if NETFRAMEWORK
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+#else
+using System.Text.Json;
+using System.Text.Json.Serialization;
+#endif
 
 namespace NewRelic.Telemetry.Metrics
 {
@@ -15,7 +19,25 @@ namespace NewRelic.Telemetry.Metrics
 #endif
     readonly struct NewRelicMetricBatch : ITelemetryDataType<NewRelicMetricBatch>
     {
-        [DataMember(Name = "common")]
+#if NETFRAMEWORK
+        private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore,
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+        };
+#else
+        private static readonly JsonSerializerOptions JsonSerializerOptions = new JsonSerializerOptions()
+        {
+            IgnoreNullValues = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        };
+#endif
+
+#if NETFRAMEWORK
+        [JsonProperty("common")]
+#else
+        [JsonPropertyName("common")]
+#endif
         public NewRelicMetricBatchCommonProperties CommonProperties { get; }
 
         public IEnumerable<NewRelicMetric> Metrics { get; }
@@ -34,7 +56,11 @@ namespace NewRelic.Telemetry.Metrics
 
         public string ToJson()
         {
-            return JsonSerializer.ToJsonString(new[] { this }, StandardResolver.ExcludeNullCamelCase);
+#if NETFRAMEWORK
+            return JsonConvert.SerializeObject(new[] { this }, JsonSerializerSettings);
+#else
+            return JsonSerializer.Serialize(new[] { this }, JsonSerializerOptions);
+#endif
         }
 
         public void SetInstrumentationProvider(string instrumentationProvider)

@@ -2,7 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
-using System.Runtime.Serialization;
+#if NETFRAMEWORK
+using Newtonsoft.Json;
+#else
+using System.Text.Json.Serialization;
+#endif
 
 namespace NewRelic.Telemetry.Tracing
 {
@@ -15,7 +19,11 @@ namespace NewRelic.Telemetry.Tracing
     {
         public string Id { get; }
 
-        [DataMember(Name = "trace.id")]
+#if NETFRAMEWORK
+        [JsonProperty("trace.id")]
+#else
+        [JsonPropertyName("trace.id")]
+#endif
         public string? TraceId { get; }
 
         public long Timestamp { get; }
