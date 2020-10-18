@@ -23,7 +23,7 @@ jobs:
       artifact_staging_path: ${{ github.workspace }}\artifactstaging
       solution_file_path: ${{ github.workspace }}\NewRelic.sln
       telemetrysdk_path: ${{ github.workspace }}\src\NewRelic.Telemetry\bin\Release\
-      exporter_path: ${{ github.workspace }}\src\OpenTelemetry.Exporter.NewRelic\bin\Release\
+      exporter_path: ${{ github.workspace }}\src\NewRelic.OpenTelemetry.Exporter\bin\Release\
       DOTNET_NOLOGO: true
 
     steps:
@@ -53,7 +53,7 @@ jobs:
       shell: powershell
 
     - name: Unit Tests - OpenTelemetry
-      run:  dotnet test ${{ github.workspace }}\tests\OpenTelemetry.Exporter.NewRelic.Tests --no-build --no-restore --configuration Release --logger trx
+      run:  dotnet test ${{ github.workspace }}\tests\NewRelic.OpenTelemetry.Exporter.Tests --no-build --no-restore --configuration Release --logger trx
       shell: powershell
          
     - name: Archive the artifacts
