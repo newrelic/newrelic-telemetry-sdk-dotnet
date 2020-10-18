@@ -185,7 +185,7 @@
       <Project>{62CE6D9B-449B-4956-94FC-0FBBA235145F}</Project>
       <Name>NewRelic.Telemetry</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\src\OpenTelemetry.Exporter.NewRelic\NewRelic.OpenTelemetry.csproj">
+    <ProjectReference Include="..\..\..\src\NewRelic.OpenTelemetry\NewRelic.OpenTelemetry.csproj">
       <Project>{2477cd19-50d2-44e3-bc83-bcfe027b60b8}</Project>
       <Name>NewRelic.OpenTelemetry</Name>
     </ProjectReference>
