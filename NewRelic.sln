@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Telemetry", "src\N
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Telemetry.Tests", "tests\NewRelic.Telemetry.Tests\NewRelic.Telemetry.Tests.csproj", "{46FE3771-EB5C-4C05-B76C-DDEF7BCC7706}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetry.Exporter.NewRelic", "src\OpenTelemetry.Exporter.NewRelic\OpenTelemetry.Exporter.NewRelic.csproj", "{2477CD19-50D2-44E3-BC83-BCFE027B60B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.OpenTelemetry", "src\OpenTelemetry.Exporter.NewRelic\NewRelic.OpenTelemetry.csproj", "{2477CD19-50D2-44E3-BC83-BCFE027B60B8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetry.Exporter.NewRelic.Tests", "tests\OpenTelemetry.Exporter.NewRelic.Tests\OpenTelemetry.Exporter.NewRelic.Tests.csproj", "{4D5BC297-24D2-47FE-85C2-051A29A59B7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.OpenTelemetry.Tests", "tests\OpenTelemetry.Exporter.NewRelic.Tests\NewRelic.OpenTelemetry.Tests.csproj", "{4D5BC297-24D2-47FE-85C2-051A29A59B7D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Examples.AspNetCore", "examples\OpenTelemetry.Exporter.NewRelic\AspNetCore\NewRelic.Examples.AspNetCore.csproj", "{F2E815B3-5902-4DD5-9D37-CFB514D6B4DE}"
 EndProject
@@ -23,7 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewRelic.Examples.AspNet", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{A76FE35F-7402-4B7D-BA8A-9DE4B1C63102}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenTelemetry.Exporter.NewRelic", "OpenTelemetry.Exporter.NewRelic", "{6B78F9B1-C192-45E1-8E33-CB2A71CA3E1E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NewRelic.OpenTelemetry", "NewRelic.OpenTelemetry", "{6B78F9B1-C192-45E1-8E33-CB2A71CA3E1E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NewRelic.Telemetry", "NewRelic.Telemetry", "{D847E466-5836-4FBA-9D1A-8DF1FD9EF5A8}"
 EndProject
