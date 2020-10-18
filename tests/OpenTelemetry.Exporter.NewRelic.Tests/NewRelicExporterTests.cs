@@ -86,7 +86,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             };
 
             var newRelicExporter = new NewRelicTraceExporter(exporterOptions);
-            var exportActivityProcessor = new BatchExportActivityProcessor(newRelicExporter);
+            var exportActivityProcessor = new BatchExportProcessor<Activity>(newRelicExporter);
 
             var openTelemetrySdk = Sdk.CreateTracerProviderBuilder()
                 .AddSource(ActivitySourceName)
