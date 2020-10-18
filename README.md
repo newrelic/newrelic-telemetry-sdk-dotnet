@@ -7,8 +7,8 @@
 
 This repo contains the New Relic Telemetry SDK and an OpenTelemetry provider for .NET.
 
-## [New Relic OpenTelemetry trace exporter](/src/OpenTelemetry.Exporter.NewRelic)
-[OpenTelemetry](https://opentelemetry.io/) is a set of APIs that aim to standardize the collection and reporting of application telemetry information.  The [New Relic trace exporter for OpenTelemetry](/src/OpenTelemetry.Exporter.NewRelic) allows tracing information collected within the OpenTelemetry framework to be reported to New Relic.  This exporter is built using New Relic's Telemetry SDK.
+## [New Relic OpenTelemetry trace exporter](/src/NewRelic.OpenTelemetry.Exporter)
+[OpenTelemetry](https://opentelemetry.io/) is a set of APIs that aim to standardize the collection and reporting of application telemetry information.  The [New Relic trace exporter for OpenTelemetry](/src/NewRelic.OpenTelemetry.Exporter) allows tracing information collected within the OpenTelemetry framework to be reported to New Relic.  This exporter is built using New Relic's Telemetry SDK.
 
 ## [New Relic Telemetry SDK](/src/NewRelic.Telemetry)
 The [New Relic Telemetry SDK](/src/NewRelic.Telemetry) allows tracking of information about the execution of an application and sends it to the New Relic back-end.  New Relic tools allow the visualization of this information, making it insightful and actionable.
