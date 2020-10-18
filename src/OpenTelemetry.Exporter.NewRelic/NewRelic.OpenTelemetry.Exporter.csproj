@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
-    <Description>Open Telemetry Provider for .NET to send data to New Relic.</Description>
+    <Description>New Relic exporter for OpenTelemetry .NET</Description>
     <DefineConstants>$(DefineConstants);INTERNALIZE_TELEMETRY_SDK</DefineConstants>
     <PackageReleaseNotes>https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/blob/main/src/OpenTelemetry.Exporter.NewRelic/CHANGELOG.md</PackageReleaseNotes>
   </PropertyGroup>
