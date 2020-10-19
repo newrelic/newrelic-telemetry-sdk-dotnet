@@ -19,7 +19,7 @@ namespace OpenTelemetry.Exporter.NewRelic
     /// <summary>
     /// An exporter used to send Trace/Span information to New Relic.
     /// </summary>
-    public class NewRelicTraceExporter : ActivityExporter
+    public class NewRelicTraceExporter : BaseExporter<Activity>
     {
         private const string ProductName = "NewRelic-Dotnet-OpenTelemetry";
 

@@ -43,7 +43,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
         private readonly (int? Parent, string Name, DateTimeOffset Start, DateTimeOffset End, Status Status, bool IsCallToNewRelic)[] _spanDefinitions = new (int?, string, DateTimeOffset, DateTimeOffset, Status, bool)[]
         {
             (null, "Test Span 1", _traceStartTime, _traceStartTime.AddMilliseconds(225), Status.Ok, false),
-            (0, "Test Span 2", _traceStartTime.AddMilliseconds(1), _traceStartTime.AddMilliseconds(100), Status.Aborted.WithDescription(ErrorMessage), false),
+            (0, "Test Span 2", _traceStartTime.AddMilliseconds(1), _traceStartTime.AddMilliseconds(100), Status.Error.WithDescription(ErrorMessage), false),
             (null, "Test Span 3", _traceStartTime.AddMilliseconds(2), _traceStartTime.AddMilliseconds(375), Status.Ok, false),
             (null, "Test Span 4", _traceStartTime.AddMilliseconds(3), _traceStartTime.AddMilliseconds(650), Status.Ok, false),
             (3, "Should Be Filtered - HTTP Call to NR", _traceStartTime.AddMilliseconds(4), _traceStartTime.AddMilliseconds(600), Status.Ok, true),
@@ -82,7 +82,7 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
 
             using (var openTelemetrySdk = Sdk.CreateTracerProviderBuilder()
                     .AddSource("newrelic.test")
-                    .AddProcessor(new BatchExportActivityProcessor(exporter))
+                    .AddProcessor(new BatchExportProcessor<Activity>(exporter))
                     .Build())
             {
                 var tracer = openTelemetrySdk.GetTracer("TestTracer");
