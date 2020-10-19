@@ -11,7 +11,12 @@ namespace NewRelic.Telemetry
     /// <summary>
     /// Configuration settings for the New Relic Telemetry SDK.
     /// </summary>
-    public class TelemetryConfiguration
+#if INTERNALIZE_TELEMETRY_SDK
+    internal
+#else
+    public
+#endif
+    class TelemetryConfiguration
     {
         /// <summary>
         /// REQUIRED: Your Insights Insert API Key.  This value is required in order to communicate with the

@@ -6,7 +6,6 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using NewRelic.Telemetry;
 using OpenTelemetry;
 using OpenTelemetry.Trace;
 using Xunit;
@@ -79,11 +78,11 @@ namespace NewRelic.OpenTelemetry.Tests
                     endCalledCount++;
                 };
 
-            var exporterOptions = new TelemetryConfiguration()
+            var exporterOptions = new NewRelicExporterOptions()
             {
                 ApiKey = "my-apikey",
                 ServiceName = "test-newrelic",
-                TraceUrl = new Uri($"http://{_testServerHost}:{_testServerPort}/trace/v1?requestId={requestId}"),
+                EndpointUrl = new Uri($"http://{_testServerHost}:{_testServerPort}/trace/v1?requestId={requestId}"),
             };
 
             var newRelicExporter = new NewRelicTraceExporter(exporterOptions);

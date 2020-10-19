@@ -5,7 +5,6 @@ using System;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NewRelic.OpenTelemetry;
-using NewRelic.Telemetry;
 
 namespace OpenTelemetry.Trace
 {
@@ -18,29 +17,29 @@ namespace OpenTelemetry.Trace
         /// Adds New Relic exporter to the TracerProvider.
         /// </summary>
         /// <param name="builder"><see cref="TracerProviderBuilder"/> builder to use.</param>
-        /// <param name="configure">Exporter configuration options.</param>
+        /// <param name="options">Exporter configuration options.</param>
         /// <returns>The instance of <see cref="TracerProviderBuilder"/> to chain the calls.</returns>
-        public static TracerProviderBuilder AddNewRelicExporter(this TracerProviderBuilder builder, Action<TelemetryConfiguration> configure)
+        public static TracerProviderBuilder AddNewRelicExporter(this TracerProviderBuilder builder, Action<NewRelicExporterOptions> options)
         {
-            return AddNewRelicExporter(builder, configure, null!);
+            return AddNewRelicExporter(builder, options, null!);
         }
 
         /// <summary>
         /// Adds New Relic exporter to the TracerProvider and enables the exporter to log to an ILogger.
         /// </summary>
         /// <param name="builder"><see cref="TracerProviderBuilder"/> builder to use.</param>
-        /// <param name="configure">Exporter configuration options.</param>
+        /// <param name="options">Exporter configuration options.</param>
         /// <param name="loggerFactory">ILoggerFactory instance for creating an ILogger.</param>
         /// <returns>The instance of <see cref="TracerProviderBuilder"/> to chain the calls.</returns>
-        public static TracerProviderBuilder AddNewRelicExporter(this TracerProviderBuilder builder, Action<TelemetryConfiguration> configure, ILoggerFactory loggerFactory)
+        public static TracerProviderBuilder AddNewRelicExporter(this TracerProviderBuilder builder, Action<NewRelicExporterOptions> options, ILoggerFactory loggerFactory)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            var config = new TelemetryConfiguration();
-            configure?.Invoke(config);
+            var config = new NewRelicExporterOptions();
+            options?.Invoke(config);
             var exporter = new NewRelicTraceExporter(config, loggerFactory);
 
             return builder.AddProcessor(new BatchExportProcessor<Activity>(exporter));

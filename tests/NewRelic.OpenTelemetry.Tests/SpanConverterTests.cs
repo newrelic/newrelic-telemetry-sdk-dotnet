@@ -23,7 +23,7 @@ namespace NewRelic.OpenTelemetry.Tests
         private const int ExpectedCountSpans = 6;
         private const string AttrNameParentID = "parent.Id";
 
-        private TelemetryConfiguration _config;
+        private NewRelicExporterOptions _options;
         private List<Activity> _otSpans = new List<Activity>();
         private List<NewRelicSpan> _resultNRSpans = new List<NewRelicSpan>();
         private NewRelicSpanBatch? _resultNRSpanBatch;
@@ -53,12 +53,12 @@ namespace NewRelic.OpenTelemetry.Tests
 
         public SpanConverterTests()
         {
-            _config = new TelemetryConfiguration()
+            _options = new NewRelicExporterOptions()
             {
                 ApiKey = "12345",
                 ServiceName = TestServiceName,
             };
-            var mockDataSender = new TraceDataSender(_config, null);
+            var mockDataSender = new TraceDataSender(_options.TelemetryConfiguration, null);
 
             // Capture the spans that were requested to be sent to New Relic.
             mockDataSender.WithCaptureSendDataAsyncDelegate((sb, retryId) =>
@@ -78,7 +78,7 @@ namespace NewRelic.OpenTelemetry.Tests
                 return Task.FromResult(new System.Net.Http.HttpResponseMessage(System.Net.HttpStatusCode.OK));
             });
 
-            var exporter = new NewRelicTraceExporter(mockDataSender, _config, null);
+            var exporter = new NewRelicTraceExporter(mockDataSender, _options, null);
             var source = new ActivitySource("newrelic.test");
 
             using (var openTelemetrySdk = Sdk.CreateTracerProviderBuilder()
@@ -102,7 +102,7 @@ namespace NewRelic.OpenTelemetry.Tests
                     activity.SetStartTime(spanDefinition.Start.UtcDateTime);
                     if (spanDefinition.IsCallToNewRelic)
                     {
-                        activity.AddTag("http.url", _config.TraceUrl);
+                        activity.AddTag("http.url", _options.EndpointUrl);
                     }
 
                     activity.SetEndTime(spanDefinition.End.UtcDateTime);
@@ -201,7 +201,7 @@ namespace NewRelic.OpenTelemetry.Tests
             Assert.Equal(_otSpans.Count, _resultNRSpans.Count);
             Assert.NotNull(_resultNRSpanBatch?.CommonProperties.Attributes);
             Assert.True(_resultNRSpanBatch?.CommonProperties.Attributes.ContainsKey("instrumentation.provider"));
-            Assert.Equal(_config.InstrumentationProvider, _resultNRSpanBatch?.CommonProperties.Attributes["instrumentation.provider"]);
+            Assert.Equal(_options.InstrumentationProvider, _resultNRSpanBatch?.CommonProperties.Attributes["instrumentation.provider"]);
         }
     }
 }

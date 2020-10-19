@@ -33,31 +33,31 @@ namespace NewRelic.OpenTelemetry
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NewRelicTraceExporter"/> class.
-        /// Configures the Trace Exporter accepting configuration settings from an instance of the New Relic Telemetry SDK configuration object.
+        /// Configures the Trace Exporter accepting configuration settings from an instance of the New Relic Exporter options object.
         /// </summary>
-        /// <param name="config"></param>
-        public NewRelicTraceExporter(TelemetrySdk.TelemetryConfiguration config)
-            : this(config, null!)
+        /// <param name="options"></param>
+        public NewRelicTraceExporter(NewRelicExporterOptions options)
+            : this(options, null!)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NewRelicTraceExporter"/> class.
-        /// Configures the Trace Exporter accepting configuration settings from an instance of the New Relic Telemetry SDK configuration object.  Also
+        /// Configures the Trace Exporter accepting configuration settings from an instance of the New Relic Exporter options object.  Also
         /// accepts a logger factory supported by Microsoft.Extensions.Logging.
         /// </summary>
-        /// <param name="config"></param>
-        public NewRelicTraceExporter(TelemetrySdk.TelemetryConfiguration config, ILoggerFactory loggerFactory)
-            : this(new TraceDataSender(config, loggerFactory), config, loggerFactory)
+        /// <param name="options"></param>
+        public NewRelicTraceExporter(NewRelicExporterOptions options, ILoggerFactory loggerFactory)
+            : this(new TraceDataSender(options.TelemetryConfiguration, loggerFactory), options, loggerFactory)
         {
         }
 
-        internal NewRelicTraceExporter(TraceDataSender spanDataSender, TelemetrySdk.TelemetryConfiguration config, ILoggerFactory? loggerFactory)
+        internal NewRelicTraceExporter(TraceDataSender spanDataSender, NewRelicExporterOptions options, ILoggerFactory? loggerFactory)
         {
             _spanDataSender = spanDataSender;
             spanDataSender.AddVersionInfo(ProductName, _productVersion);
 
-            _config = config;
+            _config = options.TelemetryConfiguration;
 
             _config.InstrumentationProvider = "opentelemetry";
 
