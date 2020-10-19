@@ -7,10 +7,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using NewRelic.Telemetry;
+using OpenTelemetry;
 using OpenTelemetry.Trace;
 using Xunit;
 
-namespace OpenTelemetry.Exporter.NewRelic.Tests
+namespace NewRelic.OpenTelemetry.Tests
 {
     [Collection("newrelic-exporter")]
     public class NewRelicExporterTests : IDisposable

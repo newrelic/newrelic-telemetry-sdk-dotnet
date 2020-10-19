@@ -4,7 +4,7 @@
 #if NET452
 using System;
 
-namespace OpenTelemetry.Exporter.NewRelic
+namespace NewRelic.OpenTelemetry
 {
     /// <summary>
     /// Provides DateTime conversions to Unix Timestamps.

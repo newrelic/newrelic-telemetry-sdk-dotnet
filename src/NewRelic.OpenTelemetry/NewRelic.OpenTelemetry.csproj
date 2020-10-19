@@ -39,7 +39,7 @@
       <_Parameter1>$(PackageVersion)</_Parameter1>
     </AssemblyAttribute>
 
-    <AssemblyAttribute Include="OpenTelemetry.Exporter.NewRelic.PackageVersion">
+    <AssemblyAttribute Include="NewRelic.OpenTelemetry.PackageVersion">
       <_Parameter1>$(PackageVersion)</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>

@@ -8,10 +8,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using NewRelic.Telemetry;
 using NewRelic.Telemetry.Tracing;
+using OpenTelemetry;
 using OpenTelemetry.Trace;
 using Xunit;
 
-namespace OpenTelemetry.Exporter.NewRelic.Tests
+namespace NewRelic.OpenTelemetry.Tests
 {
     [Collection("newrelic-exporter")]
     public class SpanConverterTests : IDisposable

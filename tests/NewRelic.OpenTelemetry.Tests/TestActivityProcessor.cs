@@ -3,8 +3,9 @@
 
 using System;
 using System.Diagnostics;
+using OpenTelemetry;
 
-namespace OpenTelemetry.Exporter.NewRelic.Tests
+namespace NewRelic.OpenTelemetry.Tests
 {
     internal class TestActivityProcessor : BaseProcessor<Activity>
     {
