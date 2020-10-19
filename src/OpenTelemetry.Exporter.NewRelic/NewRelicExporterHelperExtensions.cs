@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NewRelic.Telemetry;
 using OpenTelemetry.Exporter.NewRelic;
@@ -42,7 +43,7 @@ namespace OpenTelemetry.Trace
             configure?.Invoke(config);
             var exporter = new NewRelicTraceExporter(config, loggerFactory);
 
-            return builder.AddProcessor(new BatchExportActivityProcessor(exporter));
+            return builder.AddProcessor(new BatchExportProcessor<Activity>(exporter));
         }
     }
 }

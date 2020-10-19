@@ -3,11 +3,10 @@
 
 using System;
 using System.Diagnostics;
-using OpenTelemetry.Trace;
 
 namespace OpenTelemetry.Exporter.NewRelic.Tests
 {
-    internal class TestActivityProcessor : ActivityProcessor
+    internal class TestActivityProcessor : BaseProcessor<Activity>
     {
         public Action<Activity>? StartAction;
         public Action<Activity>? EndAction;
@@ -44,9 +43,10 @@ namespace OpenTelemetry.Exporter.NewRelic.Tests
             return true;
         }
 
-        protected override void OnShutdown(int timeoutMilliseconds)
+        protected override bool OnShutdown(int timeoutMilliseconds)
         {
             ShutdownCalled = true;
+            return true;
         }
 
         protected override void Dispose(bool disposing)
