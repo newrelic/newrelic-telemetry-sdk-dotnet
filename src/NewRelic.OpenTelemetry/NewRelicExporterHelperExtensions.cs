@@ -4,8 +4,8 @@
 using System;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using NewRelic.OpenTelemetry;
 using NewRelic.Telemetry;
-using OpenTelemetry.Exporter.NewRelic;
 
 namespace OpenTelemetry.Trace
 {

@@ -6,7 +6,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OpenTelemetry.Exporter.NewRelic.Tests
+namespace NewRelic.OpenTelemetry.Tests
 {
     internal class TestHttpServer
     {

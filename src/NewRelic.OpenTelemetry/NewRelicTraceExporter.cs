@@ -11,10 +11,11 @@ using Microsoft.Extensions.Logging;
 using NewRelic.Telemetry;
 using NewRelic.Telemetry.Tracing;
 using NewRelic.Telemetry.Transport;
+using OpenTelemetry;
 using OpenTelemetry.Trace;
 using TelemetrySdk = NewRelic.Telemetry;
 
-namespace OpenTelemetry.Exporter.NewRelic
+namespace NewRelic.OpenTelemetry
 {
     /// <summary>
     /// An exporter used to send Trace/Span information to New Relic.
