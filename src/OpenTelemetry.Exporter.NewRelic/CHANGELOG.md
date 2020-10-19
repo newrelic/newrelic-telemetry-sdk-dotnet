@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+## 1.0.0-beta.194 - 2020-09-25
+
+* Fix an issue where the serialization of data sent to New Relic would fail.
+  Replaced Utf8Json dependency with System.Text.Json (netstandard2.0) and
+  Newtonsoft.Json (net452).
+  ([#138](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/138))
+
 ## 1.0.0-beta.191 - 2020-09-21
 
 * Update to OpenTelemetry 0.6.0-beta.1 ([#119](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/119)).
