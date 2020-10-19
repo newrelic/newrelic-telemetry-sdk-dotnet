@@ -16,6 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OpenTelemetry.Exporter.NewRelic\OpenTelemetry.Exporter.NewRelic.csproj" />
+    <ProjectReference Include="..\..\src\NewRelic.OpenTelemetry\NewRelic.OpenTelemetry.csproj" />
   </ItemGroup>
 </Project>

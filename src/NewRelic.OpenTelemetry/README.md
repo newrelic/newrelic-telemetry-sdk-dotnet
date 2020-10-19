@@ -1,7 +1,7 @@
 # New Relic Trace Exporter for OpenTelemetry .NET
 
-[![NuGet](https://img.shields.io/nuget/v/OpenTelemetry.Exporter.NewRelic.svg)](https://www.nuget.org/packages/OpenTelemetry.Exporter.NewRelic)
-[![NuGet](https://img.shields.io/nuget/dt/OpenTelemetry.Exporter.NewRelic.svg)](https://www.nuget.org/packages/OpenTelemetry.Exporter.NewRelic)
+[![NuGet](https://img.shields.io/nuget/v/NewRelic.OpenTelemetry.svg)](https://www.nuget.org/packages/NewRelic.OpenTelemetry)
+[![NuGet](https://img.shields.io/nuget/dt/NewRelic.OpenTelemetry.svg)](https://www.nuget.org/packages/NewRelic.OpenTelemetry)
 
 The New Relic Trace Exporter for OpenTelemetry .NET supports .NET Framework (4.6+) and .NET Core applications.
 
@@ -11,7 +11,7 @@ The New Relic Trace Exporter for OpenTelemetry .NET supports .NET Framework (4.6
 ## Installation
 
 ```
-dotnet add package OpenTelemetry.Exporter.NewRelic
+dotnet add package NewRelic.OpenTelemetry
 ```
 
 ## Configuration
@@ -24,7 +24,7 @@ You can configure the `NewRelicTraceExporter` by following the directions below:
 * `SendTimeout`: Timeout in seconds.
 
 ## Next Steps
-* Review these [Sample Applications](/examples/OpenTelemetry.Exporter.NewRelic) for guidance on configuration and usage.
+* Review these [Sample Applications](/examples/NewRelic.OpenTelemetry) for guidance on configuration and usage.
 
 ## References
 

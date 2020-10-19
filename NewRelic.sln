@@ -7,23 +7,23 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Telemetry", "src\N
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Telemetry.Tests", "tests\NewRelic.Telemetry.Tests\NewRelic.Telemetry.Tests.csproj", "{46FE3771-EB5C-4C05-B76C-DDEF7BCC7706}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetry.Exporter.NewRelic", "src\OpenTelemetry.Exporter.NewRelic\OpenTelemetry.Exporter.NewRelic.csproj", "{2477CD19-50D2-44E3-BC83-BCFE027B60B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.OpenTelemetry", "src\NewRelic.OpenTelemetry\NewRelic.OpenTelemetry.csproj", "{2477CD19-50D2-44E3-BC83-BCFE027B60B8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetry.Exporter.NewRelic.Tests", "tests\OpenTelemetry.Exporter.NewRelic.Tests\OpenTelemetry.Exporter.NewRelic.Tests.csproj", "{4D5BC297-24D2-47FE-85C2-051A29A59B7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.OpenTelemetry.Tests", "tests\NewRelic.OpenTelemetry.Tests\NewRelic.OpenTelemetry.Tests.csproj", "{4D5BC297-24D2-47FE-85C2-051A29A59B7D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Examples.AspNetCore", "examples\OpenTelemetry.Exporter.NewRelic\AspNetCore\NewRelic.Examples.AspNetCore.csproj", "{F2E815B3-5902-4DD5-9D37-CFB514D6B4DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Examples.AspNetCore", "examples\NewRelic.OpenTelemetry\AspNetCore\NewRelic.Examples.AspNetCore.csproj", "{F2E815B3-5902-4DD5-9D37-CFB514D6B4DE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Examples.Console", "examples\NewRelic.Telemetry\Console\NewRelic.Examples.Console.csproj", "{131E8A7A-2FC0-4D1F-84E6-0A3CCE37DE1D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Examples.AspNetCore", "examples\NewRelic.Telemetry\AspNetCore\NewRelic.Examples.AspNetCore.csproj", "{408E065C-BEA1-461C-B2D4-7879261C8EBE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewRelic.Examples.AspNet", "examples\OpenTelemetry.Exporter.NewRelic\AspNet\NewRelic.Examples.AspNet.csproj", "{59A82C1E-3349-466B-8FD6-5EBC93B1141A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewRelic.Examples.AspNet", "examples\NewRelic.OpenTelemetry\AspNet\NewRelic.Examples.AspNet.csproj", "{59A82C1E-3349-466B-8FD6-5EBC93B1141A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewRelic.Examples.AspNet", "examples\NewRelic.Telemetry\AspNet\NewRelic.Examples.AspNet.csproj", "{2002CE3F-509D-4992-88AF-A4D5B306E16F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{A76FE35F-7402-4B7D-BA8A-9DE4B1C63102}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenTelemetry.Exporter.NewRelic", "OpenTelemetry.Exporter.NewRelic", "{6B78F9B1-C192-45E1-8E33-CB2A71CA3E1E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NewRelic.OpenTelemetry", "NewRelic.OpenTelemetry", "{6B78F9B1-C192-45E1-8E33-CB2A71CA3E1E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NewRelic.Telemetry", "NewRelic.Telemetry", "{D847E466-5836-4FBA-9D1A-8DF1FD9EF5A8}"
 EndProject
@@ -31,7 +31,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
-		azure-pipelines.yml = azure-pipelines.yml
 		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
 		CONTRIBUTING.md = CONTRIBUTING.md
 		LICENSE = LICENSE
@@ -63,7 +62,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2C3BDC5D
 		tests\Directory.Build.props = tests\Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewRelic.Examples.ConsoleCore", "examples\OpenTelemetry.Exporter.NewRelic\ConsoleCore\NewRelic.Examples.ConsoleCore.csproj", "{E3B2A227-C536-4DF7-9882-19EC54D6EED3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{114B526D-D8DA-4DC1-836F-7049917481AB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ISSUE_TEMPLATE", "ISSUE_TEMPLATE", "{11A7856D-34C9-44EB-8DBB-DDBD00544465}"
+	ProjectSection(SolutionItems) = preProject
+		.github\ISSUE_TEMPLATE\bug_report.md = .github\ISSUE_TEMPLATE\bug_report.md
+		.github\ISSUE_TEMPLATE\config.yml = .github\ISSUE_TEMPLATE\config.yml
+		.github\ISSUE_TEMPLATE\enhancement.md = .github\ISSUE_TEMPLATE\enhancement.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{380D028D-7F33-4616-8B0C-BBCD0623DC8F}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\main.yml = .github\workflows\main.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewRelic.Examples.ConsoleCore", "examples\NewRelic.OpenTelemetry\ConsoleCore\NewRelic.Examples.ConsoleCore.csproj", "{E3B2A227-C536-4DF7-9882-19EC54D6EED3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -209,6 +222,8 @@ Global
 		{D847E466-5836-4FBA-9D1A-8DF1FD9EF5A8} = {A76FE35F-7402-4B7D-BA8A-9DE4B1C63102}
 		{697E652D-2BAC-4CA6-80EF-78465A796AAC} = {E4E6AA6F-E52E-4D98-8A93-70F6872E03FA}
 		{2C3BDC5D-1E8E-4A17-B2B6-E4950DACBBE5} = {E4E6AA6F-E52E-4D98-8A93-70F6872E03FA}
+		{11A7856D-34C9-44EB-8DBB-DDBD00544465} = {114B526D-D8DA-4DC1-836F-7049917481AB}
+		{380D028D-7F33-4616-8B0C-BBCD0623DC8F} = {114B526D-D8DA-4DC1-836F-7049917481AB}
 		{E3B2A227-C536-4DF7-9882-19EC54D6EED3} = {6B78F9B1-C192-45E1-8E33-CB2A71CA3E1E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
