@@ -200,7 +200,7 @@ namespace NewRelic.OpenTelemetry.Tests
             Assert.Equal(_otSpans.Count, _resultNRSpans.Count);
             Assert.NotNull(_resultNRSpanBatch?.CommonProperties.Attributes);
             Assert.True(_resultNRSpanBatch?.CommonProperties.Attributes.ContainsKey("instrumentation.provider"));
-            Assert.Equal(_options.InstrumentationProvider, _resultNRSpanBatch?.CommonProperties.Attributes["instrumentation.provider"]);
+            Assert.Equal("opentelemetry", _resultNRSpanBatch?.CommonProperties.Attributes["instrumentation.provider"]);
         }
     }
 }
