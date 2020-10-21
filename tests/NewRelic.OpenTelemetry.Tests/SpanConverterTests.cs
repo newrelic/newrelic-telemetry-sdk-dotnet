@@ -195,11 +195,11 @@ namespace NewRelic.OpenTelemetry.Tests
         }
 
         [Fact]
-        public void Test_InstrumentationProvider()
+        public void Test_CommonProperties()
         {
             Assert.Equal(_otSpans.Count, _resultNRSpans.Count);
             Assert.NotNull(_resultNRSpanBatch?.CommonProperties.Attributes);
-            Assert.True(_resultNRSpanBatch?.CommonProperties.Attributes.ContainsKey("instrumentation.provider"));
+            Assert.Equal("newrelic-opentelemetry-exporter", _resultNRSpanBatch?.CommonProperties.Attributes["collector.name"]);
             Assert.Equal("opentelemetry", _resultNRSpanBatch?.CommonProperties.Attributes["instrumentation.provider"]);
         }
     }
