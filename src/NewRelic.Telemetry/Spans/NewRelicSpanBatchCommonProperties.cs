@@ -39,10 +39,5 @@ namespace NewRelic.Telemetry.Tracing
             TraceId = traceId;
             _attributes = attributes;
         }
-
-        public void SetInstrumentationProvider(string instrumentationProvider)
-        {
-            _attributes[NewRelicConsts.AttribNameInstrumentationProvider] = instrumentationProvider;
-        }
     }
 }

@@ -59,8 +59,6 @@ namespace NewRelic.OpenTelemetry
 
             _config = options.TelemetryConfiguration;
 
-            _config.InstrumentationProvider = "opentelemetry";
-
             if (loggerFactory != null)
             {
                 _logger = loggerFactory.CreateLogger("NewRelicTraceExporter");
