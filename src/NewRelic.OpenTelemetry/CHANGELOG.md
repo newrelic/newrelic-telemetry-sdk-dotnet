@@ -5,6 +5,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+## 1.0.0-beta.202 - 2020-10-21
+
+* Fix issue where spans without an error would appear to have an error in the
+  UI.
+  ([#149](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/149))
+
+## 1.0.0-beta.200 - 2020-10-19
+
+* NuGet package renamed from OpenTelemetry.Exporter.NewRelic to
+  NewRelic.OpenTelemetry.
+  ([#144](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/144))
+* Renamed configuration and moved its namespace from
+  `NewRelic.Telemetry.TelemetryConfiguration` to
+  `NewRelic.OpenTelemetry.NewRelicExporterOptions`.
+  ([#146](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/146))
+* Update to OpenTelemetry 0.7.0-beta.1.
+  ([#142](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/142))
+
 ## 1.0.0-beta.194 - 2020-09-25
 
 * Fix an issue where the serialization of data sent to New Relic would fail.
