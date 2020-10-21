@@ -80,7 +80,6 @@ namespace ASPNetFrameworkApiApplication.Controllers
             // If an unhandled exception occurs, it can be denoted on the span.
             catch (Exception ex)
             {
-                spanAttribs[NewRelicConsts.Tracing.AttribNameHasError] = true;
                 spanAttribs[NewRelicConsts.Tracing.AttribNameErrorMsg] = ex;
 
                 //This ensures that tracking of spans doesn't interfere with the normal execution flow

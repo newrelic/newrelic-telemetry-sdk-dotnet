@@ -167,8 +167,6 @@ namespace NewRelic.OpenTelemetry
             var status = openTelemetrySpan.GetStatus();
             if (!status.IsOk)
             {
-                newRelicSpanAttribs.Add(NewRelicConsts.Tracing.AttribNameHasError, true);
-
                 if (!string.IsNullOrWhiteSpace(status.Description))
                 {
                     newRelicSpanAttribs.Add(NewRelicConsts.Tracing.AttribNameErrorMsg, status.Description);

@@ -19,7 +19,6 @@ namespace NewRelic.Telemetry
             public const string AttribNameDurationMs = "duration.ms";
             public const string AttribNameName = "name";
             public const string AttribNameParentId = "parent.id";
-            public const string AttribNameHasError = "error";
             public const string AttribNameErrorMsg = "error.message";
             public const string AttribNameHttpUrl = "http.url";
         }
