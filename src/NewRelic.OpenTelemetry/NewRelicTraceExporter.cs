@@ -165,11 +165,15 @@ namespace NewRelic.OpenTelemetry
             }
 
             var status = openTelemetrySpan.GetStatus();
-            if (!status.IsOk)
+            if (status.StatusCode == StatusCode.Error)
             {
                 if (!string.IsNullOrWhiteSpace(status.Description))
                 {
                     newRelicSpanAttribs.Add(NewRelicConsts.Tracing.AttribNameErrorMsg, status.Description);
+                }
+                else
+                {
+                    newRelicSpanAttribs.Add(NewRelicConsts.Tracing.AttribNameErrorMsg, "Unspecified error");
                 }
             }
 
