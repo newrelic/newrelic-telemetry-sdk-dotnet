@@ -50,15 +50,6 @@ namespace NewRelic.OpenTelemetry
             set => TelemetryConfiguration.ServiceName = value;
         }
 
-        /// <summary>
-        /// Identifies the source of information that is being sent to New Relic.
-        /// </summary>
-        public string? InstrumentationProvider
-        {
-            get => TelemetryConfiguration.InstrumentationProvider;
-            set => TelemetryConfiguration.InstrumentationProvider = value;
-        }
-
         internal TelemetryConfiguration TelemetryConfiguration { get; } = new TelemetryConfiguration();
 
         /// <summary>
