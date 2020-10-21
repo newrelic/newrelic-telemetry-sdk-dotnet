@@ -131,18 +131,17 @@ namespace NewRelic.OpenTelemetry.Tests
         }
 
         [Fact]
-        public void Test_ErrorAttribute()
+        public void Test_ErrorMessageAttribute()
         {
             var resultSpan0 = ResultNRSpansDic[_otSpans[0].Context.SpanId.ToHexString()];
             var resultSpan1 = ResultNRSpansDic[_otSpans[1].Context.SpanId.ToHexString()];
             var resultSpan2 = ResultNRSpansDic[_otSpans[2].Context.SpanId.ToHexString()];
             var resultSpan3 = ResultNRSpansDic[_otSpans[3].Context.SpanId.ToHexString()];
 
-            Assert.False(resultSpan0.Attributes?.ContainsKey("error"));
-            Assert.True((bool?)resultSpan1.Attributes?["error"]);
+            Assert.False(resultSpan0.Attributes?.ContainsKey("error.message"));
             Assert.Equal(ErrorMessage, resultSpan1.Attributes?["error.message"]);
-            Assert.False(resultSpan2.Attributes?.ContainsKey("error"));
-            Assert.False(resultSpan3.Attributes?.ContainsKey("error"));
+            Assert.False(resultSpan2.Attributes?.ContainsKey("error.message"));
+            Assert.False(resultSpan3.Attributes?.ContainsKey("error.message"));
         }
 
         [Fact]

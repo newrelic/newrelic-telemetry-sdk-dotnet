@@ -23,7 +23,6 @@ namespace NewRelic.Telemetry.Tests
                     { "adsfasdf", 12 },
                     { NewRelicConsts.Tracing.AttribNameDurationMs, 67 },
                     { NewRelicConsts.Tracing.AttribNameServiceName, "serviceName" },
-                    { NewRelicConsts.Tracing.AttribNameHasError, true },
                     { NewRelicConsts.Tracing.AttribNameName, "name" },
                 });
 
@@ -31,7 +30,6 @@ namespace NewRelic.Telemetry.Tests
             Assert.Equal("traceId", span.TraceId);
             Assert.Equal(1L, span.Timestamp);
             Assert.Equal("serviceName", span.Attributes?["service.name"]);
-            Assert.Equal(true, span.Attributes?["error"]);
             Assert.Equal(67, span.Attributes?["duration.ms"]);
             Assert.Equal("name", span.Attributes?["name"]);
             Assert.Equal("parentId", span.Attributes?["parent.id"]);

@@ -79,8 +79,7 @@ namespace BasicConsoleApplication
                     // In the event of an exception, mark the span 
                     // as having an error and record a custom attribute 
                     // with the details about the exception.
-                    spanAttribs[NewRelicConsts.Tracing.AttribNameHasError] = true;
-                    spanAttribs[NewRelicConsts.Tracing.AttribNameHasError] = ex;
+                    spanAttribs[NewRelicConsts.Tracing.AttribNameErrorMsg] = ex.Message;
                 }
                 finally
                 {
@@ -138,8 +137,7 @@ namespace BasicConsoleApplication
                         // In the event of an exception, mark the span 
                         // as having an error and record a custom attribute 
                         // with the details about the exception.
-                        spanAttribs[NewRelicConsts.Tracing.AttribNameHasError] = true;
-                        spanAttribs[NewRelicConsts.Tracing.AttribNameHasError] = ex;
+                        spanAttribs[NewRelicConsts.Tracing.AttribNameErrorMsg] = ex.Message;
                     }
                     finally
                     {

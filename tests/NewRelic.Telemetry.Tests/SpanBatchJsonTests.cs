@@ -48,7 +48,6 @@ namespace NewRelic.Telemetry.Tests
                             { NewRelicConsts.Tracing.AttribNameDurationMs, 67 },
                             { NewRelicConsts.Tracing.AttribNameServiceName, "serviceName" },
                             { NewRelicConsts.Tracing.AttribNameName, "name" },
-                            { NewRelicConsts.Tracing.AttribNameHasError, true },
                         }),
                 });
 
@@ -83,8 +82,7 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "name", "name");
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "service.name", "serviceName");
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "parent.id", "parentId");
-            TestHelpers.AssertForAttribValue(resultSpanAttribs, "error", true);
-            TestHelpers.AssertForAttribCount(resultSpanAttribs, 5);
+            TestHelpers.AssertForAttribCount(resultSpanAttribs, 4);
         }
 
         [Fact]
@@ -112,7 +110,6 @@ namespace NewRelic.Telemetry.Tests
                             { NewRelicConsts.Tracing.AttribNameDurationMs, 100 },
                             { NewRelicConsts.Tracing.AttribNameServiceName, "serviceName1" },
                             { NewRelicConsts.Tracing.AttribNameName, "name1" },
-                            { NewRelicConsts.Tracing.AttribNameHasError, true },
                         }),
                     new NewRelicSpan(
                         spanId: "span2",
@@ -166,9 +163,8 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribValue(firstSpanAttribs, "name", "name1");
             TestHelpers.AssertForAttribValue(firstSpanAttribs, "service.name", "serviceName1");
             TestHelpers.AssertForAttribValue(firstSpanAttribs, "parent.id", "parentId1");
-            TestHelpers.AssertForAttribValue(firstSpanAttribs, "error", true);
 
-            TestHelpers.AssertForAttribCount(firstSpanAttribs, 5);
+            TestHelpers.AssertForAttribCount(firstSpanAttribs, 4);
 
             var secondSpan = resultSpans[1];
 
@@ -212,7 +208,6 @@ namespace NewRelic.Telemetry.Tests
                             { NewRelicConsts.Tracing.AttribNameDurationMs, 67 },
                             { NewRelicConsts.Tracing.AttribNameServiceName, "serviceName" },
                             { NewRelicConsts.Tracing.AttribNameName, "name" },
-                            { NewRelicConsts.Tracing.AttribNameHasError, true },
                         }),
                 });
 
@@ -255,8 +250,7 @@ namespace NewRelic.Telemetry.Tests
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "name", "name");
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "service.name", "serviceName");
             TestHelpers.AssertForAttribValue(resultSpanAttribs, "parent.id", "parentId");
-            TestHelpers.AssertForAttribValue(resultSpanAttribs, "error", true);
-            TestHelpers.AssertForAttribCount(resultSpanAttribs, 5);
+            TestHelpers.AssertForAttribCount(resultSpanAttribs, 4);
         }
     }
 }
