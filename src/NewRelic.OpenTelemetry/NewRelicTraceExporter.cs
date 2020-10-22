@@ -28,7 +28,8 @@ namespace NewRelic.OpenTelemetry
         private static readonly string _productVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
         private static readonly NewRelicSpanBatchCommonProperties _commonProperties = new NewRelicSpanBatchCommonProperties(
             null,
-            new Dictionary<string, object> {
+            new Dictionary<string, object>
+            {
                 { NewRelicConsts.AttribNameCollectorName, "newrelic-opentelemetry-exporter" },
                 { NewRelicConsts.AttribNameInstrumentationProvider, "opentelemetry" },
             });
