@@ -15,7 +15,5 @@ namespace NewRelic.Telemetry
         where T : ITelemetryDataType<T>
     {
         string ToJson();
-
-        void SetInstrumentationProvider(string instrumentationProvider);
     }
 }

@@ -26,6 +26,13 @@ namespace NewRelic.OpenTelemetry
 
         private static readonly ActivitySpanId EmptyActivitySpanId = ActivitySpanId.CreateFromBytes(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, });
         private static readonly string _productVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
+        private static readonly NewRelicSpanBatchCommonProperties _commonProperties = new NewRelicSpanBatchCommonProperties(
+            null,
+            new Dictionary<string, object>
+            {
+                { NewRelicConsts.AttribNameCollectorName, "newrelic-opentelemetry-exporter" },
+                { NewRelicConsts.AttribNameInstrumentationProvider, "opentelemetry" },
+            });
 
         private readonly TraceDataSender _spanDataSender;
         private readonly ILogger? _logger;
@@ -59,8 +66,6 @@ namespace NewRelic.OpenTelemetry
 
             _config = options.TelemetryConfiguration;
 
-            _config.InstrumentationProvider = "opentelemetry";
-
             if (loggerFactory != null)
             {
                 _logger = loggerFactory.CreateLogger("NewRelicTraceExporter");
@@ -80,8 +85,10 @@ namespace NewRelic.OpenTelemetry
                 return ExportResult.Success;
             }
 
+            var spanBatch = new NewRelicSpanBatch(nrSpans, _commonProperties);
+
             Response? response = null;
-            Task.Run(async () => response = await _spanDataSender.SendDataAsync(nrSpans)).GetAwaiter().GetResult();
+            Task.Run(async () => response = await _spanDataSender.SendDataAsync(spanBatch)).GetAwaiter().GetResult();
 
             switch (response?.ResponseStatus)
             {

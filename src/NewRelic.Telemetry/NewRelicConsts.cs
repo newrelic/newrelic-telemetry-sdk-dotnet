@@ -10,6 +10,7 @@ namespace NewRelic.Telemetry
 #endif
     static class NewRelicConsts
     {
+        public const string AttribNameCollectorName = "collector.name";
         public const string AttribNameInstrumentationProvider = "instrumentation.provider";
 
         public static class Tracing

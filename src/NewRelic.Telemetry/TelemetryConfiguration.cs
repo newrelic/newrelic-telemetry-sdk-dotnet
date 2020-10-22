@@ -78,11 +78,6 @@ namespace NewRelic.Telemetry
         public string? ServiceName { get; set; }
 
         /// <summary>
-        /// Identifies the source of information that is being sent to New Relic.
-        /// </summary>
-        public string? InstrumentationProvider { get; set; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="TelemetryConfiguration"/> class.
         /// Creates the Configuration object accepting all default settings.
         /// </summary>

@@ -62,10 +62,5 @@ namespace NewRelic.Telemetry.Metrics
             return JsonSerializer.Serialize(new[] { this }, JsonSerializerOptions);
 #endif
         }
-
-        public void SetInstrumentationProvider(string instrumentationProvider)
-        {
-            CommonProperties.SetInstrumentationProvider(instrumentationProvider);
-        }
     }
 }

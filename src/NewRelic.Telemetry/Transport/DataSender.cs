@@ -108,11 +108,6 @@ namespace NewRelic.Telemetry.Transport
                 return Response.Failure("API Key was not available");
             }
 
-            if (_config.InstrumentationProvider != null)
-            {
-                dataToSend.SetInstrumentationProvider(_config.InstrumentationProvider);
-            }
-
             return await SendDataAsync(dataToSend, 0);
         }
 

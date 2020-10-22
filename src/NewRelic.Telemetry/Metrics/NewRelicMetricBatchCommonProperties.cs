@@ -36,10 +36,5 @@ namespace NewRelic.Telemetry.Metrics
             IntervalMs = intervalMs;
             _attributes = attributes ?? new Dictionary<string, object>();
         }
-
-        public void SetInstrumentationProvider(string instrumentationProvider)
-        {
-            _attributes[NewRelicConsts.AttribNameInstrumentationProvider] = instrumentationProvider;
-        }
     }
 }
