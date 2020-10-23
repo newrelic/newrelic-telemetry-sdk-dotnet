@@ -13,7 +13,7 @@ namespace SampleConsoleCoreApp
         private static readonly ActivitySource SampleActivitySource = new ActivitySource(ActivitySourceName);
 
         // Set these values for yourself
-        private const string MyNewRelicInsightsInsertApiKey = "<YOUR_NR_INSIGHTS_INSERT_API_KEY_HERE>";
+        private const string MyNewRelicInsightsInsertApiKey = "Your Insights Insert API Key. See: https://docs.newrelic.com/docs/insights/insights-data-sources/custom-data/introduction-event-api#register";
         private const string MyServiceName = "SampleConsoleCoreApp";
 
         static void Main(string[] args)

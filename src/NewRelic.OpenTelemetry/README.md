@@ -18,7 +18,7 @@ dotnet add package NewRelic.OpenTelemetry
 
 You can configure the `NewRelicTraceExporter` by following the directions below:
 
-* `ApiKey`: Your Insights Insert API key.
+* `ApiKey`: Your [Insights Insert API](https://docs.newrelic.com/docs/telemetry-data-platform/ingest-manage-data/ingest-apis/use-event-api-report-custom-events#register) key.
 * `ServiceName`: Name of the service reporting telemetry.
 * `TraceUrlOverride`: New Relic endpoint address.
 * `SendTimeout`: Timeout in seconds.
