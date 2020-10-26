@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 #endif
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -109,6 +110,27 @@ namespace NewRelic.Telemetry.Transport
             }
 
             return await SendDataAsync(dataToSend, 0);
+        }
+
+        /// <summary>
+        /// Method used to send a data to New Relic endpoint.  Handles the communication with the New Relic endpoints.
+        /// </summary>
+        /// <param name="dataToSend">The data to send to New Relic.</param>
+        /// <returns>New Relic response indicating the outcome and additional information about the interaction with the New Relic endpoint.</returns>
+        public async Task<Response> SendDataAsync(IEnumerable<TData> dataToSend)
+        {
+            Response response = Response._success;
+
+            foreach (var batch in dataToSend)
+            {
+                var r = await SendDataAsync(batch);
+                if (r != Response._success)
+                {
+                    response = r;
+                }
+            }
+
+            return response;
         }
 
         internal DataSender<TData> WithDelayFunction(Func<uint, Task> delayerImpl)
