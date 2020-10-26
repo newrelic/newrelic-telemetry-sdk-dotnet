@@ -246,6 +246,16 @@ namespace NewRelic.OpenTelemetry
                 newRelicSpanAttribs.Add(NewRelicConsts.Tracing.AttribSpanKind, spanKind);
             }
 
+            var source = openTelemetrySpan.Source;
+            if (source != null)
+            {
+                newRelicSpanAttribs.Add(NewRelicConsts.AttributeInstrumentationName, openTelemetrySpan.Source.Name);
+                if (source.Version != null)
+                {
+                    newRelicSpanAttribs.Add(NewRelicConsts.AttributeInstrumentationVersion, source.Version);
+                }
+            }
+
             if (openTelemetrySpan.Tags != null)
             {
                 foreach (var spanAttrib in openTelemetrySpan.Tags)
