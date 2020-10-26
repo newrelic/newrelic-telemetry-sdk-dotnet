@@ -13,6 +13,9 @@ namespace NewRelic.Telemetry
         public const string AttribNameCollectorName = "collector.name";
         public const string AttribNameInstrumentationProvider = "instrumentation.provider";
 
+        public const string AttributeInstrumentationName = "instrumentation.name";
+        public const string AttributeInstrumentationVersion = "instrumentation.version";
+
         public static class Tracing
         {
             public const string AttribNameServiceName = "service.name";

@@ -12,6 +12,7 @@ using NewRelic.Telemetry;
 using NewRelic.Telemetry.Tracing;
 using NewRelic.Telemetry.Transport;
 using OpenTelemetry;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using TelemetrySdk = NewRelic.Telemetry;
 
@@ -26,13 +27,6 @@ namespace NewRelic.OpenTelemetry
 
         private static readonly ActivitySpanId EmptyActivitySpanId = ActivitySpanId.CreateFromBytes(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, });
         private static readonly string _productVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
-        private static readonly NewRelicSpanBatchCommonProperties _commonProperties = new NewRelicSpanBatchCommonProperties(
-            null,
-            new Dictionary<string, object>
-            {
-                { NewRelicConsts.AttribNameCollectorName, "newrelic-opentelemetry-exporter" },
-                { NewRelicConsts.AttribNameInstrumentationProvider, "opentelemetry" },
-            });
 
         private readonly TraceDataSender _spanDataSender;
         private readonly ILogger? _logger;
@@ -73,22 +67,20 @@ namespace NewRelic.OpenTelemetry
         }
 
         /// <inheritdoc />
-        public override ExportResult Export(in Batch<Activity> batch)
+        public override ExportResult Export(in Batch<Activity> activityBatch)
         {
             // Prevent exporter's HTTP operations from being instrumented.
             using var scope = SuppressInstrumentationScope.Begin();
 
-            var nrSpans = ToNewRelicSpans(batch);
+            var spanBatches = ToNewRelicSpanBatches(activityBatch);
 
-            if (nrSpans.Count() == 0)
+            if (spanBatches.Count() == 0)
             {
                 return ExportResult.Success;
             }
 
-            var spanBatch = new NewRelicSpanBatch(nrSpans, _commonProperties);
-
             Response? response = null;
-            Task.Run(async () => response = await _spanDataSender.SendDataAsync(spanBatch)).GetAwaiter().GetResult();
+            Task.Run(async () => response = await _spanDataSender.SendDataAsync(spanBatches)).GetAwaiter().GetResult();
 
             switch (response?.ResponseStatus)
             {
@@ -115,17 +107,75 @@ namespace NewRelic.OpenTelemetry
             };
         }
 
-        private List<NewRelicSpan> ToNewRelicSpans(in Batch<Activity> otSpans)
+        private IEnumerable<NewRelicSpanBatch> ToNewRelicSpanBatches(in Batch<Activity> activityBatch)
         {
-            var nrSpans = new List<NewRelicSpan>();
-            var spanIdsToFilter = new List<string>();
+            var spansByResource = GroupByResource(activityBatch);
+            var spanBatches = new List<NewRelicSpanBatch>(spansByResource.Count);
 
-            foreach (var otSpan in otSpans)
+            foreach (var resource in spansByResource)
             {
+                string? serviceName = null;
+                string? serviceNamespace = null;
+                Dictionary<string, object>? commonProperties = new Dictionary<string, object>();
+
+                commonProperties.Add(NewRelicConsts.AttribNameCollectorName, "newrelic-opentelemetry-exporter");
+                commonProperties.Add(NewRelicConsts.AttribNameInstrumentationProvider, "opentelemetry");
+
+                foreach (var label in resource.Key.Attributes)
+                {
+                    switch (label.Key)
+                    {
+                        case Resource.ServiceNameKey:
+                            serviceName = label.Value as string;
+                            continue;
+                        case Resource.ServiceNamespaceKey:
+                            serviceNamespace = label.Value as string;
+                            continue;
+                    }
+
+                    commonProperties[label.Key] = label.Value;
+                }
+
+                if (!string.IsNullOrWhiteSpace(serviceName))
+                {
+                    serviceName = serviceNamespace != null
+                        ? serviceNamespace + "." + serviceName
+                        : serviceName;
+                }
+                else
+                {
+                    serviceName = _config.ServiceName;
+                }
+
+                if (!string.IsNullOrWhiteSpace(serviceName))
+                {
+                    commonProperties.Add(NewRelicConsts.Tracing.AttribNameServiceName, serviceName!);
+                }
+
+                var spanBatchCommonProperties = new NewRelicSpanBatchCommonProperties(null, commonProperties);
+                var spanBatch = new NewRelicSpanBatch(resource.Value, spanBatchCommonProperties);
+                spanBatches.Add(spanBatch);
+            }
+
+            return spanBatches;
+        }
+
+        private Dictionary<Resource, List<NewRelicSpan>> GroupByResource(in Batch<Activity> activityBatch)
+        {
+            var result = new Dictionary<Resource, List<NewRelicSpan>>();
+            foreach (var activity in activityBatch)
+            {
+                var resource = activity.GetResource();
+                if (!result.TryGetValue(resource, out var spans))
+                {
+                    spans = new List<NewRelicSpan>();
+                    result[resource] = spans;
+                }
+
                 try
                 {
-                    var nrSpan = ToNewRelicSpan(otSpan);
-                    nrSpans.Add(nrSpan);
+                    var newRelicSpan = ToNewRelicSpan(activity);
+                    spans.Add(newRelicSpan);
                 }
                 catch (Exception ex)
                 {
@@ -134,7 +184,7 @@ namespace NewRelic.OpenTelemetry
                         var otSpanId = "<unknown>";
                         try
                         {
-                            otSpanId = otSpan.Context.SpanId.ToHexString();
+                            otSpanId = activity.Context.SpanId.ToHexString();
                         }
                         catch
                         {
@@ -145,7 +195,7 @@ namespace NewRelic.OpenTelemetry
                 }
             }
 
-            return nrSpans;
+            return result;
         }
 
         private NewRelicSpan ToNewRelicSpan(Activity openTelemetrySpan)
@@ -184,11 +234,6 @@ namespace NewRelic.OpenTelemetry
                 }
             }
 
-            if (_config.ServiceName != null && !string.IsNullOrWhiteSpace(_config.ServiceName))
-            {
-                newRelicSpanAttribs.Add(NewRelicConsts.Tracing.AttribNameServiceName, _config.ServiceName);
-            }
-
             var parentSpanId = null as string;
             if (openTelemetrySpan.ParentSpanId != default && openTelemetrySpan.ParentSpanId != EmptyActivitySpanId)
             {
@@ -199,6 +244,16 @@ namespace NewRelic.OpenTelemetry
             if (spanKind != null)
             {
                 newRelicSpanAttribs.Add(NewRelicConsts.Tracing.AttribSpanKind, spanKind);
+            }
+
+            var source = openTelemetrySpan.Source;
+            if (source != null)
+            {
+                newRelicSpanAttribs.Add(NewRelicConsts.AttributeInstrumentationName, openTelemetrySpan.Source.Name);
+                if (source.Version != null)
+                {
+                    newRelicSpanAttribs.Add(NewRelicConsts.AttributeInstrumentationVersion, source.Version);
+                }
             }
 
             if (openTelemetrySpan.Tags != null)
