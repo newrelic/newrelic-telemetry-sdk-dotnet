@@ -256,9 +256,9 @@ namespace NewRelic.OpenTelemetry
                 }
             }
 
-            if (openTelemetrySpan.Tags != null)
+            if (openTelemetrySpan.TagObjects != null)
             {
-                foreach (var spanAttrib in openTelemetrySpan.Tags)
+                foreach (var spanAttrib in openTelemetrySpan.TagObjects)
                 {
                     if (spanAttrib.Value == null)
                     {
