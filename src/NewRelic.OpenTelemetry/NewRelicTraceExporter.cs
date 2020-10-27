@@ -244,10 +244,10 @@ namespace NewRelic.OpenTelemetry
             }
 
             var source = openTelemetrySpan.Source;
-            if (source != null)
+            if (source != null && !string.IsNullOrEmpty(source.Name))
             {
                 newRelicSpanAttribs.Add(NewRelicConsts.AttributeInstrumentationName, openTelemetrySpan.Source.Name);
-                if (source.Version != null)
+                if (source.Version != null && !string.IsNullOrEmpty(source.Version))
                 {
                     newRelicSpanAttribs.Add(NewRelicConsts.AttributeInstrumentationVersion, source.Version);
                 }
