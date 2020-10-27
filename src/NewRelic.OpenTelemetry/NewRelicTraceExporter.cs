@@ -25,7 +25,6 @@ namespace NewRelic.OpenTelemetry
     {
         private const string ProductName = "NewRelic-Dotnet-OpenTelemetry";
 
-        private static readonly ActivitySpanId EmptyActivitySpanId = ActivitySpanId.CreateFromBytes(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, });
         private static readonly string _productVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
 
         private readonly TraceDataSender _spanDataSender;
@@ -234,11 +233,9 @@ namespace NewRelic.OpenTelemetry
                 }
             }
 
-            var parentSpanId = null as string;
-            if (openTelemetrySpan.ParentSpanId != default && openTelemetrySpan.ParentSpanId != EmptyActivitySpanId)
-            {
-                parentSpanId = openTelemetrySpan.ParentSpanId.ToHexString();
-            }
+            var parentSpanId = openTelemetrySpan.ParentSpanId != default
+                ? openTelemetrySpan.ParentSpanId.ToHexString()
+                : null;
 
             var spanKind = ActivityKindToString(openTelemetrySpan.Kind);
             if (spanKind != null)
