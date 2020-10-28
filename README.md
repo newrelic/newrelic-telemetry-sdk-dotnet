@@ -3,7 +3,7 @@
 
 # New Relic Telemetry SDK and OpenTelemetry support for .NET
 
-[![Build status](https://dev.azure.com/NRAzurePipelines/dotnet/_apis/build/status/newrelic.newrelic-telemetry-sdk-dotnet?branchName=master)](https://dev.azure.com/NRAzurePipelines/dotnet/_build/latest?definitionId=17&branchName=master)
+![New Relic Telemetry SDK for .NET](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/workflows/New%20Relic%20Telemetry%20SDK%20for%20.NET/badge.svg?branch=main)
 
 This repo contains the New Relic Telemetry SDK and an OpenTelemetry provider for .NET.
 
