@@ -52,8 +52,7 @@ namespace SampleConsoleCoreApp
                 Console.WriteLine($"Web request result: {request.Result.StatusCode}");
             }
 
-            Console.WriteLine("\nTrace finished, waiting ten seconds to allow trace to be collected and sent to New Relic.");
-            System.Threading.Thread.Sleep(10000);
+            Console.WriteLine("\nFinished.");
         }
     }
 }
