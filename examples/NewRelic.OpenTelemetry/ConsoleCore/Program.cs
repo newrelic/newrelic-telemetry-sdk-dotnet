@@ -12,12 +12,19 @@ namespace SampleConsoleCoreApp
         private const string ActivitySourceName = "NewRelic.OpenTelemetryExporter.SampleConsoleCoreApp";
         private static readonly ActivitySource SampleActivitySource = new ActivitySource(ActivitySourceName);
 
-        // Set these values for yourself
-        private const string MyNewRelicInsightsInsertApiKey = "<YOUR_NR_INSIGHTS_INSERT_API_KEY_HERE>";
-        private const string MyServiceName = "SampleConsoleCoreApp";
+        // Set these values by environment variable
+        private static readonly string MyNewRelicInsightsInsertApiKey = Environment.GetEnvironmentVariable("NR_API_KEY");
+        private static readonly string MyServiceName = Environment.GetEnvironmentVariable("NR_SAMPLE_APP_NAME") ?? "SampleConsoleCoreApp";
 
         static void Main(string[] args)
         {
+
+            if (MyNewRelicInsightsInsertApiKey == null)
+            {
+                Console.WriteLine("Please provide your New Relic Insights Insert API key by setting the 'NR_API_KEY' environment variable.");
+                return;
+            }
+
             var loggerFactory = LoggerFactory.Create(builder =>
                 {
                     builder.SetMinimumLevel(LogLevel.Debug)
