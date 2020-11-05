@@ -57,18 +57,14 @@ namespace SampleConsoleCoreApp
             {
                 using (var activity = SampleActivitySource.StartActivity("SampleConsoleCoreAppSpan"))
                 {
-                    //Console.WriteLine("Creating root of trace.");
-
                     var message = "Hello, OpenTelemetry with New Relic!";
                     activity?.SetTag("aNumber", 42);
                     activity?.SetTag("message", message);
 
-                    //Console.WriteLine("\nMaking an external HTTP request which will be added as a child span of the trace.");
-
                     var httpClient = new HttpClient();
-                    var request = httpClient.GetAsync("https://www.newrelic.com");
+                    httpClient.GetAsync("https://www.newrelic.com");
 
-                    //Console.WriteLine($"Web request result: {request.Result.StatusCode}");
+                    System.Threading.Thread.Sleep(1000);
                 }
             }
         }
