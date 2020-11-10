@@ -19,8 +19,9 @@ namespace NewRelic.OpenTelemetry.Tests
     {
         private const string TestServiceName = "TestService";
         private const string ErrorMessage = "This is a test error description";
+        private const string SampleOkMessage = "This is a test Ok description";
 
-        private const int ExpectedCountSpans = 6;
+        private const int ExpectedCountSpans = 7;
         private const string AttrNameParentID = "parent.Id";
 
         private NewRelicExporterOptions _options;
@@ -39,16 +40,18 @@ namespace NewRelic.OpenTelemetry.Tests
          *  3   Test Span 4                                     Trace 3     Included
          *  4       Should be Filtered - HTTP Call to NR        Trace 3     Excluded
          *  5           Should be filtered - Child of HTTP      Trace 3     Excluded
+         *  6   Test Span 5                                     Trace 4     Included
         */
         private static DateTimeOffset _traceStartTime = DateTime.UtcNow;
-        private readonly (int? Parent, string Name, DateTimeOffset Start, DateTimeOffset End, Status Status, bool IsCallToNewRelic)[] _spanDefinitions = new (int?, string, DateTimeOffset, DateTimeOffset, Status, bool)[]
+        private readonly (int? Parent, string Name, DateTimeOffset Start, DateTimeOffset End, Status? Status, bool IsCallToNewRelic)[] _spanDefinitions = new (int?, string, DateTimeOffset, DateTimeOffset, Status?, bool)[]
         {
             (null, "Test Span 1", _traceStartTime, _traceStartTime.AddMilliseconds(225), Status.Unset, false),
             (0, "Test Span 2", _traceStartTime.AddMilliseconds(1), _traceStartTime.AddMilliseconds(100), Status.Error.WithDescription(ErrorMessage), false),
             (null, "Test Span 3", _traceStartTime.AddMilliseconds(2), _traceStartTime.AddMilliseconds(375), Status.Ok, false),
-            (null, "Test Span 4", _traceStartTime.AddMilliseconds(3), _traceStartTime.AddMilliseconds(650), Status.Ok, false),
+            (null, "Test Span 4", _traceStartTime.AddMilliseconds(3), _traceStartTime.AddMilliseconds(650), Status.Ok.WithDescription(SampleOkMessage), false),
             (3, "Should Be Filtered - HTTP Call to NR", _traceStartTime.AddMilliseconds(4), _traceStartTime.AddMilliseconds(600), Status.Ok, true),
             (4, "Should Be Filtered - Child of HTTP", _traceStartTime.AddMilliseconds(5), _traceStartTime.AddMilliseconds(500), Status.Ok, false),
+            (null, "Test Span 5", _traceStartTime.AddMilliseconds(6), _traceStartTime.AddMilliseconds(750), null, false),
         };
 
         public SpanConverterTests()
@@ -106,7 +109,12 @@ namespace NewRelic.OpenTelemetry.Tests
                     }
 
                     activity.SetEndTime(spanDefinition.End.UtcDateTime);
-                    activity.SetStatus(spanDefinition.Status);
+
+                    if (spanDefinition.Status.HasValue)
+                    {
+                        activity.SetStatus(spanDefinition.Status.Value);
+                    }
+
                     activity.Stop();
 
                     _otSpans.Add(activity);
@@ -128,6 +136,7 @@ namespace NewRelic.OpenTelemetry.Tests
             Assert.True(ResultNRSpansDic.ContainsKey(_otSpans[1].Context.SpanId.ToHexString()));
             Assert.True(ResultNRSpansDic.ContainsKey(_otSpans[2].Context.SpanId.ToHexString()));
             Assert.True(ResultNRSpansDic.ContainsKey(_otSpans[3].Context.SpanId.ToHexString()));
+            Assert.True(ResultNRSpansDic.ContainsKey(_otSpans[6].Context.SpanId.ToHexString()));
         }
 
         [Fact]
@@ -137,11 +146,13 @@ namespace NewRelic.OpenTelemetry.Tests
             var resultSpan1 = ResultNRSpansDic[_otSpans[1].Context.SpanId.ToHexString()];
             var resultSpan2 = ResultNRSpansDic[_otSpans[2].Context.SpanId.ToHexString()];
             var resultSpan3 = ResultNRSpansDic[_otSpans[3].Context.SpanId.ToHexString()];
+            var resultSpan6 = ResultNRSpansDic[_otSpans[6].Context.SpanId.ToHexString()];
 
             Assert.False(resultSpan0.Attributes?.ContainsKey("error.message"));
             Assert.Equal(ErrorMessage, resultSpan1.Attributes?["error.message"]);
             Assert.False(resultSpan2.Attributes?.ContainsKey("error.message"));
             Assert.False(resultSpan3.Attributes?.ContainsKey("error.message"));
+            Assert.False(resultSpan6.Attributes?.ContainsKey("error.message"));
         }
 
         [Fact]
@@ -151,14 +162,19 @@ namespace NewRelic.OpenTelemetry.Tests
             var resultNRSpan1 = ResultNRSpansDic[_otSpans[1].Context.SpanId.ToHexString()];
             var resultNRSpan2 = ResultNRSpansDic[_otSpans[2].Context.SpanId.ToHexString()];
             var resultNRSpan3 = ResultNRSpansDic[_otSpans[3].Context.SpanId.ToHexString()];
+            var resultNRSpan6 = ResultNRSpansDic[_otSpans[6].Context.SpanId.ToHexString()];
 
             Assert.Equal(resultNRSpan0.TraceId, _otSpans[0].Context.TraceId.ToHexString());
             Assert.Equal(resultNRSpan1.TraceId, _otSpans[1].Context.TraceId.ToHexString());
             Assert.Equal(resultNRSpan2.TraceId, _otSpans[2].Context.TraceId.ToHexString());
+            Assert.Equal(resultNRSpan6.TraceId, _otSpans[6].Context.TraceId.ToHexString());
             Assert.Equal(resultNRSpan0.TraceId, resultNRSpan1.TraceId);
             Assert.NotEqual(resultNRSpan0.TraceId, resultNRSpan2.TraceId);
             Assert.NotEqual(resultNRSpan0.TraceId, resultNRSpan3.TraceId);
             Assert.NotEqual(resultNRSpan2.TraceId, resultNRSpan3.TraceId);
+            Assert.NotEqual(resultNRSpan6.TraceId, resultNRSpan3.TraceId);
+            Assert.NotEqual(resultNRSpan6.TraceId, resultNRSpan2.TraceId);
+            Assert.NotEqual(resultNRSpan6.TraceId, resultNRSpan0.TraceId);
         }
 
         [Fact]
@@ -168,11 +184,13 @@ namespace NewRelic.OpenTelemetry.Tests
             var resultNRSpan1 = ResultNRSpansDic[_otSpans[1].Context.SpanId.ToHexString()];
             var resultNRSpan2 = ResultNRSpansDic[_otSpans[2].Context.SpanId.ToHexString()];
             var resultNRSpan3 = ResultNRSpansDic[_otSpans[3].Context.SpanId.ToHexString()];
+            var resultNRSpan6 = ResultNRSpansDic[_otSpans[6].Context.SpanId.ToHexString()];
 
             Assert.False(resultNRSpan0.Attributes?.ContainsKey(AttrNameParentID));
             Assert.Equal(resultNRSpan1.Attributes?[NewRelicConsts.Tracing.AttribNameParentId], resultNRSpan0.Id);
             Assert.False(resultNRSpan2.Attributes?.ContainsKey(AttrNameParentID));
             Assert.False(resultNRSpan3.Attributes?.ContainsKey(AttrNameParentID));
+            Assert.False(resultNRSpan6.Attributes?.ContainsKey(AttrNameParentID));
         }
 
         [Fact]
@@ -201,6 +219,30 @@ namespace NewRelic.OpenTelemetry.Tests
             Assert.NotNull(_resultNRSpanBatch?.CommonProperties.Attributes);
             Assert.Equal("newrelic-opentelemetry-exporter", _resultNRSpanBatch?.CommonProperties.Attributes["collector.name"]);
             Assert.Equal("opentelemetry", _resultNRSpanBatch?.CommonProperties.Attributes["instrumentation.provider"]);
+        }
+
+        [Fact]
+        public void Test_Status()
+        {
+            const string statusCodeAttributeName = "otel.status_code";
+            const string statusDescriptionAttributeName = "otel.status_description";
+
+            var resultNRSpan0 = ResultNRSpansDic[_otSpans[0].Context.SpanId.ToHexString()];
+            var resultNRSpan1 = ResultNRSpansDic[_otSpans[1].Context.SpanId.ToHexString()];
+            var resultNRSpan2 = ResultNRSpansDic[_otSpans[2].Context.SpanId.ToHexString()];
+            var resultNRSpan3 = ResultNRSpansDic[_otSpans[3].Context.SpanId.ToHexString()];
+            var resultNRSpan6 = ResultNRSpansDic[_otSpans[6].Context.SpanId.ToHexString()];
+
+            Assert.False(resultNRSpan0.Attributes?.ContainsKey(statusCodeAttributeName));
+            Assert.False(resultNRSpan0.Attributes?.ContainsKey(statusDescriptionAttributeName));
+            Assert.Equal("Error", resultNRSpan1.Attributes?[statusCodeAttributeName]);
+            Assert.Equal(ErrorMessage, resultNRSpan1.Attributes?[statusDescriptionAttributeName]);
+            Assert.Equal("Ok", resultNRSpan2.Attributes?[statusCodeAttributeName]);
+            Assert.False(resultNRSpan2.Attributes?.ContainsKey(statusDescriptionAttributeName));
+            Assert.Equal("Ok", resultNRSpan3.Attributes?[statusCodeAttributeName]);
+            Assert.Equal(SampleOkMessage, resultNRSpan3.Attributes?[statusDescriptionAttributeName]);
+            Assert.False(resultNRSpan6.Attributes?.ContainsKey(statusCodeAttributeName));
+            Assert.False(resultNRSpan6.Attributes?.ContainsKey(statusDescriptionAttributeName));
         }
     }
 }

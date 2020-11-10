@@ -24,8 +24,16 @@ namespace NewRelic.OpenTelemetry
     public class NewRelicTraceExporter : BaseExporter<Activity>
     {
         private const string ProductName = "NewRelic-Dotnet-OpenTelemetry";
+        private const string OTelStatusCodeAttributeName = "otel.status_code";
+        private const string OTelStatusDescriptionAttributeName = "otel.status_description";
 
         private static readonly string _productVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
+
+        private static readonly List<string> _tagNamesToIgnore = new List<string>
+        {
+            OTelStatusCodeAttributeName,
+            OTelStatusDescriptionAttributeName,
+        };
 
         private readonly TraceDataSender _spanDataSender;
         private readonly ILogger? _logger;
@@ -102,6 +110,17 @@ namespace NewRelic.OpenTelemetry
                 ActivityKind.Internal => "INTERNAL",
                 ActivityKind.Producer => "PRODUCER",
                 ActivityKind.Server => "SERVER",
+                _ => null,
+            };
+        }
+
+        private static string? StatusCodeToString(StatusCode statusCode)
+        {
+            return statusCode switch
+            {
+                StatusCode.Error => "Error",
+                StatusCode.Ok => "Ok",
+                StatusCode.Unset => "Unset",
                 _ => null,
             };
         }
@@ -233,6 +252,17 @@ namespace NewRelic.OpenTelemetry
                 }
             }
 
+            var statusCode = StatusCodeToString(status.StatusCode);
+            if (status.StatusCode != StatusCode.Unset && statusCode != null)
+            {
+                newRelicSpanAttribs.Add(OTelStatusCodeAttributeName, statusCode);
+
+                if (!string.IsNullOrWhiteSpace(status.Description))
+                {
+                    newRelicSpanAttribs.Add(OTelStatusDescriptionAttributeName, status.Description);
+                }
+            }
+
             var parentSpanId = openTelemetrySpan.ParentSpanId != default
                 ? openTelemetrySpan.ParentSpanId.ToHexString()
                 : null;
@@ -257,7 +287,7 @@ namespace NewRelic.OpenTelemetry
             {
                 foreach (var spanAttrib in openTelemetrySpan.TagObjects)
                 {
-                    if (spanAttrib.Value == null)
+                    if (spanAttrib.Value == null || _tagNamesToIgnore.Contains(spanAttrib.Key))
                     {
                         continue;
                     }
