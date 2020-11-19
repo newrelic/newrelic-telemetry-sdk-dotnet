@@ -55,17 +55,17 @@ namespace NewRelic.Telemetry.Tracing
         {
         }
 
-        internal TraceDataSender(TelemetryConfiguration config, ILoggerFactory? loggerFactory, string telemetrySdkVersionOverride)
-            : base(config, loggerFactory, telemetrySdkVersionOverride)
-        {
-        }
-
 #if !INTERNALIZE_TELEMETRY_SDK
         public TraceDataSender(IConfiguration config, ILoggerFactory? loggerFactory)
             : base(config, loggerFactory)
         {
         }
 #endif
+
+        internal TraceDataSender(TelemetryConfiguration config, ILoggerFactory? loggerFactory, string telemetrySdkVersionOverride)
+            : base(config, loggerFactory, telemetrySdkVersionOverride)
+        {
+        }
 
         public async Task<Response> SendDataAsync(IEnumerable<NewRelicSpan> spans)
         {
