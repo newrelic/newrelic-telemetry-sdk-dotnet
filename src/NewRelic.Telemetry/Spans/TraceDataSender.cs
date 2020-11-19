@@ -62,6 +62,11 @@ namespace NewRelic.Telemetry.Tracing
         }
 #endif
 
+        internal TraceDataSender(TelemetryConfiguration config, ILoggerFactory? loggerFactory, string telemetrySdkVersionOverride)
+            : base(config, loggerFactory, telemetrySdkVersionOverride)
+        {
+        }
+
         public async Task<Response> SendDataAsync(IEnumerable<NewRelicSpan> spans)
         {
             var batch = new NewRelicSpanBatch(spans);
