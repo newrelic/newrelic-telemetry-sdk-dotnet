@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Diagnostics;
 using NewRelic.Telemetry;
+using OpenTelemetry;
 
 namespace NewRelic.OpenTelemetry
 {
@@ -49,6 +51,16 @@ namespace NewRelic.OpenTelemetry
             get => TelemetryConfiguration.ServiceName;
             set => TelemetryConfiguration.ServiceName = value;
         }
+
+        /// <summary>
+        /// Gets or sets the export processor type to be used.
+        /// </summary>
+        public ExportProcessorType ExportProcessorType { get; set; } = ExportProcessorType.Batch;
+
+        /// <summary>
+        /// Gets or sets the BatchExportProcessor options. Ignored unless ExportProcessorType is Batch.
+        /// </summary>
+        public BatchExportProcessorOptions<Activity> BatchExportProcessorOptions { get; set; } = new BatchExportProcessorOptions<Activity>();
 
         internal TelemetryConfiguration TelemetryConfiguration { get; } = new TelemetryConfiguration();
 
