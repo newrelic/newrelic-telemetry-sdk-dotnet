@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -16,7 +17,7 @@ namespace NewRelic.OpenTelemetry.Tests
     [Collection("newrelic-exporter")]
     public class NewRelicExporterTests : IDisposable
     {
-        private static readonly ConcurrentDictionary<Guid, string> Responses = new ConcurrentDictionary<Guid, string>();
+        private static readonly ConcurrentDictionary<Guid, IDictionary<string, object>> Responses = new ConcurrentDictionary<Guid, IDictionary<string, object>>();
 
         private readonly IDisposable? _testServer;
         private readonly string _testServerHost;
@@ -47,13 +48,17 @@ namespace NewRelic.OpenTelemetry.Tests
             {
                 context.Response.StatusCode = 200;
 
-                using StreamReader readStream = new StreamReader(context.Request.InputStream);
+                using var readStream = new StreamReader(context.Request.InputStream);
 
-                string requestContent = readStream.ReadToEnd();
+                var dictionary = new Dictionary<string, object>
+                {
+                    { "request-body", readStream.ReadToEnd() },
+                    { "user-agent", context.Request.UserAgent },
+                };
 
                 Responses.TryAdd(
                     Guid.Parse(context.Request.QueryString["requestId"]),
-                    requestContent);
+                    dictionary);
 
                 context.Response.OutputStream.Close();
             }
@@ -62,6 +67,38 @@ namespace NewRelic.OpenTelemetry.Tests
         public void Dispose()
         {
             _testServer?.Dispose();
+        }
+
+        [Fact]
+        public void UserAgentStringIsCorrect()
+        {
+            const string ActivitySourceName = "newrelic.test";
+            var requestId = Guid.NewGuid();
+
+            var exporterOptions = new NewRelicExporterOptions()
+            {
+                ApiKey = "my-apikey",
+                ServiceName = "test-newrelic",
+                EndpointUrl = new Uri($"http://{_testServerHost}:{_testServerPort}/trace/v1?requestId={requestId}"),
+            };
+
+            var newRelicExporter = new NewRelicTraceExporter(exporterOptions);
+            var exportActivityProcessor = new BatchExportProcessor<Activity>(newRelicExporter);
+
+            using var openTelemetrySdk = Sdk.CreateTracerProviderBuilder()
+                .AddSource(ActivitySourceName)
+                .AddProcessor(exportActivityProcessor)
+                .Build();
+
+            var source = new ActivitySource(ActivitySourceName);
+            var activity = source.StartActivity("Test Activity");
+            activity?.Stop();
+
+            exportActivityProcessor.ForceFlush();
+
+            Assert.Equal(
+                $"{Telemetry.ProductInfo.Name}/exporter {ProductInfo.Name}/{ProductInfo.Version}",
+                Responses[requestId]["user-agent"]);
         }
 
         [Fact]
@@ -79,7 +116,7 @@ namespace NewRelic.OpenTelemetry.Tests
                     endCalledCount++;
                 };
 
-            var openTelemetrySdk = Sdk.CreateTracerProviderBuilder()
+            using var openTelemetrySdk = Sdk.CreateTracerProviderBuilder()
                 .AddSource(ActivitySourceName)
                 .AddProcessor(testActivityProcessor)
                 .AddNewRelicExporter(options =>
