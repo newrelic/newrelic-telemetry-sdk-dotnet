@@ -33,10 +33,10 @@ jobs:
         fetch-depth: 0
 
     - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.1
+      uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Setup Nuget Add to Path
-      uses: nuget/setup-nuget@v1
+      uses: nuget/setup-nuget@v1.0.5
       with:
         nuget-version: '5.x'  
     
