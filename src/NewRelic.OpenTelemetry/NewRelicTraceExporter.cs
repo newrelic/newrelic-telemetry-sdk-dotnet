@@ -139,10 +139,10 @@ namespace NewRelic.OpenTelemetry
                 {
                     switch (label.Key)
                     {
-                        case Resource.ServiceNameKey:
+                        case ResourceSemanticConventions.AttributeServiceName:
                             serviceName = label.Value as string;
                             continue;
-                        case Resource.ServiceNamespaceKey:
+                        case ResourceSemanticConventions.AttributeServiceNamespace:
                             serviceNamespace = label.Value as string;
                             continue;
                     }
@@ -179,7 +179,7 @@ namespace NewRelic.OpenTelemetry
             var result = new Dictionary<Resource, List<NewRelicSpan>>();
             foreach (var activity in activityBatch)
             {
-                var resource = activity.GetResource();
+                var resource = ParentProvider.GetResource();
                 if (!result.TryGetValue(resource, out var spans))
                 {
                     spans = new List<NewRelicSpan>();
