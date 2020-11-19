@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NewRelic.Telemetry;
@@ -23,11 +22,8 @@ namespace NewRelic.OpenTelemetry
     /// </summary>
     public class NewRelicTraceExporter : BaseExporter<Activity>
     {
-        private const string ProductName = "NewRelic-Dotnet-OpenTelemetry";
         private const string OTelStatusCodeAttributeName = "otel.status_code";
         private const string OTelStatusDescriptionAttributeName = "otel.status_description";
-
-        private static readonly string _productVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
 
         private static readonly List<string> _tagNamesToIgnore = new List<string>
         {
@@ -56,14 +52,14 @@ namespace NewRelic.OpenTelemetry
         /// </summary>
         /// <param name="options"></param>
         public NewRelicTraceExporter(NewRelicExporterOptions options, ILoggerFactory loggerFactory)
-            : this(new TraceDataSender(options.TelemetryConfiguration, loggerFactory), options, loggerFactory)
+            : this(new TraceDataSender(options.TelemetryConfiguration, loggerFactory, "exporter"), options, loggerFactory)
         {
         }
 
         internal NewRelicTraceExporter(TraceDataSender spanDataSender, NewRelicExporterOptions options, ILoggerFactory? loggerFactory)
         {
             _spanDataSender = spanDataSender;
-            spanDataSender.AddVersionInfo(ProductName, _productVersion);
+            spanDataSender.AddVersionInfo(ProductInfo.Name, ProductInfo.Version);
 
             _config = options.TelemetryConfiguration;
 

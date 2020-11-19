@@ -12,7 +12,6 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,8 +29,6 @@ namespace NewRelic.Telemetry.Transport
 
         protected readonly TelemetryConfiguration _config;
         protected readonly TelemetryLogging _logger;
-
-        private readonly string _telemetrySdkVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
 
         private readonly string _userAgentBase;
         private readonly HttpClient _httpClient;
@@ -64,9 +61,9 @@ namespace NewRelic.Telemetry.Transport
         {
         }
 
-        protected DataSender(TelemetryConfiguration config, ILoggerFactory? loggerFactory)
+        protected DataSender(TelemetryConfiguration config, ILoggerFactory? loggerFactory, string? telemetrySdkVersionOverride = null)
         {
-            _userAgentBase = "NewRelic-Dotnet-TelemetrySDK/" + _telemetrySdkVersion;
+            _userAgentBase = $"{ProductInfo.Name}/{telemetrySdkVersionOverride ?? ProductInfo.Version}";
             UserAgent = _userAgentBase;
 
             _config = config;
