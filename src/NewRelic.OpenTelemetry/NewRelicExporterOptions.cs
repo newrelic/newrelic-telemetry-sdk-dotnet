@@ -63,13 +63,5 @@ namespace NewRelic.OpenTelemetry
         public BatchExportProcessorOptions<Activity> BatchExportProcessorOptions { get; set; } = new BatchExportProcessorOptions<Activity>();
 
         internal TelemetryConfiguration TelemetryConfiguration { get; } = new TelemetryConfiguration();
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewRelicExporterOptions"/> class.
-        /// Creates the Options object accepting all default settings.
-        /// </summary>
-        public NewRelicExporterOptions()
-        {
-        }
     }
 }
