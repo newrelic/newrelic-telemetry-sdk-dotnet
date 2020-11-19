@@ -33,4 +33,12 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+
+  <ItemGroup Condition="'$(Deterministic)'=='true'">
+    <SourceRoot Include="$(MSBuildThisFileDirectory)/" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(Deterministic)'=='true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
 </Project>
