@@ -20,7 +20,7 @@ namespace NewRelic.OpenTelemetry
     /// <summary>
     /// An exporter used to send Trace/Span information to New Relic.
     /// </summary>
-    public class NewRelicTraceExporter : BaseExporter<Activity>
+    internal class NewRelicTraceExporter : BaseExporter<Activity>
     {
         private const string OTelStatusCodeAttributeName = "otel.status_code";
         private const string OTelStatusDescriptionAttributeName = "otel.status_description";

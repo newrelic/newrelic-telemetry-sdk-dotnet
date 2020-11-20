@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using OpenTelemetry;
 using OpenTelemetry.Trace;
 using Xunit;
@@ -115,34 +116,33 @@ namespace NewRelic.OpenTelemetry.Tests
                     endCalledCount++;
                 };
 
-            var exporterOptions = new NewRelicExporterOptions()
-            {
-                ApiKey = "my-apikey",
-                ServiceName = "test-newrelic",
-                EndpointUrl = new Uri($"http://{_testServerHost}:{_testServerPort}/trace/v1?requestId={requestId}"),
-            };
-
-            var newRelicExporter = new NewRelicTraceExporter(exporterOptions);
-            var exportActivityProcessor = new BatchExportProcessor<Activity>(newRelicExporter);
-
             using var openTelemetrySdk = Sdk.CreateTracerProviderBuilder()
                 .AddSource(ActivitySourceName)
                 .AddProcessor(testActivityProcessor)
-                .AddProcessor(exportActivityProcessor)
+                .AddNewRelicExporter(options =>
+                {
+                    options.ApiKey = "my-apikey";
+                    options.ServiceName = "test-newrelic";
+                    options.EndpointUrl = new Uri($"http://{_testServerHost}:{_testServerPort}/trace/v1?requestId={requestId}");
+                    options.ExportProcessorType = ExportProcessorType.Simple;
+                })
                 .AddHttpClientInstrumentation()
                 .Build();
 
-            var source = new ActivitySource(ActivitySourceName);
-            var activity = source.StartActivity("Test Activity");
-            activity?.Stop();
+            // Since the SimpleExportProcessor is used in this test, if instrumentation is
+            // not suppressed then the exporter will hang indefinitely. This is because the
+            // HTTP call the exporter makes to send data will recursively (and synchronously)
+            // invoke export again... and again... and again.
+            var task = Task.Run(() =>
+            {
+                var source = new ActivitySource(ActivitySourceName);
+                var activity = source.StartActivity("Test Activity");
+                activity?.Stop();
+            });
 
-            // We call ForceFlush on the exporter twice, so that in the event
-            // of a regression, this should give any operations performed in
-            // the  exporter itself enough time to be instrumented and loop
-            // back through the exporter.
-            exportActivityProcessor.ForceFlush();
-            exportActivityProcessor.ForceFlush();
+            var completed = task.Wait(TimeSpan.FromSeconds(5));
 
+            Assert.True(completed);
             Assert.Equal(1, endCalledCount);
         }
     }
