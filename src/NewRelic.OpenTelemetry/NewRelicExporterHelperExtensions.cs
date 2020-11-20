@@ -28,21 +28,33 @@ namespace OpenTelemetry.Trace
         /// Adds New Relic exporter to the TracerProvider and enables the exporter to log to an ILogger.
         /// </summary>
         /// <param name="builder"><see cref="TracerProviderBuilder"/> builder to use.</param>
-        /// <param name="options">Exporter configuration options.</param>
+        /// <param name="configure">Exporter configuration options.</param>
         /// <param name="loggerFactory">ILoggerFactory instance for creating an ILogger.</param>
         /// <returns>The instance of <see cref="TracerProviderBuilder"/> to chain the calls.</returns>
-        public static TracerProviderBuilder AddNewRelicExporter(this TracerProviderBuilder builder, Action<NewRelicExporterOptions> options, ILoggerFactory loggerFactory)
+        public static TracerProviderBuilder AddNewRelicExporter(this TracerProviderBuilder builder, Action<NewRelicExporterOptions> configure, ILoggerFactory loggerFactory)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            var config = new NewRelicExporterOptions();
-            options?.Invoke(config);
-            var exporter = new NewRelicTraceExporter(config, loggerFactory);
+            var options = new NewRelicExporterOptions();
+            configure?.Invoke(options);
+            var exporter = new NewRelicTraceExporter(options, loggerFactory);
 
-            return builder.AddProcessor(new BatchExportProcessor<Activity>(exporter));
+            if (options.ExportProcessorType == ExportProcessorType.Simple)
+            {
+                return builder.AddProcessor(new SimpleExportProcessor<Activity>(exporter));
+            }
+            else
+            {
+                return builder.AddProcessor(new BatchExportProcessor<Activity>(
+                    exporter,
+                    options.BatchExportProcessorOptions.MaxQueueSize,
+                    options.BatchExportProcessorOptions.ScheduledDelayMilliseconds,
+                    options.BatchExportProcessorOptions.ExporterTimeoutMilliseconds,
+                    options.BatchExportProcessorOptions.MaxExportBatchSize));
+            }
         }
     }
 }
