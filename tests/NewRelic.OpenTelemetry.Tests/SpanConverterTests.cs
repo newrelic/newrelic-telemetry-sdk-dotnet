@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using NewRelic.Telemetry;
 using NewRelic.Telemetry.Tracing;
 using OpenTelemetry;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Xunit;
 
@@ -60,7 +61,6 @@ namespace NewRelic.OpenTelemetry.Tests
             _options = new NewRelicExporterOptions()
             {
                 ApiKey = "12345",
-                ServiceName = TestServiceName,
             };
             var mockDataSender = new TraceDataSender(_options.TelemetryConfiguration, null);
 
@@ -86,6 +86,7 @@ namespace NewRelic.OpenTelemetry.Tests
             var source = new ActivitySource("newrelic.test");
 
             using (var openTelemetrySdk = Sdk.CreateTracerProviderBuilder()
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(TestServiceName))
                     .AddSource("newrelic.test")
                     .AddProcessor(new BatchExportProcessor<Activity>(exporter))
                     .Build())

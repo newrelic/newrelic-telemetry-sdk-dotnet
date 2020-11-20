@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
 namespace SampleConsoleCoreApp
@@ -33,11 +34,11 @@ namespace SampleConsoleCoreApp
             );
 
             using (var tracerProvider = Sdk.CreateTracerProviderBuilder()
+                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName))
                 .AddSource(ActivitySourceName)
                 .AddNewRelicExporter(options =>
                 {
                     options.ApiKey = nrApiKey;
-                    options.ServiceName = serviceName;
                     options.AuditLoggingEnabled = true;
                 }, loggerFactory)
                 .AddHttpClientInstrumentation()

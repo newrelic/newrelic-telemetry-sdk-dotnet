@@ -35,7 +35,7 @@ namespace NewRelic.Telemetry.Tests
         private const bool AuditLoggingEnabledDiffProdValue = true;
 
         private const string ServiceNameNewRelicValue = NRConfigSection + "Service";
-        private const string ServiceNameDefaultValue = null;
+        private const string ServiceNameDefaultValue = "New Relic Telemetry SDK";
 
         private const int BackoffMaxSecondsDefaultValue = 80;
 

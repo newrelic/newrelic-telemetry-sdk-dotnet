@@ -75,7 +75,7 @@ namespace NewRelic.Telemetry
         /// <summary>
         /// Identifies the name of a service for which information is being reported to New Relic.
         /// </summary>
-        public string? ServiceName { get; set; }
+        public string ServiceName { get; set; } = "New Relic Telemetry SDK";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TelemetryConfiguration"/> class.

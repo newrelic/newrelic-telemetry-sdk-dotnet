@@ -9,6 +9,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using OpenTelemetry;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Xunit;
 
@@ -78,7 +79,6 @@ namespace NewRelic.OpenTelemetry.Tests
             var exporterOptions = new NewRelicExporterOptions()
             {
                 ApiKey = "my-apikey",
-                ServiceName = "test-newrelic",
                 EndpointUrl = new Uri($"http://{_testServerHost}:{_testServerPort}/trace/v1?requestId={requestId}"),
             };
 
@@ -86,6 +86,7 @@ namespace NewRelic.OpenTelemetry.Tests
             var exportActivityProcessor = new BatchExportProcessor<Activity>(newRelicExporter);
 
             using var openTelemetrySdk = Sdk.CreateTracerProviderBuilder()
+                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("test-newrelic"))
                 .AddSource(ActivitySourceName)
                 .AddProcessor(exportActivityProcessor)
                 .Build();
@@ -117,12 +118,12 @@ namespace NewRelic.OpenTelemetry.Tests
                 };
 
             using var openTelemetrySdk = Sdk.CreateTracerProviderBuilder()
+                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("test-newrelic"))
                 .AddSource(ActivitySourceName)
                 .AddProcessor(testActivityProcessor)
                 .AddNewRelicExporter(options =>
                 {
                     options.ApiKey = "my-apikey";
-                    options.ServiceName = "test-newrelic";
                     options.EndpointUrl = new Uri($"http://{_testServerHost}:{_testServerPort}/trace/v1?requestId={requestId}");
                     options.ExportProcessorType = ExportProcessorType.Simple;
                 })
