@@ -44,15 +44,6 @@ namespace NewRelic.OpenTelemetry
         }
 
         /// <summary>
-        /// Identifies the name of a service for which information is being reported to New Relic.
-        /// </summary>
-        public string? ServiceName
-        {
-            get => TelemetryConfiguration.ServiceName;
-            set => TelemetryConfiguration.ServiceName = value;
-        }
-
-        /// <summary>
         /// Gets or sets the export processor type to be used.
         /// </summary>
         public ExportProcessorType ExportProcessorType { get; set; } = ExportProcessorType.Batch;
@@ -62,6 +53,9 @@ namespace NewRelic.OpenTelemetry
         /// </summary>
         public BatchExportProcessorOptions<Activity> BatchExportProcessorOptions { get; set; } = new BatchExportProcessorOptions<Activity>();
 
-        internal TelemetryConfiguration TelemetryConfiguration { get; } = new TelemetryConfiguration();
+        internal TelemetryConfiguration TelemetryConfiguration { get; } = new TelemetryConfiguration()
+        {
+            ServiceName = "OpenTelemetry Exporter",
+        };
     }
 }
