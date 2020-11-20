@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Trace;
@@ -12,12 +14,17 @@ namespace SampleConsoleCoreApp
         private const string ActivitySourceName = "NewRelic.OpenTelemetryExporter.SampleConsoleCoreApp";
         private static readonly ActivitySource SampleActivitySource = new ActivitySource(ActivitySourceName);
 
-        // Set these values for yourself
-        private const string MyNewRelicInsightsInsertApiKey = "<YOUR_NR_INSIGHTS_INSERT_API_KEY_HERE>";
-        private const string MyServiceName = "SampleConsoleCoreApp";
-
         static void Main(string[] args)
         {
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", true, true)
+                .Build();
+
+            var nrApiKey = config.GetValue<string>("NewRelic:ApiKey");
+            var serviceName = config.GetValue<string>("NewRelic:ServiceName");
+
+            Console.WriteLine($"Using NR API Key {nrApiKey} and service name {serviceName} from configuration.");
+
             var loggerFactory = LoggerFactory.Create(builder =>
                 {
                     builder.SetMinimumLevel(LogLevel.Debug)
@@ -25,35 +32,41 @@ namespace SampleConsoleCoreApp
                 }
             );
 
-            using var tracerProvider = Sdk.CreateTracerProviderBuilder()
+            using (var tracerProvider = Sdk.CreateTracerProviderBuilder()
                 .AddSource(ActivitySourceName)
                 .AddNewRelicExporter(options =>
                 {
-                    options.ApiKey = MyNewRelicInsightsInsertApiKey;
-                    options.ServiceName = MyServiceName;
+                    options.ApiKey = nrApiKey;
+                    options.ServiceName = serviceName;
                     options.AuditLoggingEnabled = true;
                 }, loggerFactory)
                 .AddHttpClientInstrumentation()
-                .Build();
-
-            using (var activity = SampleActivitySource.StartActivity("SampleConsoleCoreAppSpan"))
+                .Build())
             {
-                Console.WriteLine("Creating root of trace.");
-
-                var message = "Hello, OpenTelemetry with New Relic!";
-                activity?.SetTag("aNumber", 42);
-                activity?.SetTag("message", message);
-
-                Console.WriteLine("\nMaking an external HTTP request which will be added as a child span of the trace.");
-
-                var httpClient = new HttpClient();
-                var request = httpClient.GetAsync("https://www.newrelic.com");
-
-                Console.WriteLine($"Web request result: {request.Result.StatusCode}");
+                Task.Run(() => GenerateSpans());
+                Console.WriteLine("Spans are being generated and exported to New Relic. Press enter to stop.");
+                Console.ReadLine();
             }
 
-            Console.WriteLine("\nTrace finished, waiting ten seconds to allow trace to be collected and sent to New Relic.");
-            System.Threading.Thread.Sleep(10000);
+            Console.WriteLine("\nFinished.");
+        }
+
+        private static void GenerateSpans()
+        {
+            while (true)
+            {
+                using (var activity = SampleActivitySource.StartActivity("SampleConsoleCoreAppSpan"))
+                {
+                    var message = "Hello, OpenTelemetry with New Relic!";
+                    activity?.SetTag("aNumber", 42);
+                    activity?.SetTag("message", message);
+
+                    var httpClient = new HttpClient();
+                    httpClient.GetAsync("https://www.newrelic.com");
+
+                    System.Threading.Thread.Sleep(1000);
+                }
+            }
         }
     }
 }
