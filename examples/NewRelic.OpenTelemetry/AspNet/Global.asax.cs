@@ -2,6 +2,7 @@ using System;
 using System.Configuration;
 using System.Web.Http;
 using OpenTelemetry;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
 namespace SampleAspNetFrameworkApp
@@ -19,10 +20,10 @@ namespace SampleAspNetFrameworkApp
 
             // Initialize OpenTelemetry and register the New Relic Exporter
             this.openTelemetry = Sdk.CreateTracerProviderBuilder()
+                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("aspnet-example"))
                 .AddNewRelicExporter(config =>
                 {
                     config.ApiKey = apiKey;
-                    config.ServiceName = "aspnet-example";
                 })
                 .AddAspNetInstrumentation()
                 .AddHttpClientInstrumentation()
