@@ -76,7 +76,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\main.yml = .github\workflows\main.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewRelic.Examples.ConsoleCore", "examples\NewRelic.OpenTelemetry\ConsoleCore\NewRelic.Examples.ConsoleCore.csproj", "{E3B2A227-C536-4DF7-9882-19EC54D6EED3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Examples.ConsoleCore", "examples\NewRelic.OpenTelemetry\ConsoleCore\NewRelic.Examples.ConsoleCore.csproj", "{E3B2A227-C536-4DF7-9882-19EC54D6EED3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MicroserviceExample", "MicroserviceExample", "{65D2FC75-29A8-4F40-865E-2FA12015CB95}"
+	ProjectSection(SolutionItems) = preProject
+		examples\NewRelic.OpenTelemetry\MicroserviceExample\.dockerignore = examples\NewRelic.OpenTelemetry\MicroserviceExample\.dockerignore
+		examples\NewRelic.OpenTelemetry\MicroserviceExample\docker-compose.yml = examples\NewRelic.OpenTelemetry\MicroserviceExample\docker-compose.yml
+		examples\NewRelic.OpenTelemetry\MicroserviceExample\README.md = examples\NewRelic.OpenTelemetry\MicroserviceExample\README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi", "examples\NewRelic.OpenTelemetry\MicroserviceExample\WebApi\WebApi.csproj", "{58F93644-9B91-475B-9C2F-B9768D43E1C6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utils", "examples\NewRelic.OpenTelemetry\MicroserviceExample\Utils\Utils.csproj", "{89A9C5DB-A144-4DC4-82B5-B3A021A1CC68}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkerService", "examples\NewRelic.OpenTelemetry\MicroserviceExample\WorkerService\WorkerService.csproj", "{DCB42FF8-3434-4496-8059-7E264AC3EA15}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -208,6 +221,42 @@ Global
 		{E3B2A227-C536-4DF7-9882-19EC54D6EED3}.Release|x64.Build.0 = Release|Any CPU
 		{E3B2A227-C536-4DF7-9882-19EC54D6EED3}.Release|x86.ActiveCfg = Release|Any CPU
 		{E3B2A227-C536-4DF7-9882-19EC54D6EED3}.Release|x86.Build.0 = Release|Any CPU
+		{58F93644-9B91-475B-9C2F-B9768D43E1C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58F93644-9B91-475B-9C2F-B9768D43E1C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58F93644-9B91-475B-9C2F-B9768D43E1C6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{58F93644-9B91-475B-9C2F-B9768D43E1C6}.Debug|x64.Build.0 = Debug|Any CPU
+		{58F93644-9B91-475B-9C2F-B9768D43E1C6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{58F93644-9B91-475B-9C2F-B9768D43E1C6}.Debug|x86.Build.0 = Debug|Any CPU
+		{58F93644-9B91-475B-9C2F-B9768D43E1C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58F93644-9B91-475B-9C2F-B9768D43E1C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58F93644-9B91-475B-9C2F-B9768D43E1C6}.Release|x64.ActiveCfg = Release|Any CPU
+		{58F93644-9B91-475B-9C2F-B9768D43E1C6}.Release|x64.Build.0 = Release|Any CPU
+		{58F93644-9B91-475B-9C2F-B9768D43E1C6}.Release|x86.ActiveCfg = Release|Any CPU
+		{58F93644-9B91-475B-9C2F-B9768D43E1C6}.Release|x86.Build.0 = Release|Any CPU
+		{89A9C5DB-A144-4DC4-82B5-B3A021A1CC68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89A9C5DB-A144-4DC4-82B5-B3A021A1CC68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89A9C5DB-A144-4DC4-82B5-B3A021A1CC68}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{89A9C5DB-A144-4DC4-82B5-B3A021A1CC68}.Debug|x64.Build.0 = Debug|Any CPU
+		{89A9C5DB-A144-4DC4-82B5-B3A021A1CC68}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{89A9C5DB-A144-4DC4-82B5-B3A021A1CC68}.Debug|x86.Build.0 = Debug|Any CPU
+		{89A9C5DB-A144-4DC4-82B5-B3A021A1CC68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89A9C5DB-A144-4DC4-82B5-B3A021A1CC68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89A9C5DB-A144-4DC4-82B5-B3A021A1CC68}.Release|x64.ActiveCfg = Release|Any CPU
+		{89A9C5DB-A144-4DC4-82B5-B3A021A1CC68}.Release|x64.Build.0 = Release|Any CPU
+		{89A9C5DB-A144-4DC4-82B5-B3A021A1CC68}.Release|x86.ActiveCfg = Release|Any CPU
+		{89A9C5DB-A144-4DC4-82B5-B3A021A1CC68}.Release|x86.Build.0 = Release|Any CPU
+		{DCB42FF8-3434-4496-8059-7E264AC3EA15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCB42FF8-3434-4496-8059-7E264AC3EA15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCB42FF8-3434-4496-8059-7E264AC3EA15}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DCB42FF8-3434-4496-8059-7E264AC3EA15}.Debug|x64.Build.0 = Debug|Any CPU
+		{DCB42FF8-3434-4496-8059-7E264AC3EA15}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DCB42FF8-3434-4496-8059-7E264AC3EA15}.Debug|x86.Build.0 = Debug|Any CPU
+		{DCB42FF8-3434-4496-8059-7E264AC3EA15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCB42FF8-3434-4496-8059-7E264AC3EA15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCB42FF8-3434-4496-8059-7E264AC3EA15}.Release|x64.ActiveCfg = Release|Any CPU
+		{DCB42FF8-3434-4496-8059-7E264AC3EA15}.Release|x64.Build.0 = Release|Any CPU
+		{DCB42FF8-3434-4496-8059-7E264AC3EA15}.Release|x86.ActiveCfg = Release|Any CPU
+		{DCB42FF8-3434-4496-8059-7E264AC3EA15}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -225,6 +274,10 @@ Global
 		{11A7856D-34C9-44EB-8DBB-DDBD00544465} = {114B526D-D8DA-4DC1-836F-7049917481AB}
 		{380D028D-7F33-4616-8B0C-BBCD0623DC8F} = {114B526D-D8DA-4DC1-836F-7049917481AB}
 		{E3B2A227-C536-4DF7-9882-19EC54D6EED3} = {6B78F9B1-C192-45E1-8E33-CB2A71CA3E1E}
+		{65D2FC75-29A8-4F40-865E-2FA12015CB95} = {6B78F9B1-C192-45E1-8E33-CB2A71CA3E1E}
+		{58F93644-9B91-475B-9C2F-B9768D43E1C6} = {65D2FC75-29A8-4F40-865E-2FA12015CB95}
+		{89A9C5DB-A144-4DC4-82B5-B3A021A1CC68} = {65D2FC75-29A8-4F40-865E-2FA12015CB95}
+		{DCB42FF8-3434-4496-8059-7E264AC3EA15} = {65D2FC75-29A8-4F40-865E-2FA12015CB95}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {08D1630D-EA85-4E78-ABBA-34195DCA7595}
