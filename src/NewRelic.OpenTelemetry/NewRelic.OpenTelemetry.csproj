@@ -10,6 +10,7 @@
     <Compile Include="..\NewRelic.Telemetry\ITelemetryDataType.cs" Link="NewRelic.Telemetry\ITelemetryDataType.cs" />
     <Compile Include="..\NewRelic.Telemetry\NewRelicConsts.cs" Link="NewRelic.Telemetry\NewRelicConsts.cs" />
     <Compile Include="..\NewRelic.Telemetry\PackageVersionAttribute.cs" Link="NewRelic.Telemetry\PackageVersionAttribute.cs" />
+    <Compile Include="..\NewRelic.Telemetry\ProductInfo.cs" Link="NewRelic.Telemetry\ProductInfo.cs" />
     <Compile Include="..\NewRelic.Telemetry\TelemetryConfiguration.cs" Link="NewRelic.Telemetry\TelemetryConfiguration.cs" />
     <Compile Include="..\NewRelic.Telemetry\Logging\TelemetryLogging.cs" Link="NewRelic.Telemetry\Logging\TelemetryLogging.cs" />
     <Compile Include="..\NewRelic.Telemetry\Spans\NewRelicSpan.cs" Link="NewRelic.Telemetry\Spans\NewRelicSpan.cs" />
@@ -21,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenTelemetry" Version="0.8.0-beta.1" />
+    <PackageReference Include="OpenTelemetry" Version="1.0.0-rc1.1" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
@@ -35,10 +36,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AssemblyAttribute Include="NewRelic.Telemetry.PackageVersion">
-      <_Parameter1>$(PackageVersion)</_Parameter1>
-    </AssemblyAttribute>
-
     <AssemblyAttribute Include="NewRelic.OpenTelemetry.PackageVersion">
       <_Parameter1>$(PackageVersion)</_Parameter1>
     </AssemblyAttribute>

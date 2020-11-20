@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NewRelic.Telemetry;
@@ -21,11 +20,16 @@ namespace NewRelic.OpenTelemetry
     /// <summary>
     /// An exporter used to send Trace/Span information to New Relic.
     /// </summary>
-    public class NewRelicTraceExporter : BaseExporter<Activity>
+    internal class NewRelicTraceExporter : BaseExporter<Activity>
     {
-        private const string ProductName = "NewRelic-Dotnet-OpenTelemetry";
+        private const string OTelStatusCodeAttributeName = "otel.status_code";
+        private const string OTelStatusDescriptionAttributeName = "otel.status_description";
 
-        private static readonly string _productVersion = Assembly.GetExecutingAssembly().GetCustomAttribute<PackageVersionAttribute>().PackageVersion;
+        private static readonly List<string> _tagNamesToIgnore = new List<string>
+        {
+            OTelStatusCodeAttributeName,
+            OTelStatusDescriptionAttributeName,
+        };
 
         private readonly TraceDataSender _spanDataSender;
         private readonly ILogger? _logger;
@@ -48,14 +52,14 @@ namespace NewRelic.OpenTelemetry
         /// </summary>
         /// <param name="options"></param>
         public NewRelicTraceExporter(NewRelicExporterOptions options, ILoggerFactory loggerFactory)
-            : this(new TraceDataSender(options.TelemetryConfiguration, loggerFactory), options, loggerFactory)
+            : this(new TraceDataSender(options.TelemetryConfiguration, loggerFactory, "exporter"), options, loggerFactory)
         {
         }
 
         internal NewRelicTraceExporter(TraceDataSender spanDataSender, NewRelicExporterOptions options, ILoggerFactory? loggerFactory)
         {
             _spanDataSender = spanDataSender;
-            spanDataSender.AddVersionInfo(ProductName, _productVersion);
+            spanDataSender.AddVersionInfo(ProductInfo.Name, ProductInfo.Version);
 
             _config = options.TelemetryConfiguration;
 
@@ -106,6 +110,17 @@ namespace NewRelic.OpenTelemetry
             };
         }
 
+        private static string? StatusCodeToString(StatusCode statusCode)
+        {
+            return statusCode switch
+            {
+                StatusCode.Error => "Error",
+                StatusCode.Ok => "Ok",
+                StatusCode.Unset => "Unset",
+                _ => null,
+            };
+        }
+
         private IEnumerable<NewRelicSpanBatch> ToNewRelicSpanBatches(in Batch<Activity> activityBatch)
         {
             var spansByResource = GroupByResource(activityBatch);
@@ -124,10 +139,10 @@ namespace NewRelic.OpenTelemetry
                 {
                     switch (label.Key)
                     {
-                        case Resource.ServiceNameKey:
+                        case ResourceSemanticConventions.AttributeServiceName:
                             serviceName = label.Value as string;
                             continue;
-                        case Resource.ServiceNamespaceKey:
+                        case ResourceSemanticConventions.AttributeServiceNamespace:
                             serviceNamespace = label.Value as string;
                             continue;
                     }
@@ -164,7 +179,7 @@ namespace NewRelic.OpenTelemetry
             var result = new Dictionary<Resource, List<NewRelicSpan>>();
             foreach (var activity in activityBatch)
             {
-                var resource = activity.GetResource();
+                var resource = ParentProvider.GetResource();
                 if (!result.TryGetValue(resource, out var spans))
                 {
                     spans = new List<NewRelicSpan>();
@@ -233,6 +248,17 @@ namespace NewRelic.OpenTelemetry
                 }
             }
 
+            var statusCode = StatusCodeToString(status.StatusCode);
+            if (status.StatusCode != StatusCode.Unset && statusCode != null)
+            {
+                newRelicSpanAttribs.Add(OTelStatusCodeAttributeName, statusCode);
+
+                if (!string.IsNullOrWhiteSpace(status.Description))
+                {
+                    newRelicSpanAttribs.Add(OTelStatusDescriptionAttributeName, status.Description);
+                }
+            }
+
             var parentSpanId = openTelemetrySpan.ParentSpanId != default
                 ? openTelemetrySpan.ParentSpanId.ToHexString()
                 : null;
@@ -257,7 +283,7 @@ namespace NewRelic.OpenTelemetry
             {
                 foreach (var spanAttrib in openTelemetrySpan.TagObjects)
                 {
-                    if (spanAttrib.Value == null)
+                    if (spanAttrib.Value == null || _tagNamesToIgnore.Contains(spanAttrib.Key))
                     {
                         continue;
                     }
