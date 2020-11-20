@@ -25,10 +25,17 @@ namespace NewRelic.OpenTelemetry
         private const string OTelStatusCodeAttributeName = "otel.status_code";
         private const string OTelStatusDescriptionAttributeName = "otel.status_description";
 
-        private static readonly List<string> _tagNamesToIgnore = new List<string>
+        private static readonly HashSet<string> _tagNamesToIgnore = new HashSet<string>
         {
             OTelStatusCodeAttributeName,
             OTelStatusDescriptionAttributeName,
+            NewRelicConsts.Tracing.AttribNameDurationMs,
+            NewRelicConsts.Tracing.AttribNameName,
+            NewRelicConsts.Tracing.AttribNameErrorMsg,
+            NewRelicConsts.Tracing.AttribSpanKind,
+            NewRelicConsts.AttributeInstrumentationName,
+            NewRelicConsts.AttributeInstrumentationVersion,
+            NewRelicConsts.Tracing.AttribNameParentId,
         };
 
         private readonly TraceDataSender _spanDataSender;
@@ -288,7 +295,7 @@ namespace NewRelic.OpenTelemetry
                         continue;
                     }
 
-                    newRelicSpanAttribs.Add(spanAttrib.Key, spanAttrib.Value);
+                    newRelicSpanAttribs[spanAttrib.Key] = spanAttrib.Value;
                 }
             }
 

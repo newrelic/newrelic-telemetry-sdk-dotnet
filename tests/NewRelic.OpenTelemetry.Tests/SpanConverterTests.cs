@@ -20,6 +20,7 @@ namespace NewRelic.OpenTelemetry.Tests
         private const string TestServiceName = "TestService";
         private const string ErrorMessage = "This is a test error description";
         private const string SampleOkMessage = "This is a test Ok description";
+        private const string AttributeValueToIgnore = "IgnoreMe";
 
         private const int ExpectedCountSpans = 7;
         private const string AttrNameParentID = "parent.Id";
@@ -43,15 +44,15 @@ namespace NewRelic.OpenTelemetry.Tests
          *  6   Test Span 5                                     Trace 4     Included
         */
         private static DateTimeOffset _traceStartTime = DateTime.UtcNow;
-        private readonly (int? Parent, string Name, DateTimeOffset Start, DateTimeOffset End, Status? Status, bool IsCallToNewRelic)[] _spanDefinitions = new (int?, string, DateTimeOffset, DateTimeOffset, Status?, bool)[]
+        private readonly (int? Parent, string Name, DateTimeOffset Start, DateTimeOffset End, Status? Status, bool IsCallToNewRelic, bool IncludeTags)[] _spanDefinitions = new (int?, string, DateTimeOffset, DateTimeOffset, Status?, bool, bool)[]
         {
-            (null, "Test Span 1", _traceStartTime, _traceStartTime.AddMilliseconds(225), Status.Unset, false),
-            (0, "Test Span 2", _traceStartTime.AddMilliseconds(1), _traceStartTime.AddMilliseconds(100), Status.Error.WithDescription(ErrorMessage), false),
-            (null, "Test Span 3", _traceStartTime.AddMilliseconds(2), _traceStartTime.AddMilliseconds(375), Status.Ok, false),
-            (null, "Test Span 4", _traceStartTime.AddMilliseconds(3), _traceStartTime.AddMilliseconds(650), Status.Ok.WithDescription(SampleOkMessage), false),
-            (3, "Should Be Filtered - HTTP Call to NR", _traceStartTime.AddMilliseconds(4), _traceStartTime.AddMilliseconds(600), Status.Ok, true),
-            (4, "Should Be Filtered - Child of HTTP", _traceStartTime.AddMilliseconds(5), _traceStartTime.AddMilliseconds(500), Status.Ok, false),
-            (null, "Test Span 5", _traceStartTime.AddMilliseconds(6), _traceStartTime.AddMilliseconds(750), null, false),
+            (null, "Test Span 1", _traceStartTime, _traceStartTime.AddMilliseconds(225), Status.Unset, false, true),
+            (0, "Test Span 2", _traceStartTime.AddMilliseconds(1), _traceStartTime.AddMilliseconds(100), Status.Error.WithDescription(ErrorMessage), false, false),
+            (null, "Test Span 3", _traceStartTime.AddMilliseconds(2), _traceStartTime.AddMilliseconds(375), Status.Ok, false, false),
+            (null, "Test Span 4", _traceStartTime.AddMilliseconds(3), _traceStartTime.AddMilliseconds(650), Status.Ok.WithDescription(SampleOkMessage), false, false),
+            (3, "Should Be Filtered - HTTP Call to NR", _traceStartTime.AddMilliseconds(4), _traceStartTime.AddMilliseconds(600), Status.Ok, true, false),
+            (4, "Should Be Filtered - Child of HTTP", _traceStartTime.AddMilliseconds(5), _traceStartTime.AddMilliseconds(500), Status.Ok, false, false),
+            (null, "Test Span 5", _traceStartTime.AddMilliseconds(6), _traceStartTime.AddMilliseconds(750), null, false, false),
         };
 
         public SpanConverterTests()
@@ -113,6 +114,18 @@ namespace NewRelic.OpenTelemetry.Tests
                     if (spanDefinition.Status.HasValue)
                     {
                         activity.SetStatus(spanDefinition.Status.Value);
+                    }
+
+                    if (spanDefinition.IncludeTags)
+                    {
+                        activity.SetTag("foo", "bar");
+                        activity.SetTag(NewRelicConsts.Tracing.AttribNameDurationMs, AttributeValueToIgnore);
+                        activity.SetTag(NewRelicConsts.Tracing.AttribNameName, AttributeValueToIgnore);
+                        activity.SetTag(NewRelicConsts.Tracing.AttribNameErrorMsg, AttributeValueToIgnore);
+                        activity.SetTag(NewRelicConsts.Tracing.AttribSpanKind, AttributeValueToIgnore);
+                        activity.SetTag(NewRelicConsts.Tracing.AttribNameParentId, AttributeValueToIgnore);
+                        activity.SetTag(NewRelicConsts.AttributeInstrumentationName, AttributeValueToIgnore);
+                        activity.SetTag(NewRelicConsts.AttributeInstrumentationVersion, AttributeValueToIgnore);
                     }
 
                     activity.Stop();
@@ -243,6 +256,20 @@ namespace NewRelic.OpenTelemetry.Tests
             Assert.Equal(SampleOkMessage, resultNRSpan3.Attributes?[statusDescriptionAttributeName]);
             Assert.False(resultNRSpan6.Attributes?.ContainsKey(statusCodeAttributeName));
             Assert.False(resultNRSpan6.Attributes?.ContainsKey(statusDescriptionAttributeName));
+        }
+
+        [Fact]
+        public void Test_Tags()
+        {
+            var resultNRSpan0 = ResultNRSpansDic[_otSpans[0].Context.SpanId.ToHexString()];
+            var allAttributeNames = resultNRSpan0.Attributes?.Keys ?? Enumerable.Empty<string>();
+
+            Assert.Equal("bar", resultNRSpan0.Attributes?["foo"]);
+
+            foreach (var attributeName in allAttributeNames)
+            {
+                Assert.False(resultNRSpan0.Attributes?[attributeName].Equals(AttributeValueToIgnore), $"Span attribute {attributeName} contained an unexpected value of '{resultNRSpan0.Attributes?[attributeName]}'.");
+            }
         }
     }
 }
