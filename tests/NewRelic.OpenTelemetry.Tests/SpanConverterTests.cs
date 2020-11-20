@@ -107,7 +107,7 @@ namespace NewRelic.OpenTelemetry.Tests
                     activity.SetStartTime(spanDefinition.Start.UtcDateTime);
                     if (spanDefinition.IsCallToNewRelic)
                     {
-                        activity.AddTag("http.url", _options.EndpointUrl);
+                        activity.AddTag("http.url", _options.Endpoint);
                     }
 
                     activity.SetEndTime(spanDefinition.End.UtcDateTime);

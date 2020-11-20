@@ -13,12 +13,16 @@ namespace NewRelic.OpenTelemetry
     /// </summary>
     public class NewRelicExporterOptions
     {
+        internal NewRelicExporterOptions()
+        {
+        }
+
         /// <summary>
         /// REQUIRED: Your Insights Insert API Key.  This value is required in order to communicate with the
         /// New Relic Endpoint. 
         /// </summary>
         /// <see cref="https://docs.newrelic.com/docs/insights/insights-data-sources/custom-data/introduction-event-api#register">for more information.</see>
-        public string? ApiKey
+        public string ApiKey
         {
             get => TelemetryConfiguration.ApiKey;
             set => TelemetryConfiguration.ApiKey = value;
@@ -27,7 +31,7 @@ namespace NewRelic.OpenTelemetry
         /// <summary>
         /// The New Relic endpoint where information is sent.
         /// </summary>
-        public Uri EndpointUrl
+        public Uri Endpoint
         {
             get => TelemetryConfiguration.TraceUrl;
             set => TelemetryConfiguration.TraceUrl = value;

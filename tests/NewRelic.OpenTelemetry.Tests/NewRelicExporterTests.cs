@@ -79,7 +79,7 @@ namespace NewRelic.OpenTelemetry.Tests
             var exporterOptions = new NewRelicExporterOptions()
             {
                 ApiKey = "my-apikey",
-                EndpointUrl = new Uri($"http://{_testServerHost}:{_testServerPort}/trace/v1?requestId={requestId}"),
+                Endpoint = new Uri($"http://{_testServerHost}:{_testServerPort}/trace/v1?requestId={requestId}"),
             };
 
             var newRelicExporter = new NewRelicTraceExporter(exporterOptions);
@@ -124,7 +124,7 @@ namespace NewRelic.OpenTelemetry.Tests
                 .AddNewRelicExporter(options =>
                 {
                     options.ApiKey = "my-apikey";
-                    options.EndpointUrl = new Uri($"http://{_testServerHost}:{_testServerPort}/trace/v1?requestId={requestId}");
+                    options.Endpoint = new Uri($"http://{_testServerHost}:{_testServerPort}/trace/v1?requestId={requestId}");
                     options.ExportProcessorType = ExportProcessorType.Simple;
                 })
                 .AddHttpClientInstrumentation()
