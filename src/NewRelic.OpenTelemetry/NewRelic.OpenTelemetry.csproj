@@ -4,6 +4,7 @@
     <Description>New Relic support for OpenTelemetry .NET</Description>
     <DefineConstants>$(DefineConstants);INTERNALIZE_TELEMETRY_SDK</DefineConstants>
     <PackageReleaseNotes>https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/blob/main/src/NewRelic.OpenTelemetry/CHANGELOG.md</PackageReleaseNotes>
+    <GitTagPrefix>OpenTelemetry_v</GitTagPrefix>
   </PropertyGroup>
 
   <ItemGroup>
