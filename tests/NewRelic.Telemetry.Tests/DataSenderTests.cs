@@ -425,7 +425,7 @@ namespace NewRelic.Telemetry.Tests
             const int delayMs = 10000;
 
             // The actual retry delay will be slightly less than delayMs since UtcNow is recalculated in RetryWithServerDelay()
-            var errorMargin = TimeSpan.FromMilliseconds(50).TotalMilliseconds;
+            var errorMargin = TimeSpan.FromMilliseconds(1000).TotalMilliseconds;
             var actualResponseFromTestRun = new List<Response>();
 
             uint actualDelayFromTestRun = 0;
