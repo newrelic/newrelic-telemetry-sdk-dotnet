@@ -26,7 +26,7 @@ namespace NewRelic.Telemetry.Tests
         private const string ApiKeyProdValue = "987654";
         private const string ApiKeyNewRelicValue = "123456";
         private const string ApiKeyDiffProductvalue = "ABCDEFG";
-        private const string ApiKeyDefaultValue = null;
+        private const string ApiKeyDefaultValue = "";
 
         private const int SendTimeoutSecondsDiffProdValue = 500;
 
