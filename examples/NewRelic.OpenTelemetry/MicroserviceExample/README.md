@@ -15,7 +15,8 @@ The application demonstrates a number of OpenTelemetry concepts:
 
 The Web API publishes messages to RabbitMQ which the Worker Service consumes.
 Distributed context propagation is achieved using OpenTelemetry APIs to inject
-and extract trace context in the headers of the published messages.
+and extract trace context in the headers of the published messages. The relevant
+code is found in the `MessageSender` and `MessageReceiver` classes in the `Utils` project. 
 
 The WebAPI and WorkerService applications are configured to use the New Relic OpenTelemetry exporter from this repository.
 
