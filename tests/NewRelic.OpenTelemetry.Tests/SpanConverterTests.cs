@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using NewRelic.OpenTelemetry.Internal;
 using NewRelic.Telemetry;
 using NewRelic.Telemetry.Tracing;
 using OpenTelemetry;
@@ -62,7 +63,7 @@ namespace NewRelic.OpenTelemetry.Tests
             {
                 ApiKey = "12345",
             };
-            var mockDataSender = new TraceDataSender(_options.TelemetryConfiguration, null);
+            var mockDataSender = new TraceDataSender(_options.TelemetryConfiguration, new SelfDiagnosticsLogger(), "mockexporter");
 
             // Capture the spans that were requested to be sent to New Relic.
             mockDataSender.WithCaptureSendDataAsyncDelegate((sb, retryId) =>
