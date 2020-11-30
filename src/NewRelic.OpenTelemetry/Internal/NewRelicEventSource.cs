@@ -20,7 +20,7 @@ namespace NewRelic.OpenTelemetry.Internal
             {
                 if (exception != null)
                 {
-                    EmitInformationalMessage(message, ToInvariantString(exception));
+                    EmitInformationalMessageWithError(message, ToInvariantString(exception));
                 }
                 else
                 {
@@ -36,7 +36,7 @@ namespace NewRelic.OpenTelemetry.Internal
             {
                 if (exception != null)
                 {
-                    EmitErrorMessage(message, ToInvariantString(exception));
+                    EmitErrorMessageWithError(message, ToInvariantString(exception));
                 }
                 else
                 {
@@ -61,7 +61,7 @@ namespace NewRelic.OpenTelemetry.Internal
             {
                 if (exception != null)
                 {
-                    EmitInformationalMessage(message, ToInvariantString(exception));
+                    EmitInformationalMessageWithError(message, ToInvariantString(exception));
                 }
                 else
                 {
@@ -77,7 +77,7 @@ namespace NewRelic.OpenTelemetry.Internal
             {
                 if (exception != null)
                 {
-                    EmitWarningMessage(message, ToInvariantString(exception));
+                    EmitWarningMessageWithError(message, ToInvariantString(exception));
                 }
                 else
                 {
@@ -93,33 +93,33 @@ namespace NewRelic.OpenTelemetry.Internal
         }
 
         [Event(2, Message = "New Relic: '{0}': {1}", Level = EventLevel.Warning)]
-        public void EmitWarningMessage(string message, string error)
+        public void EmitWarningMessageWithError(string message, string error)
         {
-            WriteEvent(1, message, error);
+            WriteEvent(2, message, error);
         }
 
         [Event(3, Message = "New Relic: '{0}'", Level = EventLevel.Informational)]
         public void EmitInformationalMessage(string message)
         {
-            WriteEvent(1, message);
+            WriteEvent(3, message);
         }
 
         [Event(4, Message = "New Relic: '{0}': {1}", Level = EventLevel.Informational)]
-        public void EmitInformationalMessage(string message, string error)
+        public void EmitInformationalMessageWithError(string message, string error)
         {
-            WriteEvent(1, message, error);
+            WriteEvent(4, message, error);
         }
 
         [Event(5, Message = "New Relic: '{0}'", Level = EventLevel.Error)]
         public void EmitErrorMessage(string message)
         {
-            WriteEvent(1, message);
+            WriteEvent(5, message);
         }
 
         [Event(6, Message = "New Relic: '{0}': {1}", Level = EventLevel.Error)]
-        public void EmitErrorMessage(string message, string error)
+        public void EmitErrorMessageWithError(string message, string error)
         {
-            WriteEvent(1, message, error);
+            WriteEvent(6, message, error);
         }
 
         // Formats the exception using the same logic that is used within the OTel SDK eventsource
