@@ -5,12 +5,7 @@ using System;
 
 namespace NewRelic.Telemetry
 {
-#if INTERNALIZE_TELEMETRY_SDK
-    internal
-#else
-    public
-#endif
-    interface ITelemetryLogger
+    internal interface ITelemetryLogger
     {
         void Debug(string message, Exception? exception = null);
 

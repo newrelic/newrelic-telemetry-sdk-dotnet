@@ -27,8 +27,8 @@ namespace NewRelic.Telemetry.Transport
     {
         internal string UserAgent { get; private set; }
 
+        internal readonly ITelemetryLogger _logger;
         protected readonly TelemetryConfiguration _config;
-        protected readonly ITelemetryLogger _logger;
 
         private readonly string _userAgentBase;
         private readonly HttpClient _httpClient;
@@ -45,23 +45,23 @@ namespace NewRelic.Telemetry.Transport
         protected abstract bool ContainsNoData(TData dataToCheck);
 
 #if !INTERNALIZE_TELEMETRY_SDK
-        protected DataSender(IConfiguration configProvider)
+        internal DataSender(IConfiguration configProvider)
             : this(configProvider, null)
         {
         }
 
-        protected DataSender(IConfiguration configProvider, ILoggerFactory? loggerFactory)
+        internal DataSender(IConfiguration configProvider, ILoggerFactory? loggerFactory)
             : this(new TelemetryConfiguration(configProvider), new TelemetryLogging(loggerFactory), null)
         {
         }
 
-        protected DataSender(TelemetryConfiguration config, ILoggerFactory? loggerFactory)
+        internal DataSender(TelemetryConfiguration config, ILoggerFactory? loggerFactory)
             : this(config, new TelemetryLogging(loggerFactory), null)
         {
         }
 #endif
 
-        protected DataSender(TelemetryConfiguration config, ITelemetryLogger logger, string? telemetrySdkVersionOverride)
+        internal DataSender(TelemetryConfiguration config, ITelemetryLogger logger, string? telemetrySdkVersionOverride)
         {
             _userAgentBase = $"{ProductInfo.Name}/{telemetrySdkVersionOverride ?? ProductInfo.Version}";
             UserAgent = _userAgentBase;
