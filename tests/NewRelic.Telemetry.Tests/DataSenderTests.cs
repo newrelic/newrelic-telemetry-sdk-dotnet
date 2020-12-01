@@ -33,7 +33,7 @@ namespace NewRelic.Telemetry.Tests
         ///             F.  1/2 of Request C                    2 spans         --> OK
         ///             G.  1/2 of Request C                    2 spans         --> OK
         ///         --------------------------------------------------------------------------
-        ///             Total = 7 Requests/Batches              9 spans
+        ///             Total = 7 Requests/Batches              9 spans.
         /// </summary>
         [Fact]
         public async Task RequestTooLarge_SplitSuccess()
@@ -123,7 +123,7 @@ namespace NewRelic.Telemetry.Tests
         ///             F.  1/2 of Request C            TooLarge3                                   -->  Too Large (Can't Split)
         ///             G.  1/2 of Request C            OK                                          -->  Success
         ///         ----------------------------------------------------------------------------------------------------------------------
-        ///             Total = 7 Requests/Batches      4 spans requested, 1 span successful
+        ///             Total = 7 Requests/Batches      4 spans requested, 1 span successful.
         /// </summary>
         [Fact]
         public async Task RequestTooLarge_SplitFail()
