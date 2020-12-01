@@ -83,7 +83,7 @@ namespace NewRelic.OpenTelemetry.Tests
                 return Task.FromResult(new System.Net.Http.HttpResponseMessage(System.Net.HttpStatusCode.OK));
             });
 
-            var exporter = new NewRelicTraceExporter(mockDataSender, _options, null);
+            var exporter = new NewRelicTraceExporter(mockDataSender, _options, new SelfDiagnosticsLogger());
             var source = new ActivitySource("newrelic.test");
 
             using (var openTelemetrySdk = Sdk.CreateTracerProviderBuilder()
