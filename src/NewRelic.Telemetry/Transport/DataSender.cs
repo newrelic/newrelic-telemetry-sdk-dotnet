@@ -3,8 +3,8 @@
 
 #if !INTERNALIZE_TELEMETRY_SDK
 using Microsoft.Extensions.Configuration;
-#endif
 using Microsoft.Extensions.Logging;
+#endif
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,8 +27,8 @@ namespace NewRelic.Telemetry.Transport
     {
         internal string UserAgent { get; private set; }
 
+        internal readonly ITelemetryLogger _logger;
         protected readonly TelemetryConfiguration _config;
-        protected readonly TelemetryLogging _logger;
 
         private readonly string _userAgentBase;
         private readonly HttpClient _httpClient;
@@ -45,29 +45,29 @@ namespace NewRelic.Telemetry.Transport
         protected abstract bool ContainsNoData(TData dataToCheck);
 
 #if !INTERNALIZE_TELEMETRY_SDK
-        protected DataSender(IConfiguration configProvider)
+        internal DataSender(IConfiguration configProvider)
             : this(configProvider, null)
         {
         }
 
-        protected DataSender(IConfiguration configProvider, ILoggerFactory? loggerFactory)
-            : this(new TelemetryConfiguration(configProvider), loggerFactory)
+        internal DataSender(IConfiguration configProvider, ILoggerFactory? loggerFactory)
+            : this(new TelemetryConfiguration(configProvider), new TelemetryLogging(loggerFactory), null)
+        {
+        }
+
+        internal DataSender(TelemetryConfiguration config, ILoggerFactory? loggerFactory)
+            : this(config, new TelemetryLogging(loggerFactory), null)
         {
         }
 #endif
 
-        protected DataSender(TelemetryConfiguration config)
-            : this(config, null)
-        {
-        }
-
-        protected DataSender(TelemetryConfiguration config, ILoggerFactory? loggerFactory, string? telemetrySdkVersionOverride = null)
+        internal DataSender(TelemetryConfiguration config, ITelemetryLogger logger, string? telemetrySdkVersionOverride)
         {
             _userAgentBase = $"{ProductInfo.Name}/{telemetrySdkVersionOverride ?? ProductInfo.Version}";
             UserAgent = _userAgentBase;
 
             _config = config;
-            _logger = new TelemetryLogging(loggerFactory);
+            _logger = logger;
 
             _httpClient = new HttpClient();
             _httpClient.Timeout = _config.SendTimeout;
@@ -78,7 +78,7 @@ namespace NewRelic.Telemetry.Transport
 
             _httpHandlerImpl = SendDataAsync;
         }
-       
+
         /// <summary>
         /// Method used to add product information including product name and version to the User-Agent HTTP header.
         /// </summary>

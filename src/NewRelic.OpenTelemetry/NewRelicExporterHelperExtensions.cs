@@ -3,7 +3,6 @@
 
 using System;
 using System.Diagnostics;
-using Microsoft.Extensions.Logging;
 using NewRelic.OpenTelemetry;
 
 namespace OpenTelemetry.Trace
@@ -17,21 +16,9 @@ namespace OpenTelemetry.Trace
         /// Adds New Relic exporter to the TracerProvider.
         /// </summary>
         /// <param name="builder"><see cref="TracerProviderBuilder"/> builder to use.</param>
-        /// <param name="options">Exporter configuration options.</param>
+        /// <param name="configure">A method to configure the exporter options.</param>
         /// <returns>The instance of <see cref="TracerProviderBuilder"/> to chain the calls.</returns>
-        public static TracerProviderBuilder AddNewRelicExporter(this TracerProviderBuilder builder, Action<NewRelicExporterOptions> options)
-        {
-            return AddNewRelicExporter(builder, options, null!);
-        }
-
-        /// <summary>
-        /// Adds New Relic exporter to the TracerProvider and enables the exporter to log to an ILogger.
-        /// </summary>
-        /// <param name="builder"><see cref="TracerProviderBuilder"/> builder to use.</param>
-        /// <param name="configure">Exporter configuration options.</param>
-        /// <param name="loggerFactory">ILoggerFactory instance for creating an ILogger.</param>
-        /// <returns>The instance of <see cref="TracerProviderBuilder"/> to chain the calls.</returns>
-        public static TracerProviderBuilder AddNewRelicExporter(this TracerProviderBuilder builder, Action<NewRelicExporterOptions> configure, ILoggerFactory loggerFactory)
+        public static TracerProviderBuilder AddNewRelicExporter(this TracerProviderBuilder builder, Action<NewRelicExporterOptions> configure)
         {
             if (builder == null)
             {
@@ -40,7 +27,7 @@ namespace OpenTelemetry.Trace
 
             var options = new NewRelicExporterOptions();
             configure?.Invoke(options);
-            var exporter = new NewRelicTraceExporter(options, loggerFactory);
+            var exporter = new NewRelicTraceExporter(options);
 
             if (options.ExportProcessorType == ExportProcessorType.Simple)
             {

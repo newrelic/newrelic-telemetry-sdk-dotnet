@@ -7,8 +7,8 @@ using System.Linq;
 using System.Threading.Tasks;
 #if !INTERNALIZE_TELEMETRY_SDK
 using Microsoft.Extensions.Configuration;
-#endif
 using Microsoft.Extensions.Logging;
+#endif
 using NewRelic.Telemetry.Transport;
 
 namespace NewRelic.Telemetry.Tracing
@@ -50,20 +50,20 @@ namespace NewRelic.Telemetry.Tracing
             return result;
         }
 
+#if !INTERNALIZE_TELEMETRY_SDK
         public TraceDataSender(TelemetryConfiguration config, ILoggerFactory? loggerFactory)
             : base(config, loggerFactory)
         {
         }
 
-#if !INTERNALIZE_TELEMETRY_SDK
         public TraceDataSender(IConfiguration config, ILoggerFactory? loggerFactory)
             : base(config, loggerFactory)
         {
         }
 #endif
 
-        internal TraceDataSender(TelemetryConfiguration config, ILoggerFactory? loggerFactory, string telemetrySdkVersionOverride)
-            : base(config, loggerFactory, telemetrySdkVersionOverride)
+        internal TraceDataSender(TelemetryConfiguration config, ITelemetryLogger logger, string telemetrySdkVersionOverride)
+            : base(config, logger, telemetrySdkVersionOverride)
         {
         }
 

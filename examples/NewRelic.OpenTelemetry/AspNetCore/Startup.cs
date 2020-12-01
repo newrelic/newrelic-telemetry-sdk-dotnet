@@ -36,7 +36,7 @@ namespace SampleAspNetCoreApp
                     .AddNewRelicExporter(options =>
                     {
                         options.ApiKey = this.Configuration.GetValue<string>("NewRelic:ApiKey");
-                    }, loggerFactory)
+                    })
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation();
             });

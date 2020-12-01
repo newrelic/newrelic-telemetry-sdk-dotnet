@@ -40,7 +40,7 @@ namespace SampleConsoleCoreApp
                 {
                     options.ApiKey = nrApiKey;
                     options.AuditLoggingEnabled = true;
-                }, loggerFactory)
+                })
                 .AddHttpClientInstrumentation()
                 .Build())
             {
