@@ -58,7 +58,7 @@ namespace NewRelic.OpenTelemetry.Tests
                 };
 
                 Responses.TryAdd(
-                    Guid.Parse(context.Request.QueryString["requestId"]),
+                    Guid.Parse(context.Request.QueryString["requestId"] ?? string.Empty),
                     dictionary);
 
                 context.Response.OutputStream.Close();

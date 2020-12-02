@@ -14,35 +14,35 @@ namespace NewRelic.Telemetry.Tests
     {
         public static Dictionary<string, JsonElement>[] DeserializeArray(string jsonString)
         {
-            var items = JsonSerializer.Deserialize<JsonElement[]>(jsonString);
-            var objItems = items.Select(x => JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(x.ToString())).ToArray();
+            JsonElement[] items = JsonSerializer.Deserialize<JsonElement[]>(jsonString) ?? Array.Empty<JsonElement>();
+            var objItems = items.Select(x => JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(x.ToString() ?? string.Empty) ?? new Dictionary<string, JsonElement>()).ToArray();
 
             return objItems;
         }
 
         public static Dictionary<string, JsonElement>[] DeserializeArray(JsonElement jsonElem)
         {
-            return DeserializeArray(jsonElem.ToString());
+            return DeserializeArray(jsonElem.ToString() ?? string.Empty);
         }
 
-        public static Dictionary<string, JsonElement> DeserializeArrayFirstOrDefault(string jsonString)
+        public static Dictionary<string, JsonElement> DeserializeArrayFirst(string jsonString)
         {
-            return DeserializeArray(jsonString).FirstOrDefault();
+            return DeserializeArray(jsonString).First();
         }
 
-        public static Dictionary<string, JsonElement> DeserializeArrayFirstOrDefault(JsonElement jsonElem)
+        public static Dictionary<string, JsonElement>? DeserializeArrayFirstOrDefault(JsonElement jsonElem)
         {
             return DeserializeArray(jsonElem).FirstOrDefault();
         }
 
         public static Dictionary<string, JsonElement> DeserializeObject(string jsonString)
         {
-            return JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(jsonString);
+            return JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(jsonString) ?? new Dictionary<string, JsonElement>();
         }
 
         public static Dictionary<string, JsonElement> DeserializeObject(JsonElement jsonElem)
         {
-            return DeserializeObject(jsonElem.ToString());
+            return DeserializeObject(jsonElem.ToString() ?? string.Empty);
         }
 
         public static void AssertForCollectionLength(Dictionary<string, JsonElement>[] dic, int length)
