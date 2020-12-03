@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>net5.0;netcoreapp3.1;net461</TargetFrameworks>
     <Description>Tests for .NET New Relic Telemetry SDK library</Description>
   </PropertyGroup>
 
@@ -15,6 +15,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
 
   <ItemGroup>

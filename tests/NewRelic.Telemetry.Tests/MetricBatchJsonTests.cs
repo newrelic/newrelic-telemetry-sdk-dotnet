@@ -15,7 +15,12 @@ namespace NewRelic.Telemetry.Tests
 
         private readonly long _interval = 250L;
 
+        // Accounts for the different serialization behavior between the 2 Json libraries.
+#if NETFRAMEWORK
+        private readonly double _countValue = 67.0;
+#else
         private readonly long _countValue = 67;
+#endif
 
         private readonly NewRelicMetricSummaryValue _summaryValue = new NewRelicMetricSummaryValue(
             count: 10,
