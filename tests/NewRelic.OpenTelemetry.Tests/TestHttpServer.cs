@@ -18,7 +18,7 @@ namespace NewRelic.OpenTelemetry.Tests
             port = 0;
             RunningServer? server = null;
 
-            var retryCount = 5;
+            var retryCount = 100;
             while (retryCount > 0)
             {
                 try
