@@ -38,16 +38,6 @@ namespace NewRelic.OpenTelemetry
         }
 
         /// <summary>
-        /// Logs messages sent-to and received-by the New Relic endpoints.  This setting
-        /// is useful for troubleshooting, but is not recommended in production environments.
-        /// </summary>
-        public bool AuditLoggingEnabled
-        {
-            get => TelemetryConfiguration.AuditLoggingEnabled;
-            set => TelemetryConfiguration.AuditLoggingEnabled = value;
-        }
-
-        /// <summary>
         /// Gets or sets the export processor type to be used.
         /// </summary>
         public ExportProcessorType ExportProcessorType { get; set; } = ExportProcessorType.Batch;
