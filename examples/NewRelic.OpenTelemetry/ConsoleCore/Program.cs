@@ -39,7 +39,6 @@ namespace SampleConsoleCoreApp
                 .AddNewRelicExporter(options =>
                 {
                     options.ApiKey = nrApiKey;
-                    options.AuditLoggingEnabled = true;
                 })
                 .AddHttpClientInstrumentation()
                 .Build())

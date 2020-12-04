@@ -20,7 +20,6 @@ You can configure the exporter with the following options:
 
 * `ApiKey`: Your Insights Insert API key (required).
 * `Endpoint`: New Relic endpoint address.
-* `AuditLoggingEnabled`: Logs all data sent to New Relic.
 * `ExportProcessorType`: Whether the exporter should use
   [Batch or Simple exporting processor](https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/trace/sdk.md#built-in-span-processors). Defaults to the batch exporting processor which is recommended for most use cases.
 * `BatchExportProcessorOptions`: Configuration options for the batch exporter.
