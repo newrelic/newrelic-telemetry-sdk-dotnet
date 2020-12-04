@@ -23,7 +23,7 @@ namespace NewRelic.OpenTelemetry.Tests
             {
                 try
                 {
-                    port = _globalRandom.Next(2000, 5000);
+                    port = _globalRandom.Next(20000, 40000);
                     server = new RunningServer(action, host, port);
                     server.Start();
                     break;
