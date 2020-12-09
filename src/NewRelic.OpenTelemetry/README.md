@@ -28,6 +28,10 @@ You can configure the exporter with the following options:
 ## Next Steps
 * Review these [Sample Applications](/examples/NewRelic.OpenTelemetry) for guidance on configuration and usage.
 
+## Troubleshooting
+
+The [OpenTelemetry SDK](https://github.com/open-telemetry/opentelemetry-dotnet/tree/master/src/OpenTelemetry) uses `EventSource` for its internal logging, and this package also uses `EventSource` for its internal logging so that all of the relevant logs for troubleshooting your OpenTelemetry setup can be found in one place. For more information on how to enable and use this diagnostic logging you can follow the information provided in the [OpenTelemetry Troubleshooting documentation](https://github.com/open-telemetry/opentelemetry-dotnet/tree/master/src/OpenTelemetry#troubleshooting).
+
 ## References
 
 * [OpenTelemetry Project](https://opentelemetry.io/)
