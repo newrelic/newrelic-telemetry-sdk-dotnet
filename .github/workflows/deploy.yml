@@ -18,7 +18,7 @@ on:
 env:
   telemetrysdk_path: ${{ github.workspace }}\NewRelic.Telemetry\bin\Release
   exporter_path: ${{ github.workspace }}\NewRelic.OpenTelemetry\bin\Release
-  nuget_source: https://www.nuget.org
+  nuget_source: https://api.nuget.org/v3/index.json
 
 jobs:
 
