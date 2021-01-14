@@ -18,7 +18,8 @@ dotnet add package NewRelic.OpenTelemetry
 
 You can configure the exporter with the following options:
 
-* `ApiKey` (Required): Your Insights Insert API key (required).
+* `ApiKey` (Required): Your New Relic
+  [Insights Insert API Key](https://docs.newrelic.com/docs/insights/insights-data-sources/custom-data/send-custom-events-event-api#register).
 * `Endpoint` (Optional): Endpoint to send trace data to. The endpoint defaults to New Relic's
   US data centers. For other use cases refer to
   [OpenTelemetry: Advanced configuration](https://docs.newrelic.com/docs/integrations/open-source-telemetry-integrations/opentelemetry/opentelemetry-advanced-configuration#h2-change-endpoints).
