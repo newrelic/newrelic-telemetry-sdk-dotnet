@@ -1,9 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
     <Description>New Relic support for OpenTelemetry .NET</Description>
     <DefineConstants>$(DefineConstants);INTERNALIZE_TELEMETRY_SDK</DefineConstants>
     <PackageReleaseNotes>https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/blob/main/src/NewRelic.OpenTelemetry/CHANGELOG.md</PackageReleaseNotes>
+    <GitTagPrefix>OpenTelemetry_v</GitTagPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,7 +13,7 @@
     <Compile Include="..\NewRelic.Telemetry\PackageVersionAttribute.cs" Link="NewRelic.Telemetry\PackageVersionAttribute.cs" />
     <Compile Include="..\NewRelic.Telemetry\ProductInfo.cs" Link="NewRelic.Telemetry\ProductInfo.cs" />
     <Compile Include="..\NewRelic.Telemetry\TelemetryConfiguration.cs" Link="NewRelic.Telemetry\TelemetryConfiguration.cs" />
-    <Compile Include="..\NewRelic.Telemetry\Logging\TelemetryLogging.cs" Link="NewRelic.Telemetry\Logging\TelemetryLogging.cs" />
+    <Compile Include="..\NewRelic.Telemetry\Logging\ITelemetryLogger.cs" Link="NewRelic.Telemetry\Logging\ITelemetryLogger.cs" />
     <Compile Include="..\NewRelic.Telemetry\Spans\NewRelicSpan.cs" Link="NewRelic.Telemetry\Spans\NewRelicSpan.cs" />
     <Compile Include="..\NewRelic.Telemetry\Spans\NewRelicSpanBatch.cs" Link="NewRelic.Telemetry\Spans\NewRelicSpanBatch.cs" />
     <Compile Include="..\NewRelic.Telemetry\Spans\NewRelicSpanBatchCommonProperties.cs" Link="NewRelic.Telemetry\Spans\NewRelicSpanBatchCommonProperties.cs" />
@@ -26,12 +27,11 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.0" />
     <PackageReference Include="System.Text.Json" Version="4.7.0" />
   </ItemGroup>
 

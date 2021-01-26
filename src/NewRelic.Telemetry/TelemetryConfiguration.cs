@@ -23,7 +23,7 @@ namespace NewRelic.Telemetry
         /// New Relic Endpoint. 
         /// </summary>
         /// <see cref="https://docs.newrelic.com/docs/insights/insights-data-sources/custom-data/introduction-event-api#register">for more information.</see>
-        public string? ApiKey { get; set; }
+        public string ApiKey { get; set; } = string.Empty;
 
         /// <summary>
         /// The New Relic endpoint where Trace/Span information is sent.
@@ -75,7 +75,7 @@ namespace NewRelic.Telemetry
         /// <summary>
         /// Identifies the name of a service for which information is being reported to New Relic.
         /// </summary>
-        public string? ServiceName { get; set; }
+        public string ServiceName { get; set; } = "New Relic Telemetry SDK";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TelemetryConfiguration"/> class.

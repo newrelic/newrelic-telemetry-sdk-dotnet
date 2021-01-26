@@ -15,7 +15,12 @@ namespace NewRelic.Telemetry.Tests
 
         private readonly long _interval = 250L;
 
+        // Accounts for the different serialization behavior between the 2 Json libraries.
+#if NETFRAMEWORK
+        private readonly double _countValue = 67.0;
+#else
         private readonly long _countValue = 67;
+#endif
 
         private readonly NewRelicMetricSummaryValue _summaryValue = new NewRelicMetricSummaryValue(
             count: 10,
@@ -35,7 +40,7 @@ namespace NewRelic.Telemetry.Tests
             var jsonString = metricBatch.ToJson();
 
             // Assert
-            var resultMetricBatch = TestHelpers.DeserializeArrayFirstOrDefault(jsonString);
+            var resultMetricBatch = TestHelpers.DeserializeArrayFirst(jsonString);
             var resultCommonProps = TestHelpers.DeserializeObject(resultMetricBatch["common"]);
 
             TestHelpers.AssertForAttribValue(resultCommonProps, "timestamp", _timestampL);
@@ -85,7 +90,7 @@ namespace NewRelic.Telemetry.Tests
 
             TestHelpers.AssertForCollectionLength(resultMetrics, 2);
 
-            var countMetric = resultMetrics.FirstOrDefault();
+            var countMetric = resultMetrics.First();
 
             TestHelpers.AssertForAttribCount(countMetric, 5);
 

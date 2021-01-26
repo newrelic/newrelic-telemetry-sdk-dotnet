@@ -23,7 +23,7 @@ namespace NewRelic.Telemetry.Tests
             var jsonString = spanBatch.ToJson();
 
             // Assert
-            var resultSpanBatch = TestHelpers.DeserializeArrayFirstOrDefault(jsonString);
+            var resultSpanBatch = TestHelpers.DeserializeArrayFirst(jsonString);
             var resultCommonProps = TestHelpers.DeserializeObject(resultSpanBatch["common"]);
 
             TestHelpers.AssertForAttribValue(resultCommonProps, "trace.id", "traceId");
@@ -69,7 +69,7 @@ namespace NewRelic.Telemetry.Tests
 
             TestHelpers.AssertForCollectionLength(resultSpans, 1);
 
-            var resultSpan = resultSpans.FirstOrDefault();
+            var resultSpan = resultSpans.First();
 
             TestHelpers.AssertForAttribValue(resultSpan, "id", "span1");
             TestHelpers.AssertForAttribValue(resultSpan, "trace.id", "traceId");
@@ -237,7 +237,7 @@ namespace NewRelic.Telemetry.Tests
 
             TestHelpers.AssertForCollectionLength(resultSpans, 1);
 
-            var resultSpan = resultSpans.FirstOrDefault();
+            var resultSpan = resultSpans.First();
 
             TestHelpers.AssertForAttribValue(resultSpan, "id", "span1");
             TestHelpers.AssertForAttribValue(resultSpan, "trace.id", "traceId");

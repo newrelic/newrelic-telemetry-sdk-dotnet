@@ -5,6 +5,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+## 1.0.0-rc1.9 - 2020-12-08
+
+* Conform to OpenTelemetry diagnostic logging. ([#178](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/178))
+* Remove `AuditLoggingEnabled` from exporter options. ([#182](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/182))
+
+## 1.0.0-rc1.1 - 2020-11-20
+
+* Update to OpenTelemetry 1.0.0-rc1.1. ([#167](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/167))
+* Add ExportProcessorType to exporter options. ([#169](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/169))
+* Remove `ServiceName` from exporter options. Service name should be set using the OpenTelemetry Resource API.
+  Here is an [example](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/blob/bf28937349432626858bd7c1ad11857bb64d1ca7/examples/NewRelic.OpenTelemetry/AspNetCore/Startup.cs#L35).
+  ([#174](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/174))
+* Rename `EndpointUrl` exporter option to `Endpoint`. ([#175](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/175))
+
 ## 1.0.0-beta.202 - 2020-10-21
 
 * Fix issue where spans without an error would appear to have an error in the

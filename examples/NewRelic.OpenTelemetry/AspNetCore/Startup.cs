@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using OpenTelemetry;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
 namespace SampleAspNetCoreApp
@@ -30,11 +32,11 @@ namespace SampleAspNetCoreApp
 
                 // Adds the New Relic Exporter loading settings from the appsettings.json
                 tracerBuilder
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(this.Configuration.GetValue<string>("NewRelic:ServiceName")))
                     .AddNewRelicExporter(options =>
                     {
                         options.ApiKey = this.Configuration.GetValue<string>("NewRelic:ApiKey");
-                        options.ServiceName = this.Configuration.GetValue<string>("NewRelic:ServiceName");
-                    }, loggerFactory)
+                    })
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation();
             });
@@ -47,8 +49,6 @@ namespace SampleAspNetCoreApp
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseHttpsRedirection();
 
             app.UseRouting();
 

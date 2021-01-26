@@ -9,6 +9,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using OpenTelemetry;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Xunit;
 
@@ -57,7 +58,7 @@ namespace NewRelic.OpenTelemetry.Tests
                 };
 
                 Responses.TryAdd(
-                    Guid.Parse(context.Request.QueryString["requestId"]),
+                    Guid.Parse(context.Request.QueryString["requestId"] ?? string.Empty),
                     dictionary);
 
                 context.Response.OutputStream.Close();
@@ -78,14 +79,14 @@ namespace NewRelic.OpenTelemetry.Tests
             var exporterOptions = new NewRelicExporterOptions()
             {
                 ApiKey = "my-apikey",
-                ServiceName = "test-newrelic",
-                EndpointUrl = new Uri($"http://{_testServerHost}:{_testServerPort}/trace/v1?requestId={requestId}"),
+                Endpoint = new Uri($"http://{_testServerHost}:{_testServerPort}/trace/v1?requestId={requestId}"),
             };
 
             var newRelicExporter = new NewRelicTraceExporter(exporterOptions);
             var exportActivityProcessor = new BatchExportProcessor<Activity>(newRelicExporter);
 
             using var openTelemetrySdk = Sdk.CreateTracerProviderBuilder()
+                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("test-newrelic"))
                 .AddSource(ActivitySourceName)
                 .AddProcessor(exportActivityProcessor)
                 .Build();
@@ -117,13 +118,13 @@ namespace NewRelic.OpenTelemetry.Tests
                 };
 
             using var openTelemetrySdk = Sdk.CreateTracerProviderBuilder()
+                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("test-newrelic"))
                 .AddSource(ActivitySourceName)
                 .AddProcessor(testActivityProcessor)
                 .AddNewRelicExporter(options =>
                 {
                     options.ApiKey = "my-apikey";
-                    options.ServiceName = "test-newrelic";
-                    options.EndpointUrl = new Uri($"http://{_testServerHost}:{_testServerPort}/trace/v1?requestId={requestId}");
+                    options.Endpoint = new Uri($"http://{_testServerHost}:{_testServerPort}/trace/v1?requestId={requestId}");
                     options.ExportProcessorType = ExportProcessorType.Simple;
                 })
                 .AddHttpClientInstrumentation()

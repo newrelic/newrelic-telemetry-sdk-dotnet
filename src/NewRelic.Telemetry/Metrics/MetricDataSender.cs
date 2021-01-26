@@ -26,7 +26,7 @@ namespace NewRelic.Telemetry.Metrics
         /// </summary>
         /// <param name="configOptions"></param>
         public MetricDataSender(TelemetryConfiguration configOptions)
-            : base(configOptions)
+            : base(configOptions, null)
         {
         }
 
