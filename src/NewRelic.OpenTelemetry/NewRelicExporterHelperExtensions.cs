@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
-using System.Diagnostics;
 using NewRelic.OpenTelemetry;
 
 namespace OpenTelemetry.Trace
@@ -31,11 +30,11 @@ namespace OpenTelemetry.Trace
 
             if (options.ExportProcessorType == ExportProcessorType.Simple)
             {
-                return builder.AddProcessor(new SimpleExportProcessor<Activity>(exporter));
+                return builder.AddProcessor(new SimpleActivityExportProcessor(exporter));
             }
             else
             {
-                return builder.AddProcessor(new BatchExportProcessor<Activity>(
+                return builder.AddProcessor(new BatchActivityExportProcessor(
                     exporter,
                     options.BatchExportProcessorOptions.MaxQueueSize,
                     options.BatchExportProcessorOptions.ScheduledDelayMilliseconds,

@@ -89,7 +89,7 @@ namespace NewRelic.OpenTelemetry.Tests
             using (var openTelemetrySdk = Sdk.CreateTracerProviderBuilder()
                     .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(TestServiceName))
                     .AddSource("newrelic.test")
-                    .AddProcessor(new BatchExportProcessor<Activity>(exporter))
+                    .AddProcessor(new BatchActivityExportProcessor(exporter))
                     .Build())
             {
                 var tracer = openTelemetrySdk.GetTracer("TestTracer");
@@ -255,7 +255,7 @@ namespace NewRelic.OpenTelemetry.Tests
             Assert.Equal("Ok", resultNRSpan2.Attributes?[statusCodeAttributeName]);
             Assert.False(resultNRSpan2.Attributes?.ContainsKey(statusDescriptionAttributeName));
             Assert.Equal("Ok", resultNRSpan3.Attributes?[statusCodeAttributeName]);
-            Assert.Equal(SampleOkMessage, resultNRSpan3.Attributes?[statusDescriptionAttributeName]);
+            Assert.False(resultNRSpan3.Attributes?.ContainsKey(statusDescriptionAttributeName));
             Assert.False(resultNRSpan6.Attributes?.ContainsKey(statusCodeAttributeName));
             Assert.False(resultNRSpan6.Attributes?.ContainsKey(statusDescriptionAttributeName));
         }
