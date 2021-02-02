@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
+## 1.0.0-rc2 - 2021-02-01
+
+* Update to OpenTelemetry 1.0.0-rc2. ([#188](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/188))
+
 ## 1.0.0-rc1.9 - 2020-12-08
 
 * Conform to OpenTelemetry diagnostic logging. ([#178](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/178))
