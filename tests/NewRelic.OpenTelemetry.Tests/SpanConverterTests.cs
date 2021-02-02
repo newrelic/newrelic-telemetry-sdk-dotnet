@@ -89,7 +89,7 @@ namespace NewRelic.OpenTelemetry.Tests
             using (var openTelemetrySdk = Sdk.CreateTracerProviderBuilder()
                     .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(TestServiceName))
                     .AddSource("newrelic.test")
-                    .AddProcessor(new BatchExportProcessor<Activity>(exporter))
+                    .AddProcessor(new BatchActivityExportProcessor(exporter))
                     .Build())
             {
                 var tracer = openTelemetrySdk.GetTracer("TestTracer");
