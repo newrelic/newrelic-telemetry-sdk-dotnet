@@ -13,10 +13,6 @@ namespace NewRelic.OpenTelemetry
     /// </summary>
     public class NewRelicExporterOptions
     {
-        internal NewRelicExporterOptions()
-        {
-        }
-
         /// <summary>
         /// REQUIRED: Your Insights Insert API Key.  This value is required in order to communicate with the
         /// New Relic Endpoint. 
