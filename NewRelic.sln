@@ -7,10 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Telemetry", "src\N
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Telemetry.Tests", "tests\NewRelic.Telemetry.Tests\NewRelic.Telemetry.Tests.csproj", "{46FE3771-EB5C-4C05-B76C-DDEF7BCC7706}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.OpenTelemetry", "src\NewRelic.OpenTelemetry\NewRelic.OpenTelemetry.csproj", "{2477CD19-50D2-44E3-BC83-BCFE027B60B8}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.OpenTelemetry.Tests", "tests\NewRelic.OpenTelemetry.Tests\NewRelic.OpenTelemetry.Tests.csproj", "{4D5BC297-24D2-47FE-85C2-051A29A59B7D}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Examples.Console", "examples\NewRelic.Telemetry\Console\NewRelic.Examples.Console.csproj", "{131E8A7A-2FC0-4D1F-84E6-0A3CCE37DE1D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRelic.Examples.AspNetCore", "examples\NewRelic.Telemetry\AspNetCore\NewRelic.Examples.AspNetCore.csproj", "{408E065C-BEA1-461C-B2D4-7879261C8EBE}"
@@ -104,30 +100,6 @@ Global
 		{46FE3771-EB5C-4C05-B76C-DDEF7BCC7706}.Release|x64.Build.0 = Release|Any CPU
 		{46FE3771-EB5C-4C05-B76C-DDEF7BCC7706}.Release|x86.ActiveCfg = Release|Any CPU
 		{46FE3771-EB5C-4C05-B76C-DDEF7BCC7706}.Release|x86.Build.0 = Release|Any CPU
-		{2477CD19-50D2-44E3-BC83-BCFE027B60B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2477CD19-50D2-44E3-BC83-BCFE027B60B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2477CD19-50D2-44E3-BC83-BCFE027B60B8}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{2477CD19-50D2-44E3-BC83-BCFE027B60B8}.Debug|x64.Build.0 = Debug|Any CPU
-		{2477CD19-50D2-44E3-BC83-BCFE027B60B8}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{2477CD19-50D2-44E3-BC83-BCFE027B60B8}.Debug|x86.Build.0 = Debug|Any CPU
-		{2477CD19-50D2-44E3-BC83-BCFE027B60B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2477CD19-50D2-44E3-BC83-BCFE027B60B8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2477CD19-50D2-44E3-BC83-BCFE027B60B8}.Release|x64.ActiveCfg = Release|Any CPU
-		{2477CD19-50D2-44E3-BC83-BCFE027B60B8}.Release|x64.Build.0 = Release|Any CPU
-		{2477CD19-50D2-44E3-BC83-BCFE027B60B8}.Release|x86.ActiveCfg = Release|Any CPU
-		{2477CD19-50D2-44E3-BC83-BCFE027B60B8}.Release|x86.Build.0 = Release|Any CPU
-		{4D5BC297-24D2-47FE-85C2-051A29A59B7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4D5BC297-24D2-47FE-85C2-051A29A59B7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4D5BC297-24D2-47FE-85C2-051A29A59B7D}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{4D5BC297-24D2-47FE-85C2-051A29A59B7D}.Debug|x64.Build.0 = Debug|Any CPU
-		{4D5BC297-24D2-47FE-85C2-051A29A59B7D}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{4D5BC297-24D2-47FE-85C2-051A29A59B7D}.Debug|x86.Build.0 = Debug|Any CPU
-		{4D5BC297-24D2-47FE-85C2-051A29A59B7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4D5BC297-24D2-47FE-85C2-051A29A59B7D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4D5BC297-24D2-47FE-85C2-051A29A59B7D}.Release|x64.ActiveCfg = Release|Any CPU
-		{4D5BC297-24D2-47FE-85C2-051A29A59B7D}.Release|x64.Build.0 = Release|Any CPU
-		{4D5BC297-24D2-47FE-85C2-051A29A59B7D}.Release|x86.ActiveCfg = Release|Any CPU
-		{4D5BC297-24D2-47FE-85C2-051A29A59B7D}.Release|x86.Build.0 = Release|Any CPU
 		{131E8A7A-2FC0-4D1F-84E6-0A3CCE37DE1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{131E8A7A-2FC0-4D1F-84E6-0A3CCE37DE1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{131E8A7A-2FC0-4D1F-84E6-0A3CCE37DE1D}.Debug|x64.ActiveCfg = Debug|Any CPU
