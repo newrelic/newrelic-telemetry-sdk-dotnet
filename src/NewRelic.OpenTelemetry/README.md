@@ -22,8 +22,6 @@ For more information on sending data to New Relic over OTLP see our
 [OpenTelemetry quick start guide](https://docs.newrelic.com/docs/more-integrations/open-source-telemetry-integrations/opentelemetry/opentelemetry-quick-start)
 .
 
-The New Relic Trace Exporter for OpenTelemetry .NET supports .NET Framework (4.5.2+) and .NET Core applications.
-
 ## Prerequisite
 * A [New Relic Insights Insert API key](https://docs.newrelic.com/docs/insights/insights-data-sources/custom-data/introduction-event-api#register).
 
