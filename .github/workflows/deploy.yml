@@ -6,10 +6,6 @@ on:
       run_id:
         description: 'Run ID of the Workflow run that should be deployed.  ID can be found in URL for run.'
         required: true
-      opentelemetry:
-        description: 'If "true", will push the OpenTelemetry Nuget package and symbols to Nuget. If "false", will not.'
-        required: true
-        default: 'false'
       telemetrysdk:
         description: 'If "true", will push the Telemetry SDK Nuget package and symbols to Nuget. If "false", will not.'
         required: true
@@ -17,7 +13,6 @@ on:
 
 env:
   telemetrysdk_path: ${{ github.workspace }}\NewRelic.Telemetry\bin\Release
-  exporter_path: ${{ github.workspace }}\NewRelic.OpenTelemetry\bin\Release
   nuget_source: https://api.nuget.org/v3/index.json
 
 jobs:
@@ -35,14 +30,6 @@ jobs:
           name: my-artifact-${{ github.event.inputs.run_id }}
           path: ${{ github.workspace }}
           repo: ${{ github.repository }}
-      
-      - name: Archive OpenTelemetry Artifacts
-        if: ${{ github.event.inputs.opentelemetry == 'true' }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: deploy-opentelemetry-artifacts-${{ github.run_id }}
-          path: ${{ env.exporter_path }}\*.*nupkg
-          if-no-files-found: error
 
       - name: Archive Telemetry SDK Artifacts
         if: ${{ github.event.inputs.telemetrysdk == 'true' }}
@@ -55,14 +42,7 @@ jobs:
       - name: Setup Nuget Add to Path
         uses: nuget/setup-nuget@v1.0.5
         with:
-          nuget-version: '5.x' 
-
-      - name: Publish OpenTelemetry to Nuget
-        if: ${{ github.event.inputs.opentelemetry == 'true' }}
-        run: |
-          foreach ($file in Get-ChildItem -Path "${{ env.exporter_path }}\*" -File -Include *.nupkg) {
-            nuget push $file.fullname -ApiKey ${{ secrets.NUGET_APIKEY }} -Source ${{ env.nuget_source }} }
-        shell: powershell
+          nuget-version: '5.x'
 
       - name: Publish Telemetry SDK to Nuget
         if: ${{ github.event.inputs.telemetrysdk == 'true' }}
