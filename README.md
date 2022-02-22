@@ -1,17 +1,11 @@
 [![Community Project header](https://github.com/newrelic/opensource-website/raw/master/src/images/categories/Community_Project.png)](https://opensource.newrelic.com/oss-category/#community-project)
 
 
-# New Relic Telemetry SDK and OpenTelemetry support for .NET
+# New Relic .NET Telemetry SDK
 
-![New Relic Telemetry SDK for .NET](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/workflows/New%20Relic%20Telemetry%20SDK%20for%20.NET/badge.svg?branch=main)
+![New Relic .NET Telemetry SDK](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/workflows/New%20Relic%20Telemetry%20SDK%20for%20.NET/badge.svg?branch=main)
 
-This repo contains the New Relic Telemetry SDK and an OpenTelemetry provider for .NET.
-
-## [New Relic OpenTelemetry trace exporter](/src/NewRelic.OpenTelemetry)
-[OpenTelemetry](https://opentelemetry.io/) is a set of APIs that aim to standardize the collection and reporting of application telemetry information.  The [New Relic trace exporter for OpenTelemetry](/src/NewRelic.OpenTelemetry) allows tracing information collected within the OpenTelemetry framework to be reported to New Relic.  This exporter is built using New Relic's Telemetry SDK.
-
-## [New Relic Telemetry SDK](/src/NewRelic.Telemetry)
-The [New Relic Telemetry SDK](/src/NewRelic.Telemetry) allows tracking of information about the execution of an application and sends it to the New Relic back-end.  New Relic tools allow the visualization of this information, making it insightful and actionable.
+The [New Relic .NET Telemetry SDK](/src/NewRelic.Telemetry) allows tracking of information about the execution of an application and sends it to the New Relic back-end.  New Relic tools allow the visualization of this information, making it insightful and actionable.
 
 ## Limitations
 The New Relic Telemetry APIs are rate limited. Please reference the [documentation](https://github.com/newrelic/newrelic-telemetry-sdk-specs) for New Relic Metric API and Trace API requirements and limits on the specifics of the rate limits.
@@ -30,7 +24,7 @@ For general querying information, see:
 
 Should you need assistance with New Relic products, you are in good hands with several support diagnostic tools and support channels.
 
-This [troubleshooting framework](https://discuss.newrelic.com/t/troubleshooting-frameworks/108787) steps you through common troubleshooting questions. 
+This [troubleshooting framework](https://discuss.newrelic.com/t/troubleshooting-frameworks/108787) steps you through common troubleshooting questions.
 
 If the issue has been confirmed as a bug or is a Feature request, please file a Github issue.
 
@@ -54,7 +48,7 @@ If you believe you have found a security vulnerability in this project or any of
 
 If you would like to contribute to this project, please review [these guidelines](./CONTRIBUTING.md).
 
-To [all contributors](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/graphs/contributors), we thank you!  Without your contribution, this project would not be what it is today.  We also host a community project page dedicated to 
+To [all contributors](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/graphs/contributors), we thank you!  Without your contribution, this project would not be what it is today.  We also host a community project page dedicated to
 the [New Relic Telemetry SDK (.NET)](https://opensource.newrelic.com/projects/newrelic/newrelic-telemetry-sdk-dotnet).
 
 

@@ -3,7 +3,24 @@
 [![NuGet](https://img.shields.io/nuget/v/NewRelic.OpenTelemetry.svg)](https://www.nuget.org/packages/NewRelic.OpenTelemetry)
 [![NuGet](https://img.shields.io/nuget/dt/NewRelic.OpenTelemetry.svg)](https://www.nuget.org/packages/NewRelic.OpenTelemetry)
 
-The New Relic Trace Exporter for OpenTelemetry .NET supports .NET Framework (4.5.2+) and .NET Core applications.
+## :exclamation: Deprecation Notice :exclamation:
+
+The NewRelic.OpenTelemetry package has been deprecated and will no longer be
+maintained. It included an exporter for sending OpenTelemetry trace data over
+New Relic's proprietary ingest protocol.
+
+Rather than developing and maintaining its own OpenTelemetry exporters, New
+Relic now supports ingesting data using the OpenTelemetry Protocol (OTLP). OTLP
+is an open source and vendor agnostic protocol.
+
+Configure your application to send data to New Relic's OTLP data ingestion
+endpoint using the
+[OpenTelemetry.Exporter.OpenTelemetryProtocol](https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/src/OpenTelemetry.Exporter.OpenTelemetryProtocol)
+package.
+
+For more information on sending data to New Relic over OTLP see our
+[OpenTelemetry quick start guide](https://docs.newrelic.com/docs/more-integrations/open-source-telemetry-integrations/opentelemetry/opentelemetry-quick-start)
+.
 
 ## Prerequisite
 * A [New Relic Insights Insert API key](https://docs.newrelic.com/docs/insights/insights-data-sources/custom-data/introduction-event-api#register).
@@ -27,13 +44,6 @@ You can configure the exporter with the following options:
   [Batch or Simple exporting processor](https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/trace/sdk.md#built-in-span-processors). Defaults to the batch exporting processor which is recommended for most use cases.
 * `BatchExportProcessorOptions` (Optional): Configuration options for the batch exporter.
   Only used if ExportProcessorType is set to Batch.
-
-## Next Steps
-* Review these [Sample Applications](/examples/NewRelic.OpenTelemetry) for guidance on configuration and usage.
-
-## Troubleshooting
-
-The [OpenTelemetry SDK](https://github.com/open-telemetry/opentelemetry-dotnet/tree/master/src/OpenTelemetry) uses `EventSource` for its internal logging, and this package also uses `EventSource` for its internal logging so that all of the relevant logs for troubleshooting your OpenTelemetry setup can be found in one place. For more information on how to enable and use this diagnostic logging you can follow the information provided in the [OpenTelemetry Troubleshooting documentation](https://github.com/open-telemetry/opentelemetry-dotnet/tree/master/src/OpenTelemetry#troubleshooting).
 
 ## References
 

@@ -23,7 +23,6 @@ jobs:
       artifact_staging_path: ${{ github.workspace }}\artifactstaging
       solution_file_path: ${{ github.workspace }}\NewRelic.sln
       telemetrysdk_path: ${{ github.workspace }}\src\NewRelic.Telemetry\bin\Release\
-      exporter_path: ${{ github.workspace }}\src\NewRelic.OpenTelemetry\bin\Release\
       DOTNET_NOLOGO: true
 
     steps:
@@ -38,8 +37,8 @@ jobs:
     - name: Setup Nuget Add to Path
       uses: nuget/setup-nuget@v1.0.5
       with:
-        nuget-version: '5.x'  
-    
+        nuget-version: '5.x'
+
     - name: Restore
       run:  dotnet restore ${{ env.solution_file_path }}
       shell: powershell
@@ -52,17 +51,12 @@ jobs:
       run:  dotnet test ${{ github.workspace }}\tests\NewRelic.Telemetry.Tests --no-build --no-restore --configuration Release --logger trx
       shell: powershell
 
-    - name: Unit Tests - OpenTelemetry
-      run:  dotnet test ${{ github.workspace }}\tests\NewRelic.OpenTelemetry.Tests --no-build --no-restore --configuration Release --logger trx
-      shell: powershell
-         
     - name: Archive the artifacts
       uses: actions/upload-artifact@v2
       with:
         name: my-artifact-${{ github.run_id }}
         path: |
           ${{ env.telemetrysdk_path }}
-          ${{ env.exporter_path }}
 
     # This step will only run on a build of master or a tag is created.
     - name: Publish Packages to MyGet
@@ -71,12 +65,6 @@ jobs:
         foreach ($file in Get-ChildItem -Path "${{ env.telemetrysdk_path }}\*" -File -Include *.nupkg) {
           nuget push $file.fullname -ApiKey ${{ secrets.MYGET_APIKEY }} -Source https://www.myget.org/F/newrelic/api/v2/package -NoSymbols }
 
-        foreach ($file in Get-ChildItem -Path "${{ env.exporter_path }}\*" -File -Include *.nupkg) {
-          nuget push $file.fullname -ApiKey ${{ secrets.MYGET_APIKEY }} -Source https://www.myget.org/F/newrelic/api/v2/package -NoSymbols }
-
         foreach ($file in Get-ChildItem -Path "${{ env.telemetrysdk_path }}\*" -File -Include *.snupkg) {
-          nuget push $file.fullname -ApiKey ${{ secrets.MYGET_APIKEY }} -Source https://www.myget.org/F/newrelic/api/v3/index.json }
-
-        foreach ($file in Get-ChildItem -Path "${{ env.exporter_path }}\*" -File -Include *.snupkg) {
           nuget push $file.fullname -ApiKey ${{ secrets.MYGET_APIKEY }} -Source https://www.myget.org/F/newrelic/api/v3/index.json }
       shell: powershell

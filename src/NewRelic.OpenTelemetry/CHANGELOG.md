@@ -1,89 +1,26 @@
 # Changelog
-All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## :exclamation: Deprecation Notice :exclamation:
 
-## Unreleased
+The NewRelic.OpenTelemetry package has been deprecated and will no longer be
+maintained. It included an exporter for sending OpenTelemetry trace data over
+New Relic's proprietary ingest protocol.
 
-## 1.0.0 - 2021-02-10
+Rather than developing and maintaining its own OpenTelemetry exporters, New
+Relic now supports ingesting data using the OpenTelemetry Protocol (OTLP). OTLP
+is an open source and vendor agnostic protocol.
 
-* Update to OpenTelemetry 1.0.1. ([#191](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/191))
+Configure your application to send data to New Relic's OTLP data ingestion
+endpoint using the
+[OpenTelemetry.Exporter.OpenTelemetryProtocol](https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/src/OpenTelemetry.Exporter.OpenTelemetryProtocol)
+package.
 
-## 1.0.0-rc2 - 2021-02-01
+For more information on sending data to New Relic over OTLP see our
+[OpenTelemetry quick start guide](https://docs.newrelic.com/docs/more-integrations/open-source-telemetry-integrations/opentelemetry/opentelemetry-quick-start)
+.
 
-* Update to OpenTelemetry 1.0.0-rc2. ([#188](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/188))
+## [1.0.0] - 2021-02-10
 
-## 1.0.0-rc1.9 - 2020-12-08
+* Initial release supporting exporting OpenTelemetry trace data to New Relic.
 
-* Conform to OpenTelemetry diagnostic logging. ([#178](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/178))
-* Remove `AuditLoggingEnabled` from exporter options. ([#182](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/182))
-
-## 1.0.0-rc1.1 - 2020-11-20
-
-* Update to OpenTelemetry 1.0.0-rc1.1. ([#167](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/167))
-* Add ExportProcessorType to exporter options. ([#169](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/169))
-* Remove `ServiceName` from exporter options. Service name should be set using the OpenTelemetry Resource API.
-  Here is an [example](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/blob/bf28937349432626858bd7c1ad11857bb64d1ca7/examples/NewRelic.OpenTelemetry/AspNetCore/Startup.cs#L35).
-  ([#174](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/174))
-* Rename `EndpointUrl` exporter option to `Endpoint`. ([#175](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/175))
-
-## 1.0.0-beta.202 - 2020-10-21
-
-* Fix issue where spans without an error would appear to have an error in the
-  UI.
-  ([#149](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/149))
-
-## 1.0.0-beta.200 - 2020-10-19
-
-* NuGet package renamed from OpenTelemetry.Exporter.NewRelic to
-  NewRelic.OpenTelemetry.
-  ([#144](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/144))
-* Renamed configuration and moved its namespace from
-  `NewRelic.Telemetry.TelemetryConfiguration` to
-  `NewRelic.OpenTelemetry.NewRelicExporterOptions`.
-  ([#146](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/146))
-* Update to OpenTelemetry 0.7.0-beta.1.
-  ([#142](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/142))
-
-## 1.0.0-beta.194 - 2020-09-25
-
-* Fix an issue where the serialization of data sent to New Relic would fail.
-  Replaced Utf8Json dependency with System.Text.Json (netstandard2.0) and
-  Newtonsoft.Json (net452).
-  ([#138](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/138))
-
-## 1.0.0-beta.191 - 2020-09-21
-
-* Update to OpenTelemetry 0.6.0-beta.1 ([#119](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/119)).
-* Fix `span.kind` not sent on spans ([#117](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/117)).
-* Removed dependency on NewRelic.Telemetry and
-  Microsoft.Extensions.Configuration.Abstractions packages. Change dependecy on
-  Microsoft.Extensions.Logging to Microsoft.Extensions.Logging.Abstractions
-  ([#126](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/126)).
-* Support `net452` ([#121](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/121)).
-* Renamed `UseNewRelic` helper method to `AddNewRelicExporter`.
-  `AddNewRelicExporter` now takes a delegate for configuring the exporter.
-  Overloads of `AddNewRelicExporter` that took an `IConfiguration` instance or
-  a API key have been removed.
-  ([#114](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/114)).
-
-## 1.0.0-beta.164 - 2020-08-31
-
-* Update to OpenTelemetry 0.5.0-beta.2 ([#96](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/96)).
-
-## 1.0.0-beta.159 - 2020-07-27
-
-* Update to OpenTelemetry 0.4.0-beta.2 ([#89](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/89)).
-
-## 1.0.0-beta.158 - 2020-07-24
-
-* Update to OpenTelemetry 0.3.0-beta.1 ([#88](https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/pull/88)).
-
-## 1.0.0-beta.134 - 2020-03-11
-
-* Modified the OpenTelemetry Trace Exporter to set attribute `instrumentation.provider` to "opentelemetry" on all spans.
-* Modified the OpenTelemetry Trace Exporter to append `Status.Description` as attribute `error.message` for all spans that do not have `Status.OK`
-
-## 1.0.0-beta - 2019-12-11
-
-* Initial beta release of the OpenTelemetry Exporter for .NET. Supports sending spans to the New Relic endpoint for visualization in the New Relic UI.
+[1.0.0]: https://github.com/newrelic/newrelic-telemetry-sdk-dotnet/tree/OpenTelemetry_v1.0.0
