@@ -2,7 +2,7 @@
 
 ❗Notice: This project is in the process of being archived as is and is no longer actively maintained.
 
-Rather than developing a .NET specific OpenTelemetry exporter New Relic has adopted a language agnostic approach that facilitates data collection from all OpenTelemetry data sources.
+Rather than developing a .NET specific OpenTelemetry SDK and .NET specific OpenTelemetry exporter, New Relic has adopted a language agnostic approach that facilitates data collection from all OpenTelemetry data sources.
 
 The current recommended approaches for sending OpenTelemetry data to the New Relic platform are as follows:
 
