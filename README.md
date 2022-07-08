@@ -1,6 +1,8 @@
-[![Community Project header](https://github.com/newrelic/opensource-website/raw/master/src/images/categories/Community_Project.png)](https://opensource.newrelic.com/oss-category/#community-project)
+[![Archived header](https://github.com/newrelic/open-source-office/raw/master/examples/categories/images/Archived.png)](https://github.com/newrelic/open-source-office/blob/master/examples/categories/index.md#archived)
 
-❗Notice: This project is in the process of being archived as is and is no longer actively maintained.
+# Archival Notice
+
+❗Notice: This project has been archived _as is_ and is no longer actively maintained.
 
 New Relic has adopted a language agnostic approach that facilitates data collection from all OpenTelemetry data sources.  We are deprecating the support of the .NET Telemetry SDK and the .NET OpenTelemetry exporter. 
 
@@ -13,6 +15,8 @@ For more details please see:
 * [OpenTelemetry quick start](https://docs.newrelic.com/docs/integrations/open-source-telemetry-integrations/opentelemetry/opentelemetry-quick-start/)
 * [Introduction to OpenTelemetry with New Relic](https://docs.newrelic.com/docs/integrations/open-source-telemetry-integrations/opentelemetry/introduction-opentelemetry-new-relic/)
 * [Native OpenTelemetry Protocol (OTLP) support](https://docs.newrelic.com/whats-new/2021/04/native-support-opentelemetry/)
+
+---
 
 # New Relic .NET Telemetry SDK
 
